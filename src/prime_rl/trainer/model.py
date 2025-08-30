@@ -51,18 +51,12 @@ def get_model(config: ModelConfig) -> nn.Module:
     )
     config_model.use_cache = False
     
-    if config.liger_kernel:
-        model = AutoLigerKernelForCausalLM.from_pretrained(
-            pretrained_model_name_or_path=config.name,
-            config=config_model,
-            trust_remote_code=config.trust_remote_code,
-        )
-    else:
-        model = AutoModelForCausalLM.from_pretrained(
-            pretrained_model_name_or_path=config.name,
-            config=config_model,
-            trust_remote_code=config.trust_remote_code,
-        )
+    model_cls = AutoLigerKernelForCausalLM if config.liger_kernel else AutoModelForCausalLM
+    model = model_cls.from_pretrained(
+        pretrained_model_name_or_path=config.name,
+        config=config_model,
+        trust_remote_code=config.trust_remote_code,
+    )
 
     return model
 
