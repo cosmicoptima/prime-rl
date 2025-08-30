@@ -253,9 +253,9 @@ def train(config: RLTrainerConfig):
             if config.model.liger_kernel and config.loss.type == "grpo":
                 from liger_kernel.transformers.grpo_loss import triton_grpo_loss
                 
-                # Debug: Compare advantage values
-                print(f"Liger path - advantages shape: {advantages.shape}, mean: {advantages.mean().item():.6f}, std: {advantages.std().item():.6f}")
-                print(f"Liger path - advantages min/max: {advantages.min().item():.6f} / {advantages.max().item():.6f}")
+                # Debug: Compare key values
+                print(f"Liger path - advantages shape: {advantages.shape}, mean: {advantages.mean().item():.6f}")
+                print(f"Liger path - old_logprobs shape: {old_logprobs.shape}, mean: {old_logprobs.mean().item():.6f}")
                 
                 # Liger GRPO path
                 per_token_loss, kl, is_clipped = triton_grpo_loss(
@@ -283,9 +283,9 @@ def train(config: RLTrainerConfig):
                     "is_clipped": is_clipped,
                 }
             else:
-                # Debug: Compare advantage values  
-                print(f"Standard path - advantages shape: {advantages.shape}, mean: {advantages.mean().item():.6f}, std: {advantages.std().item():.6f}")
-                print(f"Standard path - advantages min/max: {advantages.min().item():.6f} / {advantages.max().item():.6f}")
+                # Debug: Compare key values  
+                print(f"Standard path - advantages shape: {advantages.shape}, mean: {advantages.mean().item():.6f}")
+                print(f"Standard path - old_logprobs shape: {old_logprobs.shape}, mean: {old_logprobs.mean().item():.6f}")
                 
                 shifted_logits = shift_logits(logits)
                 shifted_logits = shifted_logits / temperature
