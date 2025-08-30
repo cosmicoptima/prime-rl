@@ -289,7 +289,7 @@ def train(config: RLTrainerConfig):
                 
                 # Set logprobs for entropy calculation
                 logprobs = fresh_logprobs
-                shifted_logits = None
+                # Keep shifted_logits for entropy calculation (don't set to None)
                 loss_tensors = {
                     "is_clipped": is_clipped,
                 }
