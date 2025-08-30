@@ -9,7 +9,7 @@ from liger_kernel.transformers import AutoLigerKernelForCausalLM
 from torch import Tensor
 from torch.distributed.algorithms._checkpoint.checkpoint_wrapper import checkpoint_wrapper
 from torch.distributed.fsdp import FSDPModule, MixedPrecisionPolicy, fully_shard
-from transformers import AutoConfig, AutoTokenizer
+from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
 from transformers.tokenization_utils import PreTrainedTokenizer
 
 from prime_rl.trainer.config import ActivationCheckpointConfig, ModelConfig
@@ -58,7 +58,6 @@ def get_model(config: ModelConfig) -> nn.Module:
             trust_remote_code=config.trust_remote_code,
         )
     else:
-        from transformers import AutoModelForCausalLM
         model = AutoModelForCausalLM.from_pretrained(
             pretrained_model_name_or_path=config.name,
             config=config_model,
