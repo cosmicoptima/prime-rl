@@ -262,8 +262,7 @@ def train(config: RLTrainerConfig):
                     completion_mask=loss_mask.squeeze().int(),
                     temperature=temperature,
                     beta=0.0,
-                    eps_low=1.0 - config.loss.clip_ratio,
-                    eps_high=config.loss.clip_ratio - 1.0,
+                    clip_ratio=config.loss.clip_ratio,
                     inplace=True,
                 )
                 
