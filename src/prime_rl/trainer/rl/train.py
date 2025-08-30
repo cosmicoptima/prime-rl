@@ -266,9 +266,18 @@ def train(config: RLTrainerConfig):
                     inplace=True,
                 )
                 
-                # Apply loss mask and scaling
-                shifted_loss_mask = loss_mask[:, 1:]
-                loss = (per_token_loss * shifted_loss_mask.squeeze()).sum()
+                # Debug prints for comparison
+                print(f"Liger path - loss_scale: {loss_scale}")
+                print(f"Liger path - loss_mask.sum(): {loss_mask.sum().item()}")
+                print(f"Liger path - per_token_loss.sum(): {per_token_loss.sum().item()}")
+                print(f"Liger path - per_token_loss mean: {per_token_loss.mean().item()}")
+                print(f"Liger path - per_token_loss.shape: {per_token_loss.shape}")
+                print(f"Liger path - loss_mask.shape: {loss_mask.shape}")
+                
+                # Apply loss mask and scaling to match standard implementation
+                # Note: per_token_loss shape should match loss_mask shape
+                loss = (per_token_loss * loss_mask.squeeze()).sum() / max(loss_scale, 1)
+                print(f"Liger path - final loss: {loss.item()}")
                 
                 # Skip logprobs computation for memory efficiency
                 shifted_logits = None
@@ -281,6 +290,10 @@ def train(config: RLTrainerConfig):
                 shifted_logits = shifted_logits / temperature
                 logprobs = selective_log_softmax(shifted_logits, input_ids)
                 
+                # Debug prints for comparison
+                print(f"Standard path - loss_scale: {loss_scale}")
+                print(f"Standard path - loss_mask.sum(): {loss_mask.sum().item()}")
+                
                 loss, loss_tensors = compute_loss(
                     logprobs=logprobs.squeeze().split(response_lengths),
                     old_logprobs=old_logprobs.squeeze().split(response_lengths),
@@ -289,6 +302,8 @@ def train(config: RLTrainerConfig):
                     loss_config=config.loss,
                     loss_scale=loss_scale,
                 )
+                
+                print(f"Standard path - final loss: {loss.item()}")
 
 
             # Compute entropy
