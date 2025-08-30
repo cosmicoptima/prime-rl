@@ -261,23 +261,27 @@ def train(config: RLTrainerConfig):
                 # Debug: Compare key values
                 print(f"Liger path - advantages shape: {advantages.shape}, mean: {advantages.mean().item():.6f}")
                 print(f"Liger path - fresh_logprobs shape: {fresh_logprobs.shape}, mean: {fresh_logprobs.mean().item():.6f}")
-                print(f"Liger path - old_logprobs (from batch) mean: {old_logprobs.mean().item():.6f}")
+                print(f"Liger path - old_logprobs (from batch) shape: {old_logprobs.shape}, mean: {old_logprobs.mean().item():.6f}")
                 
                 # Liger GRPO path - compute loss in PyTorch using fresh logprobs
                 # This bypasses the buggy Liger kernel GRPO computation
                 
-                # Align old_logprobs and advantages with shifted sequence
-                shifted_old_logprobs = old_logprobs[:, 1:]  # Match fresh_logprobs shape
-                shifted_advantages = advantages[:, 1:]  # Match fresh_logprobs shape
+                # Align ALL tensors to the same sequence dimension
+                # fresh_logprobs comes from shifted_logits so it might be shorter
+                seq_len = min(fresh_logprobs.shape[1], old_logprobs.shape[1], advantages.shape[1], loss_mask.shape[1])
                 
-                log_importance_ratio = fresh_logprobs - shifted_old_logprobs
+                aligned_fresh_logprobs = fresh_logprobs[:, :seq_len]
+                aligned_old_logprobs = old_logprobs[:, :seq_len] 
+                aligned_advantages = advantages[:, :seq_len]
+                aligned_loss_mask = loss_mask[:, :seq_len]
+                
+                log_importance_ratio = aligned_fresh_logprobs - aligned_old_logprobs
                 importance_ratio = torch.exp(log_importance_ratio)
                 clipped_importance_ratio = torch.clamp(importance_ratio, max=config.loss.clip_ratio)
-                per_token_loss = -clipped_importance_ratio * shifted_advantages
+                per_token_loss = -clipped_importance_ratio * aligned_advantages
                 
                 # Apply loss mask and scaling to match standard implementation
-                shifted_loss_mask = loss_mask[:, 1:]  # Match fresh_logprobs shape
-                loss = (per_token_loss * shifted_loss_mask.squeeze()).sum() / max(loss_scale, 1)
+                loss = (per_token_loss * aligned_loss_mask.squeeze()).sum() / max(loss_scale, 1)
                 print(f"Liger path - per_token_loss.sum(): {per_token_loss.sum().item():.6f}, final loss: {loss.item():.6f}")
                 
                 # Set logprobs for entropy calculation
