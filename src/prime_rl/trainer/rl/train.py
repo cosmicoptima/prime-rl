@@ -291,6 +291,8 @@ def train(config: RLTrainerConfig):
                 logprobs = fresh_logprobs
                 # Keep shifted_logits for entropy calculation (don't set to None)
                 loss_tensors = {
+                    "importance_ratio": importance_ratio,
+                    "clipped_importance_ratio": clipped_importance_ratio,
                     "is_clipped": is_clipped,
                 }
             else:
