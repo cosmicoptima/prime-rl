@@ -268,7 +268,10 @@ def train(config: RLTrainerConfig):
                 log_importance_ratio = fresh_logprobs - old_logprobs
                 importance_ratio = torch.exp(log_importance_ratio)
                 clipped_importance_ratio = torch.clamp(importance_ratio, max=config.loss.clip_ratio)
-                per_token_loss = -clipped_importance_ratio * advantages
+                
+                # Align advantages with shifted sequence (advantages corresponds to response tokens)
+                shifted_advantages = advantages[:, 1:]  # Match fresh_logprobs shape
+                per_token_loss = -clipped_importance_ratio * shifted_advantages
                 
                 # Apply loss mask and scaling to match standard implementation
                 shifted_loss_mask = loss_mask[:, 1:]  # Match fresh_logprobs shape
