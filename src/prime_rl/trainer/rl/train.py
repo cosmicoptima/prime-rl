@@ -268,7 +268,7 @@ def train(config: RLTrainerConfig):
                 
                 # Apply loss mask and scaling
                 shifted_loss_mask = loss_mask[:, 1:]
-                loss = (per_token_loss * shifted_loss_mask.squeeze()).sum() / max(loss_scale, 1)
+                loss = (per_token_loss * shifted_loss_mask.squeeze()).sum()
                 
                 # Skip logprobs computation for memory efficiency
                 shifted_logits = None
