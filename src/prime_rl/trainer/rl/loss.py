@@ -102,6 +102,7 @@ def compute_loss(
 
         # Apply loss mask and sum
         loss = (loss[loss_mask]).sum()
+        print(f"Standard compute_loss - raw per-sequence loss: {loss.item()}, masked_tokens: {loss_mask.sum().item()}")
 
         # Apply sequence-level normalization if configured
         if loss_config.norm_type == "sequence":
@@ -115,6 +116,7 @@ def compute_loss(
         total_is_clipped.append(is_clipped)
 
     # Apply loss scaling
+    print(f"Standard compute_loss - total_loss before scaling: {total_loss.item()}, loss_scale: {loss_scale}")
     scaled_loss = total_loss / max(loss_scale, 1)
 
     return scaled_loss, {
