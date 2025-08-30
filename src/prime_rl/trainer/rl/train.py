@@ -265,12 +265,14 @@ def train(config: RLTrainerConfig):
                 
                 # Liger GRPO path - compute loss in PyTorch using fresh logprobs
                 # This bypasses the buggy Liger kernel GRPO computation
-                log_importance_ratio = fresh_logprobs - old_logprobs
+                
+                # Align old_logprobs and advantages with shifted sequence
+                shifted_old_logprobs = old_logprobs[:, 1:]  # Match fresh_logprobs shape
+                shifted_advantages = advantages[:, 1:]  # Match fresh_logprobs shape
+                
+                log_importance_ratio = fresh_logprobs - shifted_old_logprobs
                 importance_ratio = torch.exp(log_importance_ratio)
                 clipped_importance_ratio = torch.clamp(importance_ratio, max=config.loss.clip_ratio)
-                
-                # Align advantages with shifted sequence (advantages corresponds to response tokens)
-                shifted_advantages = advantages[:, 1:]  # Match fresh_logprobs shape
                 per_token_loss = -clipped_importance_ratio * shifted_advantages
                 
                 # Apply loss mask and scaling to match standard implementation
