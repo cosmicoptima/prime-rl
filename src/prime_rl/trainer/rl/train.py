@@ -258,13 +258,7 @@ def train(config: RLTrainerConfig):
                 shifted_logits = shifted_logits / temperature
                 fresh_logprobs = selective_log_softmax(shifted_logits, input_ids)
                 
-                # Debug: Compare key values
-                print(f"Liger path - advantages shape: {advantages.shape}, mean: {advantages.mean().item():.6f}")
-                print(f"Liger path - fresh_logprobs shape: {fresh_logprobs.shape}, mean: {fresh_logprobs.mean().item():.6f}")
-                print(f"Liger path - old_logprobs (from batch) shape: {old_logprobs.shape}, mean: {old_logprobs.mean().item():.6f}")
-                
                 # Liger GRPO path - compute loss in PyTorch using fresh logprobs
-                # This bypasses the buggy Liger kernel GRPO computation
                 
                 # Align ALL tensors to the same sequence dimension
                 # fresh_logprobs comes from shifted_logits so it might be shorter
@@ -285,7 +279,6 @@ def train(config: RLTrainerConfig):
                 
                 # Apply loss mask and scaling to match standard implementation
                 loss = (per_token_loss * aligned_loss_mask.squeeze()).sum() / max(loss_scale, 1)
-                print(f"Liger path - per_token_loss.sum(): {per_token_loss.sum().item():.6f}, final loss: {loss.item():.6f}")
                 
                 # Set logprobs for entropy calculation
                 logprobs = fresh_logprobs
@@ -296,14 +289,10 @@ def train(config: RLTrainerConfig):
                     "is_clipped": is_clipped,
                 }
             else:
-                # Debug: Compare key values  
-                print(f"Standard path - advantages shape: {advantages.shape}, mean: {advantages.mean().item():.6f}")
-                print(f"Standard path - old_logprobs shape: {old_logprobs.shape}, mean: {old_logprobs.mean().item():.6f}")
                 
                 shifted_logits = shift_logits(logits)
                 shifted_logits = shifted_logits / temperature
                 logprobs = selective_log_softmax(shifted_logits, input_ids)
-                print(f"Standard path - fresh logprobs shape: {logprobs.shape}, mean: {logprobs.mean().item():.6f}")
                 
                 loss, loss_tensors = compute_loss(
                     logprobs=logprobs.squeeze().split(response_lengths),
@@ -314,7 +303,6 @@ def train(config: RLTrainerConfig):
                     loss_scale=loss_scale,
                 )
                 
-                print(f"Standard path - final loss: {loss.item():.6f}")
 
 
             # Compute entropy

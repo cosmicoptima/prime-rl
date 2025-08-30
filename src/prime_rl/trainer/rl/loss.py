@@ -96,7 +96,6 @@ def compute_loss(
             log_importance_ratio = torch.clamp(log_importance_ratio, max=10.0)
 
         importance_ratio = torch.exp(log_importance_ratio)
-        print(f"Standard - importance_ratio mean: {importance_ratio.mean().item():.6f}, min/max: {importance_ratio.min().item():.6f} / {importance_ratio.max().item():.6f}")
         clipped_importance_ratio = torch.clamp(importance_ratio, max=loss_config.clip_ratio)
         loss = -clipped_importance_ratio * advantages
         is_clipped = (importance_ratio > loss_config.clip_ratio).float()
