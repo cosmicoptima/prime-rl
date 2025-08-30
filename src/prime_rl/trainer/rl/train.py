@@ -250,69 +250,31 @@ def train(config: RLTrainerConfig):
             # Compute loss
             response_lengths = get_response_lengths(position_ids)
             
-            if config.model.liger_kernel and config.loss.type == "grpo":
-                from liger_kernel.transformers.grpo_loss import triton_grpo_loss
-                # Liger GRPO path
-                per_token_loss, kl, is_clipped = triton_grpo_loss(
-                    logits=logits,
-                    old_logp=old_logprobs.squeeze(),
-                    ref_logp=None,
-                    completion_ids=input_ids,
-                    advantages=advantages.squeeze(),
-                    completion_mask=loss_mask.squeeze().int(),
-                    temperature=temperature,
-                    beta=0.0,
-                    eps_low=1.0 - config.loss.clip_ratio,
-                    eps_high=config.loss.clip_ratio - 1.0,
-                    inplace=True,
-                )
-                
-                # Apply loss mask and scaling
-                shifted_loss_mask = loss_mask[:, 1:]
-                loss = (per_token_loss * shifted_loss_mask.squeeze()).sum() / max(loss_scale, 1)
-                
-                # Skip logprobs computation for memory efficiency
-                shifted_logits = None
-                logprobs = None
-                loss_tensors = {
-                    "is_clipped": is_clipped,
-                }
-            else:
-                shifted_logits = shift_logits(logits)
-                shifted_logits = shifted_logits / temperature
-                logprobs = selective_log_softmax(shifted_logits, input_ids)
-                
-                loss, loss_tensors = compute_loss(
-                    logprobs=logprobs.squeeze().split(response_lengths),
-                    old_logprobs=old_logprobs.squeeze().split(response_lengths),
-                    advantages=advantages.squeeze().split(response_lengths),
-                    loss_mask=loss_mask.squeeze().split(response_lengths),
-                    loss_config=config.loss,
-                    loss_scale=loss_scale,
-                )
-
+            shifted_logits = shift_logits(logits)
+            shifted_logits = shifted_logits / temperature
+            logprobs = selective_log_softmax(shifted_logits, input_ids)
+            
+            loss, loss_tensors = compute_loss(
+                logprobs=logprobs.squeeze().split(response_lengths),
+                old_logprobs=old_logprobs.squeeze().split(response_lengths),
+                advantages=advantages.squeeze().split(response_lengths),
+                loss_mask=loss_mask.squeeze().split(response_lengths),
+                loss_config=config.loss,
+                loss_scale=loss_scale,
+            )
 
             # Compute entropy
             with torch.no_grad():
-                if shifted_logits is not None:
-                    entropy = compute_entropy(shifted_logits)
-                else:
-                    entropy = torch.zeros_like(loss_mask.float())
+                entropy = compute_entropy(shifted_logits)
 
             # Delete logits and shifted_logits before backward pass to avoid memory spike
-            if shifted_logits is not None:
-                del logits, shifted_logits
-            else:
-                del logits
+            del logits, shifted_logits
 
             # Backward pass
             loss.backward()
 
             # Add relevant tensors to tensor dict for logging purposes
-            if logprobs is not None:
-                tensors["probs"].append(torch.exp(logprobs)[loss_mask].detach().to("cpu"))
-            else:
-                tensors["probs"].append(torch.zeros(loss_mask.sum().item()).to("cpu"))
+            tensors["probs"].append(torch.exp(logprobs)[loss_mask].detach().to("cpu"))
             
             tensors["old_probs"].append(torch.exp(old_logprobs)[loss_mask].detach().to("cpu"))
             tensors["entropy"].append(entropy[loss_mask].detach().to("cpu"))
@@ -328,15 +290,7 @@ def train(config: RLTrainerConfig):
 
             # Add loss tensors to tensor dict for logging purposes
             for key, loss_tensor in loss_tensors.items():
-                if config.model.liger_kernel and config.loss.type == "grpo":
-                    if loss_tensor.dim() > 1:
-                        mask_for_logging = loss_mask[:, 1:]
-                        loss_tensor = loss_tensor.detach()[mask_for_logging].detach().to("cpu")
-                    else:
-                        mask_for_logging = loss_mask[:, 1:].squeeze()
-                        loss_tensor = loss_tensor.detach()[mask_for_logging].detach().to("cpu")
-                else:
-                    loss_tensor = loss_tensor.detach()[loss_mask.squeeze()].detach().to("cpu")
+                loss_tensor = loss_tensor.detach()[loss_mask.squeeze()].detach().to("cpu")
                 tensors[key].append(loss_tensor)
 
             # Debug log with *local, micro step* stats
