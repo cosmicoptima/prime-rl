@@ -352,11 +352,14 @@ def train(config: RLTrainerConfig):
             # Add loss tensors to tensor dict for logging purposes
             for key, loss_tensor in loss_tensors.items():
                 if config.model.liger_kernel and config.loss.type == "grpo":
+                    # Use aligned mask to match loss_tensor shape
+                    seq_len = min(loss_tensor.shape[1], loss_mask.shape[1]) if loss_tensor.dim() > 1 else loss_mask.shape[1]
                     if loss_tensor.dim() > 1:
-                        mask_for_logging = loss_mask[:, 1:]
-                        loss_tensor = loss_tensor.detach()[mask_for_logging].detach().to("cpu")
+                        mask_for_logging = loss_mask[:, :seq_len]
+                        loss_tensor_aligned = loss_tensor[:, :seq_len]
+                        loss_tensor = loss_tensor_aligned.detach()[mask_for_logging].detach().to("cpu")
                     else:
-                        mask_for_logging = loss_mask[:, 1:].squeeze()
+                        mask_for_logging = loss_mask[:, :seq_len].squeeze()
                         loss_tensor = loss_tensor.detach()[mask_for_logging].detach().to("cpu")
                 else:
                     loss_tensor = loss_tensor.detach()[loss_mask.squeeze()].detach().to("cpu")
