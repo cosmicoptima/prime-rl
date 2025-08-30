@@ -251,8 +251,6 @@ def train(config: RLTrainerConfig):
             response_lengths = get_response_lengths(position_ids)
             
             if config.model.liger_kernel and config.loss.type == "grpo":
-                from liger_kernel.transformers.grpo_loss import triton_grpo_loss
-                
                 # Compute fresh logprobs like standard path does
                 shifted_logits = shift_logits(logits)
                 shifted_logits = shifted_logits / temperature
@@ -289,7 +287,6 @@ def train(config: RLTrainerConfig):
                     "is_clipped": is_clipped,
                 }
             else:
-                
                 shifted_logits = shift_logits(logits)
                 shifted_logits = shifted_logits / temperature
                 logprobs = selective_log_softmax(shifted_logits, input_ids)
@@ -302,7 +299,6 @@ def train(config: RLTrainerConfig):
                     loss_config=config.loss,
                     loss_scale=loss_scale,
                 )
-                
 
 
             # Compute entropy
