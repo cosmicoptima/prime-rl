@@ -275,8 +275,10 @@ def train(config: RLTrainerConfig):
                 print(f"Liger path - loss_mask.shape: {loss_mask.shape}")
                 
                 # Apply loss mask and scaling to match standard implementation
-                # Note: per_token_loss shape should match loss_mask shape
-                loss = (per_token_loss * loss_mask.squeeze()).sum() / max(loss_scale, 1)
+                # Liger internally shifts sequences, so we need to align loss_mask
+                shifted_loss_mask = loss_mask[:, 1:]  # Remove first token to match per_token_loss shape
+                print(f"Liger path - shifted_loss_mask.sum(): {shifted_loss_mask.sum().item()}")
+                loss = (per_token_loss * shifted_loss_mask.squeeze()).sum() / max(loss_scale, 1)
                 print(f"Liger path - final loss: {loss.item()}")
                 
                 # Skip logprobs computation for memory efficiency
