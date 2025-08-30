@@ -165,9 +165,3 @@ class RLTrainerConfig(BaseSettings):
         if self.monitor.wandb and self.monitor.wandb.log_extras:
             self.monitor.wandb.log_extras.samples = False
         return self
-
-    @model_validator(mode="after")
-    def validate_liger_compatibility(self):
-        if self.model.liger_kernel and self.loss.type != "grpo":
-            raise ValueError("Liger Kernel only supports GRPO, not GSPO")
-        return self
