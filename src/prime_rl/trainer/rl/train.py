@@ -263,10 +263,10 @@ def train(config: RLTrainerConfig):
                 print(f"Liger path - fresh_logprobs shape: {fresh_logprobs.shape}, mean: {fresh_logprobs.mean().item():.6f}")
                 print(f"Liger path - old_logprobs (from batch) mean: {old_logprobs.mean().item():.6f}")
                 
-                # Liger GRPO path - revert to using batch old_logprobs for now
+                # Liger GRPO path - pass shifted logits to match standard path  
                 per_token_loss, kl, is_clipped = triton_grpo_loss(
-                    logits=logits,
-                    old_logp=old_logprobs.squeeze(),  # Revert to batch old_logprobs
+                    logits=shifted_logits,  # Pass shifted logits instead of original
+                    old_logp=old_logprobs.squeeze(),  # Use batch old_logprobs
                     ref_logp=None,
                     completion_ids=input_ids,
                     advantages=advantages.squeeze(),
@@ -277,8 +277,9 @@ def train(config: RLTrainerConfig):
                     inplace=True,
                 )
                 
-                # Apply loss mask and scaling to match standard implementation
-                shifted_loss_mask = loss_mask[:, 1:]  # Remove first token to match per_token_loss shape
+                # Apply loss mask and scaling to match standard implementation  
+                # Now per_token_loss shape should match loss_mask shape since we use shifted logits
+                shifted_loss_mask = loss_mask[:, 1:]  # Still need to shift mask to match shifted logits
                 loss = (per_token_loss * shifted_loss_mask.squeeze()).sum() / max(loss_scale, 1)
                 print(f"Liger path - per_token_loss.sum(): {per_token_loss.sum().item():.6f}, final loss: {loss.item():.6f}")
                 
