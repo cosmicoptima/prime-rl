@@ -280,6 +280,9 @@ def train(config: RLTrainerConfig):
                 clipped_importance_ratio = torch.clamp(importance_ratio, max=config.loss.clip_ratio)
                 per_token_loss = -clipped_importance_ratio * aligned_advantages
                 
+                # Compute is_clipped for logging
+                is_clipped = importance_ratio > config.loss.clip_ratio
+                
                 # Apply loss mask and scaling to match standard implementation
                 loss = (per_token_loss * aligned_loss_mask.squeeze()).sum() / max(loss_scale, 1)
                 print(f"Liger path - per_token_loss.sum(): {per_token_loss.sum().item():.6f}, final loss: {loss.item():.6f}")
