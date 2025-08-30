@@ -230,7 +230,6 @@ def train(config: RLTrainerConfig):
         # Normalize by the local number of unmasked tokens in the batch (per-batch length normalization)
         if config.loss.norm_type == "token":
             loss_scale = sum(micro_batch["loss_mask"].sum().item() for micro_batch in micro_batches)
-            print(f"Individual micro_batch loss_mask sums: {[mb['loss_mask'].sum().item() for mb in micro_batches]}")
         elif config.loss.norm_type == "sequence":
             loss_scale = batch_size
 
@@ -253,6 +252,11 @@ def train(config: RLTrainerConfig):
             
             if config.model.liger_kernel and config.loss.type == "grpo":
                 from liger_kernel.transformers.grpo_loss import triton_grpo_loss
+                
+                # Debug: Compare advantage values
+                print(f"Liger path - advantages shape: {advantages.shape}, mean: {advantages.mean().item():.6f}, std: {advantages.std().item():.6f}")
+                print(f"Liger path - advantages min/max: {advantages.min().item():.6f} / {advantages.max().item():.6f}")
+                
                 # Liger GRPO path
                 per_token_loss, kl, is_clipped = triton_grpo_loss(
                     logits=logits,
@@ -267,20 +271,10 @@ def train(config: RLTrainerConfig):
                     inplace=True,
                 )
                 
-                # Debug prints for comparison
-                print(f"Liger path - loss_scale: {loss_scale}")
-                print(f"Liger path - loss_mask.sum(): {loss_mask.sum().item()}")
-                print(f"Liger path - per_token_loss.sum(): {per_token_loss.sum().item()}")
-                print(f"Liger path - per_token_loss mean: {per_token_loss.mean().item()}")
-                print(f"Liger path - per_token_loss.shape: {per_token_loss.shape}")
-                print(f"Liger path - loss_mask.shape: {loss_mask.shape}")
-                
                 # Apply loss mask and scaling to match standard implementation
-                # Liger internally shifts sequences, so we need to align loss_mask
                 shifted_loss_mask = loss_mask[:, 1:]  # Remove first token to match per_token_loss shape
-                print(f"Liger path - shifted_loss_mask.sum(): {shifted_loss_mask.sum().item()}")
                 loss = (per_token_loss * shifted_loss_mask.squeeze()).sum() / max(loss_scale, 1)
-                print(f"Liger path - final loss: {loss.item()}")
+                print(f"Liger path - per_token_loss.sum(): {per_token_loss.sum().item():.6f}, final loss: {loss.item():.6f}")
                 
                 # Skip logprobs computation for memory efficiency
                 shifted_logits = None
@@ -289,13 +283,13 @@ def train(config: RLTrainerConfig):
                     "is_clipped": is_clipped,
                 }
             else:
+                # Debug: Compare advantage values  
+                print(f"Standard path - advantages shape: {advantages.shape}, mean: {advantages.mean().item():.6f}, std: {advantages.std().item():.6f}")
+                print(f"Standard path - advantages min/max: {advantages.min().item():.6f} / {advantages.max().item():.6f}")
+                
                 shifted_logits = shift_logits(logits)
                 shifted_logits = shifted_logits / temperature
                 logprobs = selective_log_softmax(shifted_logits, input_ids)
-                
-                # Debug prints for comparison
-                print(f"Standard path - loss_scale: {loss_scale}")
-                print(f"Standard path - loss_mask.sum(): {loss_mask.sum().item()}")
                 
                 loss, loss_tensors = compute_loss(
                     logprobs=logprobs.squeeze().split(response_lengths),
@@ -306,7 +300,7 @@ def train(config: RLTrainerConfig):
                     loss_scale=loss_scale,
                 )
                 
-                print(f"Standard path - final loss: {loss.item()}")
+                print(f"Standard path - final loss: {loss.item():.6f}")
 
 
             # Compute entropy
