@@ -263,10 +263,10 @@ def train(config: RLTrainerConfig):
                 print(f"Liger path - fresh_logprobs shape: {fresh_logprobs.shape}, mean: {fresh_logprobs.mean().item():.6f}")
                 print(f"Liger path - old_logprobs (from batch) mean: {old_logprobs.mean().item():.6f}")
                 
-                # Liger GRPO path - use old_logprobs from batch like standard path does
+                # Liger GRPO path - revert to using batch old_logprobs for now
                 per_token_loss, kl, is_clipped = triton_grpo_loss(
                     logits=logits,
-                    old_logp=old_logprobs.squeeze(),  # Keep using old_logprobs from batch
+                    old_logp=old_logprobs.squeeze(),  # Revert to batch old_logprobs
                     ref_logp=None,
                     completion_ids=input_ids,
                     advantages=advantages.squeeze(),
@@ -296,6 +296,7 @@ def train(config: RLTrainerConfig):
                 shifted_logits = shift_logits(logits)
                 shifted_logits = shifted_logits / temperature
                 logprobs = selective_log_softmax(shifted_logits, input_ids)
+                print(f"Standard path - fresh logprobs shape: {logprobs.shape}, mean: {logprobs.mean().item():.6f}")
                 
                 loss, loss_tensors = compute_loss(
                     logprobs=logprobs.squeeze().split(response_lengths),
