@@ -26,12 +26,12 @@ class ActivationCheckpointConfig(BaseModel):
 
 class LoRAConfig(BaseModel):
     """Configuration for LoRA (Low-Rank Adaptation)."""
-    
+
     enabled: Annotated[
         bool,
         Field(description="Whether to enable LoRA training."),
     ] = False
-    
+
     rank: Annotated[
         int,
         Field(
@@ -39,7 +39,7 @@ class LoRAConfig(BaseModel):
             description="Rank of the low-rank decomposition matrices.",
         ),
     ] = 16
-    
+
     alpha: Annotated[
         float,
         Field(
@@ -47,7 +47,7 @@ class LoRAConfig(BaseModel):
             description="LoRA scaling parameter.",
         ),
     ] = 16.0
-    
+
     dropout: Annotated[
         float,
         Field(
@@ -64,12 +64,12 @@ class LoRAConfig(BaseModel):
         ),
     ] = [
         r".*\.q_proj$",
-        r".*\.k_proj$", 
+        r".*\.k_proj$",
         r".*\.v_proj$",
         r".*\.o_proj$",
         r".*\.gate_proj$",
         r".*\.up_proj$",
-        r".*\.down_proj$"
+        r".*\.down_proj$",
     ]
 
     trainable_modules: Annotated[
@@ -77,12 +77,7 @@ class LoRAConfig(BaseModel):
         Field(
             description="Regex patterns for modules to keep fully trainable (not freeze).",
         ),
-    ] = [
-        r".*embed_tokens$",
-        r".*norm$",
-        r".*layernorm$",
-        r"lm_head$"
-    ]
+    ] = [r".*embed_tokens$", r".*norm$", r".*layernorm$", r"lm_head$"]
 
 
 class ModelConfig(BaseConfig):
