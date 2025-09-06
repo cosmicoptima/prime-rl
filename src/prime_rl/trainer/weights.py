@@ -1,3 +1,4 @@
+import math
 import shutil
 import threading
 import warnings
@@ -101,51 +102,34 @@ def _clean_lora_state_dict(state_dict: dict[str, Tensor]) -> dict[str, Tensor]:
     return clean_state_dict
 
 
-def _merge_lora_weights_inplace(model: nn.Module) -> dict[str, dict[str, torch.Tensor]]:
+def _merge_lora_weights_permanently(model: nn.Module) -> int:
     """
-    Merge LoRA weights into base layers in-place and return original LoRA state for restoration.
+    Permanently merge LoRA weights into base layers and reinitialize adapters with identical init.
 
     Returns:
-        Dictionary mapping module names to their original LoRA state
+        Number of LoRA layers merged
     """
-    original_lora_state = {}
     merged_count = 0
+
+    # Set deterministic seed for reproducible reinitialization
+    generator = torch.Generator()
+    generator.manual_seed(42)
 
     for name, module in model.named_modules():
         if isinstance(module, LoRALinear):
-            original_lora_state[name] = {
-                "lora_A": module.lora_A.data.clone(),
-                "lora_B": module.lora_B.data.clone(),
-            }
-
+            # Merge LoRA delta into base weights
             delta_weight = (module.lora_B @ module.lora_A) * module.scaling
             module.base_layer.weight.data.add_(delta_weight)
 
-            module.lora_A.data.zero_()
-            module.lora_B.data.zero_()
+            # Reinitialize LoRA adapters exactly like original init (no scaling)
+            with torch.random.fork_rng():
+                torch.random.set_rng_state(generator.get_state())
+                nn.init.kaiming_uniform_(module.lora_A, a=math.sqrt(5))
+                nn.init.zeros_(module.lora_B)
+            
             merged_count += 1
 
-    return original_lora_state
-
-
-def _restore_lora_weights_inplace(model: nn.Module, original_lora_state: dict[str, dict[str, torch.Tensor]]) -> None:
-    """
-    Restore original LoRA weights and subtract merged weights from base layers.
-
-    Args:
-        model: Model with merged LoRA weights
-        original_lora_state: Original LoRA state from _merge_lora_weights_inplace
-    """
-    restored_count = 0
-
-    for name, module in model.named_modules():
-        if isinstance(module, LoRALinear) and name in original_lora_state:
-            module.lora_A.data.copy_(original_lora_state[name]["lora_A"])
-            module.lora_B.data.copy_(original_lora_state[name]["lora_B"])
-
-            delta_weight = (module.lora_B @ module.lora_A) * module.scaling
-            module.base_layer.weight.data.sub_(delta_weight)
-            restored_count += 1
+    return merged_count
 
 
 class WeightCheckpointManager:
@@ -172,9 +156,10 @@ class WeightCheckpointManager:
         self, model: nn.Module, dtype: torch.dtype = torch.bfloat16, has_lora_layers: bool = False
     ) -> dict[str, Tensor]:
         """Gather distributed weights for weight checkpoint."""
-        original_lora_state = None
         if has_lora_layers:
-            original_lora_state = _merge_lora_weights_inplace(model)
+            merged_count = _merge_lora_weights_permanently(model)
+            if self._is_master and merged_count > 0:
+                self._logger.info(f"permanently merged {merged_count} lora layers into base weights")
 
         try:
             with warnings.catch_warnings():
@@ -197,10 +182,9 @@ class WeightCheckpointManager:
 
                 torch.distributed.barrier()
 
-        finally:
-            # Always restore original LoRA state, even if gathering fails
-            if original_lora_state is not None:
-                _restore_lora_weights_inplace(model, original_lora_state)
+        except Exception as e:
+            self._logger.error(f"error during weight gathering: {e}")
+            raise
 
         # Always clean up the state dict for HF compatibility
         if any(".base_layer." in key or "lora_A" in key or "lora_B" in key for key in cpu_state.keys()):
