@@ -56,6 +56,7 @@ class LoRAConfig(BaseModel):
             description="LoRA dropout rate.",
         ),
     ] = 0.0
+
     target_modules: Annotated[
         list[str],
         Field(
@@ -70,6 +71,7 @@ class LoRAConfig(BaseModel):
         r".*\.up_proj$",
         r".*\.down_proj$"
     ]
+
     trainable_modules: Annotated[
         list[str],
         Field(
@@ -81,12 +83,6 @@ class LoRAConfig(BaseModel):
         r".*layernorm$",
         r"lm_head$"
     ]
-
-    @model_validator(mode="after")
-    def validate_config(self):
-        if self.enabled and not self.target_modules:
-            raise ValueError("Must specify target_modules when LoRA is enabled")
-        return self
 
 
 class ModelConfig(BaseConfig):
