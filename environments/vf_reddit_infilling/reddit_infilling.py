@@ -27,21 +27,44 @@ def count_tokens(text):
     return len(_tokenizer.encode(str(text)))
 
 
-def render_all_examples(thread: dict) -> list[str]:
-    examples = []
-    comments = thread["comments"]
+def render_all_examples(batch: dict) -> dict:
+    all_examples = []
     
-    for i, comment in enumerate(comments):
+    # Since batch_size=1, we only have one thread
+    thread = {
+        "title": batch["title"][0],
+        "body": batch["body"][0], 
+        "comments": batch["comments"][0]
+    }
+    
+    # Create one example per comment
+    for i, comment in enumerate(thread["comments"]):
         modified_thread = {
             **thread,
             "redacted": i
         }
         
-        modified_thread["question"] = render_question(modified_thread)
-        modified_thread["answer"] = comment["comment"]
-        examples.append(modified_thread)
+        question = render_question(modified_thread)
+        answer = comment["comment"]
+        
+        all_examples.append({
+            "title": thread["title"],
+            "body": thread["body"],
+            "comments": thread["comments"],
+            "question": question,
+            "answer": answer,
+            "redacted": i
+        })
     
-    return examples
+    # Return in the correct batched format
+    return {
+        "title": [ex["title"] for ex in all_examples],
+        "body": [ex["body"] for ex in all_examples],
+        "comments": [ex["comments"] for ex in all_examples],
+        "question": [ex["question"] for ex in all_examples],
+        "answer": [ex["answer"] for ex in all_examples],
+        "redacted": [ex["redacted"] for ex in all_examples]
+    }
 
 
 def render_question(thread: dict) -> str:
