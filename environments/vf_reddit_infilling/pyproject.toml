@@ -11,4 +11,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build]
-include = ["vf_reddit_infilling.py"]
+include = ["reddit_infilling.py"]
