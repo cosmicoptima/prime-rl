@@ -1,0 +1,37 @@
+max_steps = 500
+
+[monitor.wandb]
+project = "reddit-infilling"
+
+[model]
+name = "cosmicoptima/GLM-4-32B-Base-32K"
+liger_kernel = true
+
+[model.lora]
+enabled = true
+rank = 16
+alpha = 256.0
+dropout = 0.05
+target_modules = [
+   ".*\\.q_proj$",
+   ".*\\.k_proj$", 
+   ".*\\.v_proj$",
+   ".*\\.o_proj$",
+]
+modules_to_save = [
+   "lm_head$",
+   ".*\\.embed_tokens$",
+   ".*\\.norm$",
+]
+merge_on_save = true
+
+[model.ac]
+freq = 1
+
+[optim]
+lr = 4e-5
+max_norm = 0.2
+weight_decay = 0.001
+
+[ckpt]
+interval = 100

@@ -1,0 +1,26 @@
+max_steps = 500
+batch_size = 1024
+micro_batch_size = 1
+seq_len = 3072
+rollouts_per_example = 16
+mask_truncated_completions = false
+
+[model]
+name = "cosmicoptima/GLM-4-32B-Base-32K"
+
+[monitor.wandb]
+project = "reddit-infilling"
+
+[monitor.wandb.log_extras]
+samples = true
+distributions = true
+interval = 2
+
+[environment]
+id = "reddit-infilling"
+
+[sampling]
+max_tokens = 832
+
+[ckpt]
+interval = 100
