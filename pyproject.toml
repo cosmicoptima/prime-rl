@@ -65,6 +65,8 @@ vf = [
     "aime2024>=0.1.9",
     "aime2025>=0.1.9",
     "math500>=0.1.9",
+    "reddit-infilling",
+    "reddit-user-grouping",
 ]
 
 [tool.uv]
@@ -88,6 +90,9 @@ aime2024 = { index = "primeintellect" }
 aime2025 = { index = "primeintellect" }
 math500 = { index = "primeintellect" }
 
+reddit-infilling = { workspace = true }
+reddit-user-grouping = { workspace = true }
+
 [[tool.uv.index]]
 name = "pytorch-cu128"
 url = "https://download.pytorch.org/whl/test/cu128"
@@ -96,6 +101,12 @@ explicit = true
 [[tool.uv.index]]
 name = "primeintellect"
 url = "https://hub.primeintellect.ai/primeintellect/simple"
+
+[tool.uv.workspace]
+members = [
+    "environments/vf_reddit_infilling",
+    "environments/vf_reddit_user_grouping",
+]
 
 [dependency-groups]
 dev = [
