@@ -1,7 +1,7 @@
 [model]
 name = "Qwen/Qwen2.5-3B-Instruct"
-max_model_len = 4096
+max_model_len = 3072
 
 [parallel]
-dp = 2
-tp = 1
+dp = 1
+tp = 2
