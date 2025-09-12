@@ -104,7 +104,7 @@ def setup_model(config: ModelConfig, parallel_dims: ParallelDims) -> nn.Module:
     model = get_model(config)
 
     # Apply LoRA before FSDP setup
-    if config.lora is not None and config.lora.enabled:
+    if config.lora is not None:
         apply_lora_to_model(model, config.lora)
 
     setup_fsdp(model, config, parallel_dims)

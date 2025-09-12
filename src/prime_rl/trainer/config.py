@@ -27,11 +27,6 @@ class ActivationCheckpointConfig(BaseModel):
 class LoRAConfig(BaseModel):
     """Configuration for LoRA (Low-Rank Adaptation)."""
 
-    enabled: Annotated[
-        bool,
-        Field(description="Whether to enable LoRA training."),
-    ] = False
-
     rank: Annotated[
         int,
         Field(
