@@ -11,7 +11,7 @@ liger_kernel = true
 freq = 1
 
 [optim]
-lr = 1e-5
+lr = 2e-5
 max_norm = 0.01
 weight_decay = 0.001
 
