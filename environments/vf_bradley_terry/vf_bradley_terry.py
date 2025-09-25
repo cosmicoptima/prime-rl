@@ -265,7 +265,9 @@ class PolicyAwareSingleTurnEnv(SingleTurnEnv):
     
     async def a_generate(self, client=None, model=None, **kwargs):
         # Store the client and model in the rubric's class_objects
+        logger.warning("Storing client and model in rubric's class_objects")
         if client and hasattr(self.rubric, 'class_objects'):
+            logger.warning("yes")
             self.rubric.class_objects['policy_client'] = client
             self.rubric.class_objects['policy_model'] = model
         
