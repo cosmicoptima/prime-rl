@@ -14,6 +14,10 @@ from verifiers.utils.async_utils import maybe_await
 from verifiers.utils.data_utils import load_example_dataset
 from datasets import Features, Value
 
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 BRADLEY_TERRY_JUDGE_PROMPT = """```
 {question}
@@ -131,19 +135,19 @@ class BradleyTerryJudgeRubric(Rubric):
         
         # Get the client to use (policy client if use_policy_model is True)
         if self.use_policy_model:
-            self.logger.warning("Using policy model")
+            logger.warning("Using policy model")
             # Try to get policy_client from kwargs (passed from environment)
             policy_client = kwargs.get('policy_client')
             if policy_client:
                 judge_client = policy_client
                 judge_model = kwargs.get('model', self.model)  # Use the policy model name
             else:
-                self.logger.warning("No policy client found, using default client")
+                logger.warning("No policy client found, using default client")
                 # Fall back to configured client
                 judge_client = self.client
                 judge_model = self.model
         else:
-            self.logger.warning("Using default client")
+            logger.warning("Using default client")
             judge_client = self.client
             judge_model = self.model
         
