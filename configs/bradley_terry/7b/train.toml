@@ -1,7 +1,7 @@
-max_steps = 1000
+max_steps = 500
 
 [monitor.wandb]
-project = "introspection-bradley-terry"
+project = "reddit-user-grouping"
 
 [model]
 name = "Qwen/Qwen2.5-7B-Instruct"
@@ -11,9 +11,9 @@ liger_kernel = true
 freq = 1
 
 [optim]
-lr = 1e-6
-max_norm = 0.001
+lr = 1e-5
+max_norm = 0.01
 weight_decay = 0.001
 
 [ckpt]
-interval = 200 
+interval = 100

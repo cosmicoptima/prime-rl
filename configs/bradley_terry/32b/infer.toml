@@ -1,7 +1,7 @@
 [model]
-name = "Qwen/Qwen2.5-7B-Instruct"
+name = "cosmicoptima/GLM-4-32B-Base-32K"
 max_model_len = 4096
 
 [parallel]
 dp = 1
-tp = 2
+tp = 4 
