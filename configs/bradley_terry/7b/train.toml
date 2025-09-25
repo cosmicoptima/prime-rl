@@ -1,7 +1,7 @@
 max_steps = 500
 
 [monitor.wandb]
-project = "reddit-user-grouping"
+project = "introspection-bradley-terry"
 
 [model]
 name = "Qwen/Qwen2.5-7B-Instruct"
