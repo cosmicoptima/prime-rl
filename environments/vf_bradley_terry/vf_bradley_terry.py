@@ -131,19 +131,19 @@ class BradleyTerryJudgeRubric(Rubric):
         
         # Get the client to use (policy client if use_policy_model is True)
         if self.use_policy_model:
-            logger.warning("Using policy model")
+            self.logger.warning("Using policy model")
             # Try to get policy_client from kwargs (passed from environment)
             policy_client = kwargs.get('policy_client')
             if policy_client:
                 judge_client = policy_client
                 judge_model = kwargs.get('model', self.model)  # Use the policy model name
             else:
-                logger.warning("No policy client found, using default client")
+                self.logger.warning("No policy client found, using default client")
                 # Fall back to configured client
                 judge_client = self.client
                 judge_model = self.model
         else:
-            logger.warning("Using default client")
+            self.logger.warning("Using default client")
             judge_client = self.client
             judge_model = self.model
         
