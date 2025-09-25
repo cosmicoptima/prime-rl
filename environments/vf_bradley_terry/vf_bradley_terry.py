@@ -137,7 +137,7 @@ class BradleyTerryJudgeRubric(Rubric):
         if self.use_policy_model:
             logger.warning("Using policy model")
             # Try to get policy_client from kwargs (passed from environment)
-            policy_client = kwargs.get('policy_client') or self.class_objects.get('policy_client')
+            judge_client = kwargs.get('policy_client') or self.class_objects.get('policy_client')
             judge_model = kwargs.get('model') or self.class_objects.get('policy_model') or self.model
         else:
             logger.warning("Using default client")
