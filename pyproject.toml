@@ -106,6 +106,7 @@ url = "https://hub.primeintellect.ai/primeintellect/simple"
 members = [
     "environments/vf_reddit_infilling",
     "environments/vf_reddit_user_grouping",
+    "dataset_generation/self_actualization",
 ]
 
 [dependency-groups]

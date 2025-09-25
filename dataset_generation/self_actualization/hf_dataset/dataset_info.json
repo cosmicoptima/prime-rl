@@ -1,0 +1,52 @@
+{
+  "citation": "",
+  "description": {
+    "total_prompts": 4000,
+    "expected_total": 4000,
+    "sample_sizes": {
+      "investigable_dimensions_x_emotions": 1200,
+      "investigable_dimensions_x_ideonomy": 1200,
+      "emotions_x_conversational_matters": 1000,
+      "conversational_matters_x_illusions": 400,
+      "emotions_x_ideonomy": 200
+    },
+    "generation_date": "2025-09-24",
+    "status": "completed"
+  },
+  "features": {
+    "id": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "pattern": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "prompt": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "source_dimension": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "source_emotion": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "source_conversational_matter": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "source_illusion": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "source_ideonomy": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": ""
+}

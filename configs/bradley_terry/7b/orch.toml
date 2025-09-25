@@ -1,0 +1,28 @@
+max_steps = 1000
+batch_size = 512
+micro_batch_size = 1
+seq_len = 4096
+rollouts_per_example = 8
+mask_truncated_completions = false
+
+[model]
+name = "Qwen/Qwen2.5-7B-Instruct"
+
+[monitor.wandb]
+project = "introspection-bradley-terry"
+
+[monitor.wandb.log_extras]
+samples = true
+distributions = true
+interval = 5
+
+[environment]
+id = "bradley_terry_env"
+module = "environments.vf_bradley_terry.bradley_terry"
+function = "load_environment"
+
+[sampling]
+max_tokens = 1024
+
+[ckpt]
+interval = 200 

@@ -1,0 +1,15 @@
+[project]
+name = "bradley-terry"
+version = "1.0.0"
+dependencies = [
+    "choix>=0.4.1",
+    "numpy>=2.3.0",
+    "verifiers>=0.1.2.post0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+include = ["bradley_terry.py"]
