@@ -17,9 +17,7 @@ distributions = true
 interval = 5
 
 [environment]
-id = "bradley_terry_env"
-module = "environments.vf_bradley_terry.bradley_terry"
-function = "load_environment"
+id = "vf-bradley-terry"
 
 [sampling]
 max_tokens = 1024
