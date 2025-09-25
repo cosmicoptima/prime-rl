@@ -11,6 +11,7 @@ prerelease-mode = "allow"
 
 [manifest]
 members = [
+    "bradley-terry",
     "prime-rl",
     "reddit-infilling",
     "reddit-user-grouping",
@@ -248,6 +249,23 @@ wheels = [
 ]
 
 [[package]]
+name = "bradley-terry"
+version = "1.0.0"
+source = { editable = "environments/vf_bradley_terry" }
+dependencies = [
+    { name = "choix" },
+    { name = "numpy" },
+    { name = "verifiers" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "choix", specifier = ">=0.4.1" },
+    { name = "numpy" },
+    { name = "verifiers", specifier = ">=0.1.2.post0" },
+]
+
+[[package]]
 name = "cachetools"
 version = "5.5.2"
 source = { registry = "https://pypi.org/simple" }
@@ -339,6 +357,19 @@ name = "chess"
 version = "1.11.2"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/93/09/7d04d7581ae3bb8b598017941781bceb7959dd1b13e3ebf7b6a2cd843bc9/chess-1.11.2.tar.gz", hash = "sha256:a8b43e5678fdb3000695bdaa573117ad683761e5ca38e591c4826eba6d25bb39", size = 6131385, upload-time = "2025-02-25T19:10:27.328Z" }
+
+[[package]]
+name = "choix"
+version = "0.4.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "scipy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cc/83/9c9b9aa651e16813ca893b70f4384f2e9c369eafd5922f4ddaf32cde2e9e/choix-0.4.1.tar.gz", hash = "sha256:7c85d13845400932508c45a6a6a3e7a44f637969ffd506e1c7f5db07de1560b4", size = 112425, upload-time = "2025-08-10T20:19:45.346Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/81/f1/8ce3fa2fe1649c93ab7e177c3b11b9fd98c66180af3a365cfe7bd0118806/choix-0.4.1-py3-none-any.whl", hash = "sha256:15fe145ffc194dc6b4ba5a44ef24667fa0107578fb5b36723ab0b5e87eeae29f", size = 20575, upload-time = "2025-08-10T20:19:44.255Z" },
+]
 
 [[package]]
 name = "click"
@@ -2209,6 +2240,7 @@ vf = [
     { name = "aime2025" },
     { name = "alphabet-sort" },
     { name = "ascii-tree" },
+    { name = "bradley-terry" },
     { name = "deepscaler-math" },
     { name = "hendrycks-math" },
     { name = "intellect-math" },
@@ -2238,6 +2270,7 @@ requires-dist = [
     { name = "alphabet-sort", marker = "extra == 'vf'", specifier = ">=0.1.5", index = "https://hub.primeintellect.ai/primeintellect/simple" },
     { name = "ascii-tree", marker = "extra == 'vf'", specifier = ">=0.1.6", index = "https://hub.primeintellect.ai/primeintellect/simple" },
     { name = "beartype", specifier = ">=0.21.0" },
+    { name = "bradley-terry", marker = "extra == 'vf'", editable = "environments/vf_bradley_terry" },
     { name = "cydifflib", specifier = ">=1.2.0" },
     { name = "datasets", specifier = ">=3.6.0" },
     { name = "deepscaler-math", marker = "extra == 'vf'", specifier = ">=0.1.4", index = "https://hub.primeintellect.ai/primeintellect/simple" },
@@ -3035,6 +3068,7 @@ dependencies = [
     { name = "anthropic" },
     { name = "datasets" },
     { name = "huggingface-hub" },
+    { name = "pandas" },
 ]
 
 [package.metadata]
@@ -3042,6 +3076,7 @@ requires-dist = [
     { name = "anthropic", specifier = ">=0.68.0" },
     { name = "datasets", specifier = ">=3.6.0" },
     { name = "huggingface-hub", specifier = ">=0.35.0rc0" },
+    { name = "pandas", specifier = ">=2.3.1" },
 ]
 
 [[package]]

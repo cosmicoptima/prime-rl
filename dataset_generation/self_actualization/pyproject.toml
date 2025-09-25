@@ -8,4 +8,5 @@ dependencies = [
     "anthropic>=0.68.0",
     "datasets>=3.6.0",
     "huggingface-hub>=0.35.0rc0",
+    "pandas>=2.3.1",
 ]

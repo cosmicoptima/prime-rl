@@ -12,6 +12,7 @@ from verifiers.rubrics.rubric import Rubric
 from verifiers.types import Info, Messages, RolloutScores, State
 from verifiers.utils.async_utils import maybe_await
 from verifiers.utils.data_utils import load_example_dataset
+from datasets import Features, Value
 
 
 BRADLEY_TERRY_JUDGE_PROMPT = """```
@@ -287,6 +288,7 @@ class PolicyAwareSingleTurnEnv(SingleTurnEnv):
                 kwargs['model'] = policy_model
         
         return await self.rubric.score_rollouts(*args, **kwargs)
+    
 
 
 def load_environment(**kwargs):
@@ -304,7 +306,28 @@ def load_environment(**kwargs):
     
     dataset = load_dataset("cosmicoptima/introspection-prompts", split="train")
     
-    # Convert to verifiers format
+    # Define fixed source keys to ensure a consistent schema for nested structs
+    source_keys = [
+        "source_conversational_matter",
+        "source_dimension",
+        "source_emotion",
+        "source_ideonomy",
+        "source_illusion",
+    ]
+
+    # Explicit features for the mapped dataset to avoid Arrow struct cast issues
+    mapped_features = Features({
+        "question": Value("string"),
+        "answer": Value("string"),
+        "task": Value("string"),
+        "info": {
+            "pattern": Value("string"),
+            "source_items": {k: Value("string") for k in source_keys},
+            "prompt_id": Value("int64"),
+        },
+    })
+    
+    # Convert to verifiers format with consistent nested keys
     def convert_to_verifiers_format(example):
         return {
             "question": example["prompt"],
@@ -312,15 +335,17 @@ def load_environment(**kwargs):
             "task": "introspection",
             "info": {
                 "pattern": example["pattern"],
-                "source_items": {
-                    k: v for k, v in example.items() 
-                    if k.startswith("source_") and example[k] is not None
-                },
-                "prompt_id": example["id"]
-            }
+                "source_items": {k: example.get(k) for k in source_keys},
+                "prompt_id": int(example["id"]) if example.get("id") is not None else -1,
+            },
         }
     
-    dataset = dataset.map(convert_to_verifiers_format)
+    # Map and drop original columns to strictly match the declared features
+    dataset = dataset.map(
+        convert_to_verifiers_format,
+        remove_columns=dataset.column_names,
+        features=mapped_features,
+    )
     
     # Create parser
     parser = vf.Parser()
