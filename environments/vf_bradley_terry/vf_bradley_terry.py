@@ -51,7 +51,7 @@ class BradleyTerryJudgeRubric(Rubric):
     ):
         super().__init__(parser=parser, **kwargs)
 
-        self.client = client if client is not None else AsyncOpenAI()
+        self.client = client
         self.model = model
         self.sampling_args = sampling_args or {}
         self.prompt = prompt
