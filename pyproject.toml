@@ -67,6 +67,7 @@ vf = [
     "math500>=0.1.9",
     "reddit-infilling",
     "reddit-user-grouping",
+    "bradley-terry",
 ]
 
 [tool.uv]
@@ -92,6 +93,7 @@ math500 = { index = "primeintellect" }
 
 reddit-infilling = { workspace = true }
 reddit-user-grouping = { workspace = true }
+bradley-terry = { workspace = true }
 
 [[tool.uv.index]]
 name = "pytorch-cu128"
@@ -106,6 +108,7 @@ url = "https://hub.primeintellect.ai/primeintellect/simple"
 members = [
     "environments/vf_reddit_infilling",
     "environments/vf_reddit_user_grouping",
+    "environments/vf_bradley_terry",
     "dataset_generation/self_actualization",
 ]
 
