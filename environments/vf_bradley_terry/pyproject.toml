@@ -3,7 +3,7 @@ name = "bradley-terry"
 version = "1.0.0"
 dependencies = [
     "choix>=0.4.1",
-    "numpy>=2.3.0",
+    "numpy",
     "verifiers>=0.1.2.post0",
 ]
 
