@@ -216,15 +216,19 @@ class BradleyTerryJudgeRubric(Rubric):
                     logger.warning(f"About to call judge client for comparison {i} vs {j}, client type: {type(judge_client)}")
                     logger.warning(f"Judge args: {judge_args}")
                     
+                    judge_start_time = datetime.now()
                     judge_response = await maybe_await(
                         judge_client.chat.completions.create,
                         model=judge_model,
                         messages=[{"role": "user", "content": judge_prompt}],
                         **judge_args,
                     )
-                    logger.warning(f"Judge client call completed for comparison {i} vs {j}")
+                    judge_end_time = datetime.now()
+                    judge_duration = (judge_end_time - judge_start_time).total_seconds()
+                    
+                    logger.warning(f"Judge client call completed for comparison {i} vs {j} in {judge_duration:.2f}s")
                     winner = str(judge_response.choices[0].message.content).strip().upper()
-                    logger.info(f"[JUDGE END] {datetime.now().isoformat()} - Judge result for {i} vs {j}: {winner}")
+                    logger.info(f"[JUDGE END] {datetime.now().isoformat()} - Judge result for {i} vs {j}: {winner} (took {judge_duration:.2f}s)")
                     
                     # Cache the response
                     if "bradley_terry_cache" not in state:
