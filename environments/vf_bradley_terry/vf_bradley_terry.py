@@ -140,11 +140,15 @@ class BradleyTerryJudgeRubric(Rubric):
             # Try to get policy_client from kwargs (passed from environment)
             judge_client = kwargs.get('policy_client') or self.class_objects.get('policy_client')
             judge_model = kwargs.get('model') or self.class_objects.get('policy_model') or self.model
+            logger.warning(f"Policy client type: {type(judge_client)}, Policy model: {judge_model}")
+            logger.warning(f"Policy client available: {judge_client is not None}")
         else:
             logger.warning("Using default client")
             judge_client = self.client
             judge_model = self.model
+            logger.warning(f"Default client type: {type(judge_client)}, Default model: {judge_model}")
         
+        logger.warning(f"About to extract question from prompt, prompt type: {type(prompt)}")
         # Extract question from prompt
         if isinstance(prompt, list):
             last_msg = prompt[-1]
@@ -157,10 +161,14 @@ class BradleyTerryJudgeRubric(Rubric):
         
         # Parse responses from completions
         responses = []
-        for completion in completions:
+        logger.warning(f"About to parse {len(completions)} completions")
+        for i, completion in enumerate(completions):
+            logger.warning(f"Parsing completion {i}")
             response = self.parser.parse_answer(completion)
             responses.append(response)
+            logger.warning(f"Parsed completion {i}: {len(str(response))} chars")
         
+        logger.warning(f"Parsed all responses, about to create comparison matrix for {n} items")
         # Perform pairwise comparisons
         comparison_matrix = np.zeros((n, n))
         
@@ -199,12 +207,16 @@ class BradleyTerryJudgeRubric(Rubric):
                         judge_args.pop("max_completion_tokens")
                     judge_args = {k: v for k, v in judge_args.items() if v is not None}
                     
+                    logger.warning(f"About to call judge client for comparison {i} vs {j}, client type: {type(judge_client)}")
+                    logger.warning(f"Judge args: {judge_args}")
+                    
                     judge_response = await maybe_await(
                         judge_client.chat.completions.create,
                         model=judge_model,
                         messages=[{"role": "user", "content": judge_prompt}],
                         **judge_args,
                     )
+                    logger.warning(f"Judge client call completed for comparison {i} vs {j}")
                     winner = str(judge_response.choices[0].message.content).strip().upper()
                     logger.info(f"[JUDGE END] {datetime.now().isoformat()} - Judge result for {i} vs {j}: {winner}")
                     
@@ -272,11 +284,14 @@ class PolicyAwareSingleTurnEnv(SingleTurnEnv):
         # Store the client and model in the rubric's class_objects
         logger.info(f"[ROLLOUT START] {datetime.now().isoformat()} - Starting rollout inference with model: {model}")
         logger.warning("Storing client and model in rubric's class_objects")
+        logger.warning(f"Client type being stored: {type(client)}")
         if client and hasattr(self.rubric, 'class_objects'):
             logger.warning("yes")
             self.rubric.class_objects['policy_client'] = client
             self.rubric.class_objects['policy_model'] = model
+            logger.warning(f"Stored policy_client type: {type(self.rubric.class_objects['policy_client'])}")
         
+        logger.warning("About to call super().a_generate")
         # Call parent's a_generate
         result = await super().a_generate(client=client, model=model, **kwargs)
         logger.info(f"[ROLLOUT END] {datetime.now().isoformat()} - Completed rollout inference")
