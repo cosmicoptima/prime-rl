@@ -1,5 +1,6 @@
 from itertools import groupby
 from typing import Any
+from datetime import datetime
 
 import choix
 import numpy as np
@@ -163,8 +164,12 @@ class BradleyTerryJudgeRubric(Rubric):
         # Perform pairwise comparisons
         comparison_matrix = np.zeros((n, n))
         
+        logger.info(f"[PAIRWISE START] {datetime.now().isoformat()} - Starting {n*(n-1)//2} pairwise comparisons for {n} completions")
+        
         for i in range(n):
             for j in range(i + 1, n):
+                logger.info(f"[COMPARISON START] {datetime.now().isoformat()} - Comparing completion {i} vs {j}")
+                
                 # Compare response i vs response j
                 judge_prompt = self.prompt.format(
                     question=question,
@@ -179,7 +184,9 @@ class BradleyTerryJudgeRubric(Rubric):
                 
                 if cache_key in cached:
                     winner = cached[cache_key]
+                    logger.info(f"[COMPARISON CACHED] {datetime.now().isoformat()} - Used cached result for {i} vs {j}: {winner}")
                 else:
+                    logger.info(f"[JUDGE START] {datetime.now().isoformat()} - Requesting judge inference for {i} vs {j}")
                     # Get judgment from model
                     judge_args = dict(self.sampling_args or {})
                     # Normalize sampling args for chat API
@@ -199,6 +206,7 @@ class BradleyTerryJudgeRubric(Rubric):
                         **judge_args,
                     )
                     winner = str(judge_response.choices[0].message.content).strip().upper()
+                    logger.info(f"[JUDGE END] {datetime.now().isoformat()} - Judge result for {i} vs {j}: {winner}")
                     
                     # Cache the response
                     if "bradley_terry_cache" not in state:
@@ -216,6 +224,10 @@ class BradleyTerryJudgeRubric(Rubric):
                     # Tie or invalid response - treat as 0.5 each
                     comparison_matrix[i, j] = 0.5
                     comparison_matrix[j, i] = 0.5
+                
+                logger.info(f"[COMPARISON END] {datetime.now().isoformat()} - Completed comparison {i} vs {j}")
+        
+        logger.info(f"[PAIRWISE END] {datetime.now().isoformat()} - Completed all pairwise comparisons")
         
         # Compute Bradley-Terry scores using choix
         # For small numbers of items with dense comparisons, the Luce Spectral Ranking (LSR) is efficient
@@ -258,6 +270,7 @@ class PolicyAwareSingleTurnEnv(SingleTurnEnv):
     
     async def a_generate(self, client=None, model=None, **kwargs):
         # Store the client and model in the rubric's class_objects
+        logger.info(f"[ROLLOUT START] {datetime.now().isoformat()} - Starting rollout inference with model: {model}")
         logger.warning("Storing client and model in rubric's class_objects")
         if client and hasattr(self.rubric, 'class_objects'):
             logger.warning("yes")
@@ -265,7 +278,9 @@ class PolicyAwareSingleTurnEnv(SingleTurnEnv):
             self.rubric.class_objects['policy_model'] = model
         
         # Call parent's a_generate
-        return await super().a_generate(client=client, model=model, **kwargs)
+        result = await super().a_generate(client=client, model=model, **kwargs)
+        logger.info(f"[ROLLOUT END] {datetime.now().isoformat()} - Completed rollout inference")
+        return result
     
     async def score_rollout(self, *args, **kwargs):
         # Pass the policy client and model from class_objects to the rubric
