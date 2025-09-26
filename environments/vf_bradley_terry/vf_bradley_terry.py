@@ -82,6 +82,9 @@ class BradleyTerryJudgeRubric(Rubric):
         max_concurrent: int = -1,
         **kwargs,
     ) -> RolloutScores:
+        logger.warning(f"[SCORE_ROLLOUTS START] {datetime.now().isoformat()} - Called with {len(prompts)} prompts, {len(completions)} completions")
+        logger.warning(f"[SCORE_ROLLOUTS] First few prompt hashes: {[hash(str(p)) for p in prompts[:3]]}")
+        
         # Convert prompts to hashable format for grouping
         hashable_prompts = []
         for prompt in prompts:
@@ -92,6 +95,7 @@ class BradleyTerryJudgeRubric(Rubric):
         
         # Find rollouts per prompt (assuming all prompts have the same number of rollouts)
         rollouts_per_prompt = min([len(list(group)) for _, group in groupby(hashable_prompts)])
+        logger.warning(f"[SCORE_ROLLOUTS] Detected {rollouts_per_prompt} rollouts per prompt")
 
         all_scores = []
         all_metrics = {"bradley_terry": [], "win_rate": []}
@@ -105,6 +109,7 @@ class BradleyTerryJudgeRubric(Rubric):
             answer = answers[start_idx]
             state = states[start_idx]
 
+            logger.warning(f"[SCORE_ROLLOUTS] Processing group {start_idx//rollouts_per_prompt + 1}, indices {start_idx}-{end_idx}")
             scores, win_rates = await self._compute_bradley_terry(
                 group_completions, prompt, answer, state, **kwargs
             )
@@ -112,6 +117,7 @@ class BradleyTerryJudgeRubric(Rubric):
             all_metrics["bradley_terry"].extend(scores)
             all_metrics["win_rate"].extend(win_rates)
 
+        logger.warning(f"[SCORE_ROLLOUTS END] {datetime.now().isoformat()} - Returning {len(all_scores)} scores")
         return RolloutScores(reward=all_scores, metrics=all_metrics)
 
     async def _compute_bradley_terry(
@@ -285,6 +291,11 @@ class PolicyAwareSingleTurnEnv(SingleTurnEnv):
         logger.info(f"[ROLLOUT START] {datetime.now().isoformat()} - Starting rollout inference with model: {model}")
         logger.warning("Storing client and model in rubric's class_objects")
         logger.warning(f"Client type being stored: {type(client)}")
+        logger.warning(f"a_generate kwargs: {list(kwargs.keys())}")
+        logger.warning(f"score_rollouts in kwargs: {'score_rollouts' in kwargs}")
+        if 'score_rollouts' in kwargs:
+            logger.warning(f"score_rollouts value: {kwargs['score_rollouts']}")
+        
         if client and hasattr(self.rubric, 'class_objects'):
             logger.warning("yes")
             self.rubric.class_objects['policy_client'] = client
@@ -311,6 +322,7 @@ class PolicyAwareSingleTurnEnv(SingleTurnEnv):
     
     async def score_rollouts(self, *args, **kwargs):
         # Pass the policy client and model from class_objects to the rubric
+        logger.warning(f"[POLICY_AWARE_SCORE_ROLLOUTS] {datetime.now().isoformat()} - Called with {len(args)} args")
         if hasattr(self.rubric, 'class_objects'):
             policy_client = self.rubric.class_objects.get('policy_client')
             policy_model = self.rubric.class_objects.get('policy_model')
@@ -319,7 +331,10 @@ class PolicyAwareSingleTurnEnv(SingleTurnEnv):
             if policy_model:
                 kwargs['model'] = policy_model
         
-        return await self.rubric.score_rollouts(*args, **kwargs)
+        logger.warning(f"[POLICY_AWARE_SCORE_ROLLOUTS] About to call rubric.score_rollouts")
+        result = await self.rubric.score_rollouts(*args, **kwargs)
+        logger.warning(f"[POLICY_AWARE_SCORE_ROLLOUTS] Completed rubric.score_rollouts")
+        return result
     
 
 
