@@ -359,7 +359,7 @@ def load_environment(**kwargs):
     )
     
     # Create the environment
-    env = PolicyAwareSingleTurnEnv(
+    env = SingleTurnEnv(
         dataset=dataset,
         rubric=rubric,
         parser=parser,
