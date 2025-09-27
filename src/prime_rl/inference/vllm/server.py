@@ -124,7 +124,6 @@ def server(config: InferenceConfig, vllm_args: list[str]):
     # TEMPORARY: Add verbose logging arguments
     vllm_args.extend([
         "--uvicorn-log-level=debug",
-        "--log-level=DEBUG", 
     ])
     
     parser = FlexibleArgumentParser(description="vLLM OpenAI-Compatible RESTful API server.")
