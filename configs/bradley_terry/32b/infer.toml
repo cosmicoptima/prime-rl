@@ -1,3 +1,9 @@
+__unknown_args__ = [
+    "--uvicorn-log-level", "debug",
+    "--log-level", "DEBUG",
+    "--disable-log-stats", "false"
+]
+
 [model]
 name = "cosmicoptima/GLM-4-32B-Base-32K"
 max_model_len = 4096
@@ -6,8 +12,3 @@ max_model_len = 4096
 dp = 1
 tp = 4 
 
-__unknown_args__ = [
-    "--uvicorn-log-level", "debug",
-    "--log-level", "DEBUG",
-    "--disable-log-stats", "false"
-]
