@@ -357,7 +357,7 @@ def load_environment(**kwargs):
         prompt=BRADLEY_TERRY_JUDGE_PROMPT,
         parser=parser,
         use_policy_model=True,
-        sampling_args={},
+        sampling_args={"max_tokens": 10},
     )
     
     # Create the environment
