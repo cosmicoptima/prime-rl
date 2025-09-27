@@ -123,9 +123,9 @@ async def custom_run_server(args: Namespace, **uvicorn_kwargs) -> None:
 def server(config: InferenceConfig, vllm_args: list[str]):
     # TEMPORARY: Add verbose logging arguments
     vllm_args.extend([
-        "--uvicorn-log-level", "debug",
-        "--log-level", "DEBUG", 
-        "--disable-log-stats", "false"
+        "--uvicorn-log-level=debug",
+        "--log-level=DEBUG", 
+        "--disable-log-stats=false"
     ])
     
     parser = FlexibleArgumentParser(description="vLLM OpenAI-Compatible RESTful API server.")
