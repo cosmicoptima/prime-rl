@@ -4,7 +4,7 @@ from datetime import datetime
 
 import choix
 import numpy as np
-from openai import AsyncOpenAI
+from openai import OpenAI, AsyncOpenAI
 
 import verifiers as vf
 from verifiers.envs.singleturn_env import SingleTurnEnv
@@ -48,7 +48,7 @@ class BradleyTerryJudgeRubric(Rubric):
         self,
         prompt: str,
         parser: Parser | None = None,
-        client: AsyncOpenAI | None = None,
+        client: OpenAI | None = None,
         model: str = "gpt-4o-mini",
         sampling_args: dict[str, Any] | None = None,
         use_policy_model: bool = False,
@@ -217,8 +217,13 @@ class BradleyTerryJudgeRubric(Rubric):
                     logger.warning(f"Judge args: {judge_args}")
                     
                     judge_start_time = datetime.now()
-                    judge_response = await maybe_await(
-                        judge_client.chat.completions.create,
+                    # judge_response = await maybe_await(
+                    #     judge_client.chat.completions.create,
+                    #     model=judge_model,
+                    #     messages=[{"role": "user", "content": judge_prompt}],
+                    #     **judge_args,
+                    # )
+                    judge_response = judge_client.chat.completions.create(
                         model=judge_model,
                         messages=[{"role": "user", "content": judge_prompt}],
                         **judge_args,
@@ -302,7 +307,9 @@ class PolicyAwareSingleTurnEnv(SingleTurnEnv):
         
         if client and hasattr(self.rubric, 'class_objects'):
             logger.warning("yes")
-            self.rubric.class_objects['policy_client'] = client
+            # Convert AsyncOpenAI to OpenAI for synchronous calls in score_rollouts
+            sync_client = OpenAI(api_key=client.api_key, base_url=getattr(client, 'base_url', None))
+            self.rubric.class_objects['policy_client'] = sync_client
             self.rubric.class_objects['policy_model'] = model
             logger.warning(f"Stored policy_client type: {type(self.rubric.class_objects['policy_client'])}")
         
