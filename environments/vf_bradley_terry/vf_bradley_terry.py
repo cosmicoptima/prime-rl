@@ -82,9 +82,6 @@ class BradleyTerryJudgeRubric(Rubric):
         max_concurrent: int = -1,
         **kwargs,
     ) -> RolloutScores:
-        logger.warning(f"[SCORE_ROLLOUTS START] {datetime.now().isoformat()} - Called with {len(prompts)} prompts, {len(completions)} completions")
-        logger.warning(f"[SCORE_ROLLOUTS] First few prompt hashes: {[hash(str(p)) for p in prompts[:3]]}")
-        
         # Convert prompts to hashable format for grouping
         hashable_prompts = []
         for prompt in prompts:
@@ -95,7 +92,6 @@ class BradleyTerryJudgeRubric(Rubric):
         
         # Find rollouts per prompt (assuming all prompts have the same number of rollouts)
         rollouts_per_prompt = min([len(list(group)) for _, group in groupby(hashable_prompts)])
-        logger.warning(f"[SCORE_ROLLOUTS] Detected {rollouts_per_prompt} rollouts per prompt")
 
         all_scores = []
         all_metrics = {"bradley_terry": [], "win_rate": []}
@@ -109,7 +105,6 @@ class BradleyTerryJudgeRubric(Rubric):
             answer = answers[start_idx]
             state = states[start_idx]
 
-            logger.warning(f"[SCORE_ROLLOUTS] Processing group {start_idx//rollouts_per_prompt + 1}, indices {start_idx}-{end_idx}")
             scores, win_rates = await self._compute_bradley_terry(
                 group_completions, prompt, answer, state, **kwargs
             )
@@ -117,7 +112,6 @@ class BradleyTerryJudgeRubric(Rubric):
             all_metrics["bradley_terry"].extend(scores)
             all_metrics["win_rate"].extend(win_rates)
 
-        logger.warning(f"[SCORE_ROLLOUTS END] {datetime.now().isoformat()} - Returning {len(all_scores)} scores")
         return RolloutScores(reward=all_scores, metrics=all_metrics)
 
     async def _compute_bradley_terry(
@@ -142,20 +136,13 @@ class BradleyTerryJudgeRubric(Rubric):
         
         # Get the client to use (policy client if use_policy_model is True)
         if self.use_policy_model:
-            logger.warning("Using policy model")
             judge_client = OpenAI(base_url="http://localhost:8000/v1", api_key="insecure")
             
             judge_model = judge_client.models.list().data[0].id
-            logger.warning(f"Found model: {judge_model}")
-            
-            logger.warning(f"Created policy client for localhost:8000 with model: {judge_model}")
         else:
-            logger.warning("Using default client")
             judge_client = self.client
             judge_model = self.model
-            logger.warning(f"Default client type: {type(judge_client)}, Default model: {judge_model}")
         
-        logger.warning(f"About to extract question from prompt, prompt type: {type(prompt)}")
         # Extract question from prompt
         if isinstance(prompt, list):
             last_msg = prompt[-1]
@@ -168,23 +155,15 @@ class BradleyTerryJudgeRubric(Rubric):
         
         # Parse responses from completions
         responses = []
-        logger.warning(f"About to parse {len(completions)} completions")
         for i, completion in enumerate(completions):
-            logger.warning(f"Parsing completion {i}")
             response = self.parser.parse_answer(completion)
             responses.append(response)
-            logger.warning(f"Parsed completion {i}: {len(str(response))} chars")
         
-        logger.warning(f"Parsed all responses, about to create comparison matrix for {n} items")
         # Perform pairwise comparisons
         comparison_matrix = np.zeros((n, n))
         
-        logger.info(f"[PAIRWISE START] {datetime.now().isoformat()} - Starting {n*(n-1)//2} pairwise comparisons for {n} completions")
-        
         for i in range(n):
             for j in range(i + 1, n):
-                logger.info(f"[COMPARISON START] {datetime.now().isoformat()} - Comparing completion {i} vs {j}")
-                
                 # Compare response i vs response j
                 judge_prompt = self.prompt.format(
                     question=question,
@@ -199,9 +178,7 @@ class BradleyTerryJudgeRubric(Rubric):
                 
                 if cache_key in cached:
                     winner = cached[cache_key]
-                    logger.info(f"[COMPARISON CACHED] {datetime.now().isoformat()} - Used cached result for {i} vs {j}: {winner}")
                 else:
-                    logger.info(f"[JUDGE START] {datetime.now().isoformat()} - Requesting judge inference for {i} vs {j}")
                     # Get judgment from model
                     judge_args = dict(self.sampling_args or {})
                     # Normalize sampling args for chat API
@@ -214,10 +191,6 @@ class BradleyTerryJudgeRubric(Rubric):
                         judge_args.pop("max_completion_tokens")
                     judge_args = {k: v for k, v in judge_args.items() if v is not None}
                     
-                    logger.warning(f"About to call judge client for comparison {i} vs {j}, client type: {type(judge_client)}")
-                    logger.warning(f"Judge args: {judge_args}")
-                    
-                    judge_start_time = datetime.now()
                     # judge_response = await maybe_await(
                     #     judge_client.chat.completions.create,
                     #     model=judge_model,
@@ -229,12 +202,8 @@ class BradleyTerryJudgeRubric(Rubric):
                         messages=[{"role": "user", "content": judge_prompt}],
                         **judge_args,
                     )
-                    judge_end_time = datetime.now()
-                    judge_duration = (judge_end_time - judge_start_time).total_seconds()
                     
-                    logger.warning(f"Judge client call completed for comparison {i} vs {j} in {judge_duration:.2f}s")
                     winner = str(judge_response.choices[0].message.content).strip().upper()
-                    logger.info(f"[JUDGE END] {datetime.now().isoformat()} - Judge result for {i} vs {j}: {winner} (took {judge_duration:.2f}s)")
                     
                     # Cache the response
                     if "bradley_terry_cache" not in state:
@@ -252,10 +221,6 @@ class BradleyTerryJudgeRubric(Rubric):
                     # Tie or invalid response - treat as 0.5 each
                     comparison_matrix[i, j] = 0.5
                     comparison_matrix[j, i] = 0.5
-                
-                logger.info(f"[COMPARISON END] {datetime.now().isoformat()} - Completed comparison {i} vs {j}")
-        
-        logger.info(f"[PAIRWISE END] {datetime.now().isoformat()} - Completed all pairwise comparisons")
         
         # Compute Bradley-Terry scores using choix
         # For small numbers of items with dense comparisons, the Luce Spectral Ranking (LSR) is efficient
