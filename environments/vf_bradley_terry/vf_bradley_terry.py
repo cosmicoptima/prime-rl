@@ -143,9 +143,8 @@ class BradleyTerryJudgeRubric(Rubric):
         # Get the client to use (policy client if use_policy_model is True)
         if self.use_policy_model:
             logger.warning("Using policy model")
-            # Try to get policy_client from kwargs (passed from environment)
-            judge_client = kwargs.get('policy_client') or self.class_objects.get('policy_client')
-            judge_model = kwargs.get('model') or self.class_objects.get('policy_model') or self.model
+            judge_client = OpenAI(base_url="http://localhost:8000", api_key="insecure")
+            judge_model = "cosmicoptima/GLM-4-32B-Base-32K"
             logger.warning(f"Policy client type: {type(judge_client)}, Policy model: {judge_model}")
             logger.warning(f"Policy client available: {judge_client is not None}")
         else:
@@ -290,63 +289,6 @@ class BradleyTerryJudgeRubric(Rubric):
             win_rates.append(win_rate)
         
         return scores.tolist(), win_rates
-
-
-class PolicyAwareSingleTurnEnv(SingleTurnEnv):
-    """SingleTurnEnv that passes the policy client to the rubric for scoring."""
-    
-    async def a_generate(self, client=None, model=None, **kwargs):
-        # Store the client and model in the rubric's class_objects
-        logger.info(f"[ROLLOUT START] {datetime.now().isoformat()} - Starting rollout inference with model: {model}")
-        logger.warning("Storing client and model in rubric's class_objects")
-        logger.warning(f"Client type being stored: {type(client)}")
-        logger.warning(f"a_generate kwargs: {list(kwargs.keys())}")
-        logger.warning(f"score_rollouts in kwargs: {'score_rollouts' in kwargs}")
-        if 'score_rollouts' in kwargs:
-            logger.warning(f"score_rollouts value: {kwargs['score_rollouts']}")
-        
-        if client and hasattr(self.rubric, 'class_objects'):
-            logger.warning("yes")
-            # Convert AsyncOpenAI to OpenAI for synchronous calls in score_rollouts
-            sync_client = OpenAI(api_key=client.api_key, base_url=getattr(client, 'base_url', None))
-            self.rubric.class_objects['policy_client'] = sync_client
-            self.rubric.class_objects['policy_model'] = model
-            logger.warning(f"Stored policy_client type: {type(self.rubric.class_objects['policy_client'])}")
-        
-        logger.warning("About to call super().a_generate")
-        # Call parent's a_generate
-        result = await super().a_generate(client=client, model=model, **kwargs)
-        logger.info(f"[ROLLOUT END] {datetime.now().isoformat()} - Completed rollout inference")
-        return result
-    
-    async def score_rollout(self, *args, **kwargs):
-        # Pass the policy client and model from class_objects to the rubric
-        if hasattr(self.rubric, 'class_objects'):
-            policy_client = self.rubric.class_objects.get('policy_client')
-            policy_model = self.rubric.class_objects.get('policy_model')
-            if policy_client:
-                kwargs['policy_client'] = policy_client
-            if policy_model:
-                kwargs['model'] = policy_model
-        
-        return await self.rubric.score_rollout(*args, **kwargs)
-    
-    async def score_rollouts(self, *args, **kwargs):
-        # Pass the policy client and model from class_objects to the rubric
-        logger.warning(f"[POLICY_AWARE_SCORE_ROLLOUTS] {datetime.now().isoformat()} - Called with {len(args)} args")
-        if hasattr(self.rubric, 'class_objects'):
-            policy_client = self.rubric.class_objects.get('policy_client')
-            policy_model = self.rubric.class_objects.get('policy_model')
-            if policy_client:
-                kwargs['policy_client'] = policy_client
-            if policy_model:
-                kwargs['model'] = policy_model
-        
-        logger.warning(f"[POLICY_AWARE_SCORE_ROLLOUTS] About to call rubric.score_rollouts")
-        result = await self.rubric.score_rollouts(*args, **kwargs)
-        logger.warning(f"[POLICY_AWARE_SCORE_ROLLOUTS] Completed rubric.score_rollouts")
-        return result
-    
 
 
 def load_environment(**kwargs):
