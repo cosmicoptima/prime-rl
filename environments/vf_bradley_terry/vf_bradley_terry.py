@@ -143,10 +143,12 @@ class BradleyTerryJudgeRubric(Rubric):
         # Get the client to use (policy client if use_policy_model is True)
         if self.use_policy_model:
             logger.warning("Using policy model")
-            judge_client = OpenAI(base_url="http://localhost:8000", api_key="insecure")
-            judge_model = "cosmicoptima/GLM-4-32B-Base-32K"
-            logger.warning(f"Policy client type: {type(judge_client)}, Policy model: {judge_model}")
-            logger.warning(f"Policy client available: {judge_client is not None}")
+            judge_client = OpenAI(base_url="http://localhost:8000/v1", api_key="insecure")
+            
+            judge_model = judge_client.models.list().data[0].id
+            logger.warning(f"Found model: {judge_model}")
+            
+            logger.warning(f"Created policy client for localhost:8000 with model: {judge_model}")
         else:
             logger.warning("Using default client")
             judge_client = self.client
