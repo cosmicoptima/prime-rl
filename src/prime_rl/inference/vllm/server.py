@@ -121,11 +121,6 @@ async def custom_run_server(args: Namespace, **uvicorn_kwargs) -> None:
 # Adapted from vllm/entrypoints/cli/serve.py
 # Only difference is that we call `custom_run_server` instead of `run_server` and we do config translation (i.e. pass populated namespace to `parse_args`)
 def server(config: InferenceConfig, vllm_args: list[str]):
-    # TEMPORARY: Add verbose logging arguments
-    vllm_args.extend([
-        "--uvicorn-log-level=debug",
-    ])
-    
     parser = FlexibleArgumentParser(description="vLLM OpenAI-Compatible RESTful API server.")
     parser = make_arg_parser(parser)
     args = parser.parse_args(args=vllm_args, namespace=config.to_vllm())
