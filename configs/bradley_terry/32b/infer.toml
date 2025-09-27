@@ -5,3 +5,9 @@ max_model_len = 4096
 [parallel]
 dp = 1
 tp = 4 
+
+__unknown_args__ = [
+    "--uvicorn-log-level", "debug",
+    "--log-level", "DEBUG",
+    "--disable-log-stats", "false"
+]
