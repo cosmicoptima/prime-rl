@@ -125,7 +125,6 @@ def server(config: InferenceConfig, vllm_args: list[str]):
     vllm_args.extend([
         "--uvicorn-log-level=debug",
         "--log-level=DEBUG", 
-        "--disable-log-stats=false"
     ])
     
     parser = FlexibleArgumentParser(description="vLLM OpenAI-Compatible RESTful API server.")
