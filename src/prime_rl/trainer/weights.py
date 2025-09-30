@@ -122,7 +122,7 @@ def _merge_lora_weights_permanently(model: nn.Module) -> int:
             module.base_layer.weight.data.add_(delta_weight)
 
             # Reinitialize LoRA adapters exactly like original init (no scaling)
-            with torch.random.fork_rng():
+            with torch.random.fork_rng(devices=[]):
                 torch.random.set_rng_state(generator.get_state())
                 nn.init.kaiming_uniform_(module.lora_A, a=math.sqrt(5))
                 nn.init.zeros_(module.lora_B)
