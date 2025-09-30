@@ -132,7 +132,8 @@ class BradleyTerryJudgeRubric(Rubric):
         n = len(completions)
         if n < 2:
             # Can't compare with fewer than 2 completions
-            return [0.5] * n, [0.5] * n
+            fallback_score = 1.0 / n if n else 0.0
+            return [fallback_score] * n, [fallback_score] * n
         
         # Get the client to use (policy client if use_policy_model is True)
         if self.use_policy_model:
@@ -236,7 +237,8 @@ class BradleyTerryJudgeRubric(Rubric):
         
         if not comparisons:
             # No decisive comparisons, return equal scores
-            return [0.5] * n, [0.5] * n
+            fallback_score = 1.0 / n if n else 0.0
+            return [fallback_score] * n, [fallback_score] * n
         
         # Use Luce Spectral Ranking for small, dense comparison data
         params = choix.lsr_pairwise(n, comparisons, alpha=0.01)
