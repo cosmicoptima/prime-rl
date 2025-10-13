@@ -82,6 +82,10 @@ class BradleyTerryJudgeRubric(Rubric):
         max_concurrent: int = -1,
         **kwargs,
     ) -> RolloutScores:
+        print("\n" + "="*80, flush=True)
+        print(f"BRADLEY TERRY score_rollouts() CALLED with {len(prompts)} prompts, {len(completions)} completions", flush=True)
+        print("="*80 + "\n", flush=True)
+        
         # Convert prompts to hashable format for grouping
         hashable_prompts = []
         for prompt in prompts:
