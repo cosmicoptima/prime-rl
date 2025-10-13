@@ -12,7 +12,7 @@ name = "cosmicoptima/Prathamavatsa"
 [wandb]
 project = "introspection-bradley-terry"
 
-[monitor.wandb.log_extras]
+[wandb.log_extras]
 samples = true
 distributions = true
 interval = 2

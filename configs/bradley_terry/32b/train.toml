@@ -1,6 +1,6 @@
 max_steps = 1000
 
-[monitor.wandb]
+[wandb]
 project = "introspection-bradley-terry"
 
 [model]
