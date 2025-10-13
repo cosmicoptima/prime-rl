@@ -82,6 +82,10 @@ class BradleyTerryJudgeRubric(Rubric):
         max_concurrent: int = -1,
         **kwargs,
     ) -> RolloutScores:
+        # Write to file to confirm this is being called
+        with open("/tmp/bradley_terry_score_rollouts_called.txt", "a") as f:
+            f.write(f"\n{datetime.now()}: score_rollouts() CALLED with {len(prompts)} prompts, {len(completions)} completions\n")
+        
         print("\n" + "="*80, flush=True)
         print(f"BRADLEY TERRY score_rollouts() CALLED with {len(prompts)} prompts, {len(completions)} completions", flush=True)
         print("="*80 + "\n", flush=True)
