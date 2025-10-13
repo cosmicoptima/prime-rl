@@ -285,6 +285,10 @@ def load_environment(**kwargs):
     Returns:
         PolicyAwareSingleTurnEnv configured with BradleyTerryJudgeRubric
     """
+    print("\n" + "="*80, flush=True)
+    print("BRADLEY TERRY load_environment() CALLED - TESTING IF PRINTS WORK", flush=True)
+    print("="*80 + "\n", flush=True)
+    
     # Load introspection prompts dataset from HuggingFace
     from datasets import load_dataset
     
