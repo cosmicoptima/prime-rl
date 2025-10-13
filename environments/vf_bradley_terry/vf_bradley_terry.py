@@ -54,7 +54,7 @@ class BradleyTerryJudgeRubric(Rubric):
         use_policy_model: bool = False,
         **kwargs,
     ):
-        super().__init__(parser=parser, **kwargs)
+        super().__init__(parser=parser, funcs=[], **kwargs)
 
         self.client = client
         self.model = model
