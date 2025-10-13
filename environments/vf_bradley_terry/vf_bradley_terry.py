@@ -198,8 +198,8 @@ class BradleyTerryJudgeRubric(Rubric):
                     judge_args = {k: v for k, v in judge_args.items() if v is not None}
                     
                     print(f"[Comparison {i} vs {j}] Calling judge with model={judge_model}")
-                    print(f"[Comparison {i} vs {j}] Response A preview: {responses[i][:100]}...")
-                    print(f"[Comparison {i} vs {j}] Response B preview: {responses[j][:100]}...")
+                    #print(f"[Comparison {i} vs {j}] Response A preview: {responses[i][:100]}...")
+                    #print(f"[Comparison {i} vs {j}] Response B preview: {responses[j][:100]}...")
                     
                     # judge_response = await maybe_await(
                     #     judge_client.chat.completions.create,
