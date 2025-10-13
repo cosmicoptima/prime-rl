@@ -6,7 +6,7 @@ project = "introspection-bradley-terry"
 [model]
 # name = "cosmicoptima/GLM-4-32B-Base-32K"
 name = "cosmicoptima/Prathamavatsa"
-liger_kernel = true
+impl = "liger_kernel"
 
 [model.lora]
 enabled = true
@@ -24,6 +24,7 @@ modules_to_save = [
    ".*\\.embed_tokens$",
    ".*\\.norm$",
 ]
+
 [model.ac]
 freq = 1
 

@@ -9,7 +9,7 @@ mask_truncated_completions = false
 # name = "cosmicoptima/GLM-4-32B-Base-32K"
 name = "cosmicoptima/Prathamavatsa"
 
-[monitor.wandb]
+[wandb]
 project = "introspection-bradley-terry"
 
 [monitor.wandb.log_extras]
