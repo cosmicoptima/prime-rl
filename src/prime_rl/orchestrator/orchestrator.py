@@ -229,6 +229,7 @@ async def orchestrate(config: OrchestratorConfig):
                 client=client,
                 model=config.model.name,
                 sampling_args=sampling_args,
+                score_rollouts=True,
             )
             generate_completions_time = time.time() - generate_completions_start_time
             problem_requests += problems_to_sample
