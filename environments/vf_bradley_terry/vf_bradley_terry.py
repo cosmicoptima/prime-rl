@@ -162,11 +162,21 @@ class BradleyTerryJudgeRubric(Rubric):
         else:
             question = str(prompt)
         
-        # Parse responses from completions
+        # Parse responses from completions and check for invalid tokens
         responses = []
+        invalid_token_mask = []
         for i, completion in enumerate(completions):
             response = self.parser.parse_answer(completion)
             responses.append(response)
+            
+            # Check if response contains invalid special tokens
+            has_invalid_tokens = (
+                "<|end_of_text|>" in str(response) or 
+                "<|begin_of_text|>" in str(response)
+            )
+            invalid_token_mask.append(has_invalid_tokens)
+            if has_invalid_tokens:
+                print(f"⚠️  Response {i} contains invalid special tokens, will receive 0 reward")
         
         # Perform pairwise comparisons
         comparison_matrix = np.zeros((n, n))
@@ -280,7 +290,14 @@ class BradleyTerryJudgeRubric(Rubric):
             win_rate = wins / total_comparisons if total_comparisons > 0 else 0.5
             win_rates.append(win_rate)
         
-        return scores.tolist(), win_rates
+        # Zero out scores for responses with invalid tokens
+        scores_list = scores.tolist()
+        for i in range(n):
+            if invalid_token_mask[i]:
+                scores_list[i] = 0.0
+                win_rates[i] = 0.0
+        
+        return scores_list, win_rates
 
 
 def load_environment(**kwargs):
