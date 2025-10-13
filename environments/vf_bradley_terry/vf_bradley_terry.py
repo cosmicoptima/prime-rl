@@ -163,6 +163,8 @@ class BradleyTerryJudgeRubric(Rubric):
         # Perform pairwise comparisons
         comparison_matrix = np.zeros((n, n))
         
+        logger.info(f"Starting Bradley-Terry comparisons for {n} completions ({n*(n-1)//2} pairwise comparisons)")
+        
         for i in range(n):
             for j in range(i + 1, n):
                 # Compare response i vs response j
@@ -179,6 +181,7 @@ class BradleyTerryJudgeRubric(Rubric):
                 
                 if cache_key in cached:
                     winner = cached[cache_key]
+                    logger.debug(f"[Comparison {i} vs {j}] Using cached result: {winner}")
                 else:
                     # Get judgment from model
                     judge_args = dict(self.sampling_args or {})
@@ -191,6 +194,10 @@ class BradleyTerryJudgeRubric(Rubric):
                     if "max_completion_tokens" in judge_args and judge_args["max_completion_tokens"] is None:
                         judge_args.pop("max_completion_tokens")
                     judge_args = {k: v for k, v in judge_args.items() if v is not None}
+                    
+                    logger.info(f"[Comparison {i} vs {j}] Calling judge with model={judge_model}")
+                    logger.debug(f"[Comparison {i} vs {j}] Response A preview: {responses[i][:100]}...")
+                    logger.debug(f"[Comparison {i} vs {j}] Response B preview: {responses[j][:100]}...")
                     
                     # judge_response = await maybe_await(
                     #     judge_client.chat.completions.create,
@@ -205,6 +212,8 @@ class BradleyTerryJudgeRubric(Rubric):
                     )
                     
                     winner = str(judge_response.choices[0].message.content).strip().upper()
+                    logger.info(f"[Comparison {i} vs {j}] Judge raw response: '{judge_response.choices[0].message.content}'")
+                    logger.info(f"[Comparison {i} vs {j}] Parsed winner: '{winner}'")
                     
                     # Cache the response
                     if "bradley_terry_cache" not in state:
@@ -215,13 +224,16 @@ class BradleyTerryJudgeRubric(Rubric):
                 if winner == "A":
                     comparison_matrix[i, j] = 1
                     comparison_matrix[j, i] = 0
+                    logger.info(f"[Comparison {i} vs {j}] Result: A wins (response {i} beats response {j})")
                 elif winner == "B":
                     comparison_matrix[i, j] = 0
                     comparison_matrix[j, i] = 1
+                    logger.info(f"[Comparison {i} vs {j}] Result: B wins (response {j} beats response {i})")
                 else:
                     # Tie or invalid response - treat as 0.5 each
                     comparison_matrix[i, j] = 0.5
                     comparison_matrix[j, i] = 0.5
+                    logger.warning(f"[Comparison {i} vs {j}] Result: TIE or INVALID ('{winner}'), treating as 0.5 each")
         
         # Compute Bradley-Terry scores using choix
         # For small numbers of items with dense comparisons, the Luce Spectral Ranking (LSR) is efficient
