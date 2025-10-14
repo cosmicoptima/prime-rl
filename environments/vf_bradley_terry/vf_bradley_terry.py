@@ -5,6 +5,7 @@ from datetime import datetime
 import choix
 import numpy as np
 from openai import OpenAI, AsyncOpenAI
+from transformers import PreTrainedTokenizer
 
 import verifiers as vf
 from verifiers.envs.singleturn_env import SingleTurnEnv
@@ -52,6 +53,9 @@ class BradleyTerryJudgeRubric(Rubric):
         model: str = "gpt-4o-mini",
         sampling_args: dict[str, Any] | None = None,
         use_policy_model: bool = False,
+        tokenizer: PreTrainedTokenizer | None = None,
+        length_penalty_min_tokens: int = 512,
+        length_penalty_max_tokens: int = 1024,
         **kwargs,
     ):
         super().__init__(parser=parser, funcs=[], **kwargs)
@@ -61,6 +65,12 @@ class BradleyTerryJudgeRubric(Rubric):
         self.sampling_args = sampling_args or {}
         self.prompt = prompt
         self.use_policy_model = use_policy_model
+        self.tokenizer = tokenizer
+        self.length_penalty_min_tokens = length_penalty_min_tokens
+        self.length_penalty_max_tokens = length_penalty_max_tokens
+        
+        if self.tokenizer is None:
+            logger.warning("No tokenizer provided, length penalties will not be applied")
         
         # Store these in class_objects so they're available to reward functions if needed
         self.class_objects = {
@@ -70,6 +80,32 @@ class BradleyTerryJudgeRubric(Rubric):
             "judge_prompt": self.prompt,
             "judge_sampling_args": self.sampling_args,
         }
+    
+    def _count_tokens(self, text: str) -> int:
+        """Count tokens in text using the policy model's tokenizer."""
+        if self.tokenizer is None:
+            # Fallback: approximate using characters (~4 chars per token)
+            return len(text) // 4
+        return len(self.tokenizer.encode(text))
+    
+    def _compute_length_penalty(self, token_count: int) -> float:
+        """
+        Compute length penalty multiplier based on token count.
+        
+        Returns:
+            1.0 for token_count <= min_tokens
+            Linear decrease from 1.0 to 0.0 between min_tokens and max_tokens
+            0.0 for token_count >= max_tokens
+        """
+        if token_count <= self.length_penalty_min_tokens:
+            return 1.0
+        elif token_count >= self.length_penalty_max_tokens:
+            return 0.0
+        else:
+            # Linear interpolation
+            range_size = self.length_penalty_max_tokens - self.length_penalty_min_tokens
+            penalty_amount = (token_count - self.length_penalty_min_tokens) / range_size
+            return 1.0 - penalty_amount
 
     async def score_rollouts(
         self,
@@ -82,14 +118,6 @@ class BradleyTerryJudgeRubric(Rubric):
         max_concurrent: int = -1,
         **kwargs,
     ) -> RolloutScores:
-        # Write to file to confirm this is being called
-        with open("/tmp/bradley_terry_score_rollouts_called.txt", "a") as f:
-            f.write(f"\n{datetime.now()}: score_rollouts() CALLED with {len(prompts)} prompts, {len(completions)} completions\n")
-        
-        print("\n" + "="*80, flush=True)
-        print(f"BRADLEY TERRY score_rollouts() CALLED with {len(prompts)} prompts, {len(completions)} completions", flush=True)
-        print("="*80 + "\n", flush=True)
-        
         # Convert prompts to hashable format for grouping
         hashable_prompts = []
         for prompt in prompts:
@@ -102,7 +130,11 @@ class BradleyTerryJudgeRubric(Rubric):
         rollouts_per_prompt = min([len(list(group)) for _, group in groupby(hashable_prompts)])
 
         all_scores = []
-        all_metrics = {"bradley_terry": [], "win_rate": []}
+        all_metrics = {
+            "bradley_terry": [],
+            "bradley_terry_raw": [],
+            "win_rate": [],
+        }
         
         # Process each group of rollouts for the same prompt
         for start_idx in range(0, len(prompts), rollouts_per_prompt):
@@ -116,9 +148,40 @@ class BradleyTerryJudgeRubric(Rubric):
             scores, win_rates = await self._compute_bradley_terry(
                 group_completions, prompt, answer, state, **kwargs
             )
-            all_scores.extend(scores)
-            all_metrics["bradley_terry"].extend(scores)
-            all_metrics["win_rate"].extend(win_rates)
+            
+            # Apply length penalty to scores
+            for i, completion in enumerate(group_completions):
+                # Extract text from completion
+                if isinstance(completion, list):
+                    # Messages format: concatenate all content
+                    text = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
+                elif isinstance(completion, str):
+                    text = completion
+                else:
+                    text = str(completion)
+                
+                # Count tokens and compute penalty
+                token_count = self._count_tokens(text)
+                length_penalty = self._compute_length_penalty(token_count)
+                
+                # Store raw score before penalty
+                raw_score = scores[i]
+                all_metrics["bradley_terry_raw"].append(raw_score)
+                all_metrics["win_rate"].append(win_rates[i])
+                
+                # Apply penalty to score
+                penalized_score = raw_score * length_penalty
+                all_scores.append(penalized_score)
+                all_metrics["bradley_terry"].append(penalized_score)
+                
+                # Log if penalty is applied
+                if length_penalty < 1.0:
+                    logger.info(
+                        f"Length penalty applied: {token_count} tokens -> "
+                        f"penalty={length_penalty:.3f}, "
+                        f"raw_score={raw_score:.3f}, "
+                        f"penalized_score={penalized_score:.3f}"
+                    )
 
         return RolloutScores(reward=all_scores, metrics=all_metrics)
 
@@ -162,21 +225,11 @@ class BradleyTerryJudgeRubric(Rubric):
         else:
             question = str(prompt)
         
-        # Parse responses from completions and check for invalid tokens
+        # Parse responses from completions
         responses = []
-        invalid_token_mask = []
         for i, completion in enumerate(completions):
             response = self.parser.parse_answer(completion)
             responses.append(response)
-            
-            # Check if response contains invalid special tokens
-            has_invalid_tokens = (
-                "<|end_of_text|>" in str(response) or 
-                "<|begin_of_text|>" in str(response)
-            )
-            invalid_token_mask.append(has_invalid_tokens)
-            if has_invalid_tokens:
-                print(f"⚠️  Response {i} contains invalid special tokens, will receive 0 reward")
         
         # Perform pairwise comparisons
         comparison_matrix = np.zeros((n, n))
@@ -290,32 +343,36 @@ class BradleyTerryJudgeRubric(Rubric):
             win_rate = wins / total_comparisons if total_comparisons > 0 else 0.5
             win_rates.append(win_rate)
         
-        # Zero out scores for responses with invalid tokens
-        scores_list = scores.tolist()
-        for i in range(n):
-            if invalid_token_mask[i]:
-                scores_list[i] = 0.0
-                win_rates[i] = 0.0
-        
-        return scores_list, win_rates
+        return scores.tolist(), win_rates
 
 
-def load_environment(**kwargs):
+def load_environment(model_name: str | None = None, **kwargs):
     """
     Load a Bradley-Terry judge environment for prime-rl.
     
     This environment uses pairwise comparisons and Bradley-Terry ranking
     to evaluate multiple completions for each prompt.
     
-    Returns:
-        PolicyAwareSingleTurnEnv configured with BradleyTerryJudgeRubric
-    """
-    print("\n" + "="*80, flush=True)
-    print("BRADLEY TERRY load_environment() CALLED - TESTING IF PRINTS WORK", flush=True)
-    print("="*80 + "\n", flush=True)
+    Args:
+        model_name: Name/path of the policy model to use for tokenization.
+                   If not provided, length penalties will use character approximation.
+        **kwargs: Additional arguments passed to SingleTurnEnv
     
+    Returns:
+        SingleTurnEnv configured with BradleyTerryJudgeRubric
+    """
     # Load introspection prompts dataset from HuggingFace
     from datasets import load_dataset
+    from transformers import AutoTokenizer
+    
+    # Load tokenizer if model_name provided
+    tokenizer = None
+    if model_name:
+        logger.info(f"Loading tokenizer for {model_name}")
+        tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+        logger.info(f"Tokenizer loaded successfully")
+    else:
+        logger.warning("No model_name provided, length penalties will use character approximation")
     
     dataset = load_dataset("cosmicoptima/introspection-prompts", split="train")
     
@@ -363,12 +420,15 @@ def load_environment(**kwargs):
     # Create parser
     parser = vf.Parser()
     
-    # Create Bradley-Terry rubric with explicit prompt
+    # Create Bradley-Terry rubric with tokenizer for length penalties
     rubric = BradleyTerryJudgeRubric(
         prompt=BRADLEY_TERRY_JUDGE_PROMPT,
         parser=parser,
         use_policy_model=True,
         sampling_args={"max_tokens": 10},
+        tokenizer=tokenizer,
+        length_penalty_min_tokens=512,
+        length_penalty_max_tokens=1024,
     )
     
     # Create the environment

@@ -19,6 +19,8 @@ interval = 2
 
 [environment]
 id = "vf-bradley-terry"
+[environment.args]
+model_name = "cosmicoptima/Prathamavatsa"
 
 [sampling]
 max_tokens = 1024

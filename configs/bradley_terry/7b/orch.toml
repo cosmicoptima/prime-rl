@@ -18,6 +18,8 @@ interval = 2
 
 [environment]
 id = "vf-bradley-terry"
+[environment.args]
+model_name = "Qwen/Qwen2.5-7B-Instruct"
 
 [sampling]
 max_tokens = 1024
