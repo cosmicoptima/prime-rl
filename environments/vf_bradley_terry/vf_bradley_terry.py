@@ -56,6 +56,7 @@ class BradleyTerryJudgeRubric(Rubric):
         tokenizer: PreTrainedTokenizer | None = None,
         length_penalty_min_tokens: int = 512,
         length_penalty_max_tokens: int = 1024,
+        temperature: float = 1.0,
         **kwargs,
     ):
         super().__init__(parser=parser, funcs=[], **kwargs)
@@ -68,6 +69,7 @@ class BradleyTerryJudgeRubric(Rubric):
         self.tokenizer = tokenizer
         self.length_penalty_min_tokens = length_penalty_min_tokens
         self.length_penalty_max_tokens = length_penalty_max_tokens
+        self.temperature = temperature
         
         if self.tokenizer is None:
             logger.warning("No tokenizer provided, length penalties will not be applied")
@@ -329,11 +331,14 @@ class BradleyTerryJudgeRubric(Rubric):
         # Use Luce Spectral Ranking for small, dense comparison data
         params = choix.lsr_pairwise(n, comparisons, alpha=0.01)
         
-        # Convert log-scale parameters to probabilities
-        # The Bradley-Terry model gives P(i beats j) = exp(params[i]) / (exp(params[i]) + exp(params[j]))
-        # We'll normalize to [0, 1] where higher is better
-        exp_params = np.exp(params)
-        scores = exp_params / exp_params.sum()
+        # Convert log-scale parameters to scores in [0, 1] range using min-max normalization
+        # This preserves relative differences while giving a full reward range
+        scores = (params - params.min()) / (params.max() - params.min() + 1e-8)
+        
+        # Apply temperature scaling if temperature != 1.0
+        # Higher temperature (>1) amplifies differences, lower (<1) dampens them
+        if self.temperature != 1.0:
+            scores = scores ** self.temperature
         
         # Compute win rates (fraction of comparisons won)
         win_rates = []
@@ -429,6 +434,7 @@ def load_environment(model_name: str | None = None, **kwargs):
         tokenizer=tokenizer,
         length_penalty_min_tokens=512,
         length_penalty_max_tokens=1024,
+        temperature=2.0,  # Amplify reward differences (>1 = more extreme, <1 = more uniform)
     )
     
     # Create the environment
