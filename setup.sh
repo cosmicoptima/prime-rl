@@ -12,12 +12,12 @@ uv pip install flash_attn --no-build-isolation --no-cache-dir
 # Add uv to PATH
 # export PATH="/workspace/.local/bin:$PATH"
 
-export CUDA_VISIBLE_DEVICES=0,1,2,3
+export CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 
-mkdir /workspace/tmp
-rm -rf /tmp
-ln -s /workspace/tmp /
-export TMPDIR=/workspace/tmp
+# mkdir /workspace/tmp
+# rm -rf /tmp
+# ln -s /workspace/tmp /
+# export TMPDIR=/workspace/tmp
 
 git config --global credential.helper store
 
