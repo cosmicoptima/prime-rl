@@ -1,6 +1,6 @@
 [model]
-# name = "cosmicoptima/GLM-4-32B-Base-32K"
-name = "cosmicoptima/Prathamavatsa"
+name = "cosmicoptima/GLM-4-32B-Base-32K"
+#name = "cosmicoptima/Prathamavatsa"
 max_model_len = 4096
 
 [parallel]

@@ -4,8 +4,8 @@ max_steps = 1000
 project = "introspection-bradley-terry"
 
 [model]
-# name = "cosmicoptima/GLM-4-32B-Base-32K"
-name = "cosmicoptima/Prathamavatsa"
+name = "cosmicoptima/GLM-4-32B-Base-32K"
+#name = "cosmicoptima/Prathamavatsa"
 impl = "liger_kernel"
 
 [model.lora]
