@@ -214,7 +214,6 @@ def create_demo():
                     ],
                     chatbot=gr.Chatbot(
                         height=500,
-                        show_copy_button=True,
                         placeholder="Start chatting with the AI assistant...",
                         type="messages",
                         render_markdown=True,
