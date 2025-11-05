@@ -1,7 +1,8 @@
 max_steps = 200
 
 [model]
-name = "cosmicoptima/GLM-4-32B-Base-32K"
+# name = "cosmicoptima/GLM-4-32B-Base-32K"
+name = "Qwen/Qwen3-4B-Base"
 load_using_meta = true
 
 [model.ac]
