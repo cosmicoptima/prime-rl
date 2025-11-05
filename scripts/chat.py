@@ -120,7 +120,6 @@ def main():
         server_name="0.0.0.0",  # Bind to all interfaces
         server_port=args.port,
         share=not args.no_share,  # Share by default unless --no-share is specified
-        show_api=False,
     )
 
 
