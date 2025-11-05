@@ -37,7 +37,7 @@ merge_on_save = true
 name = "cosmicoptima/tjZ2Gzafnp"
 batch_size = 16
 micro_batch_size = 8
-seq_len = 4096
+seq_len = 2048
 
 [optim]
 lr = 2e-4
