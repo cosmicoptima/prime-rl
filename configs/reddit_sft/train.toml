@@ -49,3 +49,10 @@ seq_len = 2048
 
 [optim]
 lr = 2e-4
+
+[ckpt]
+interval = 50
+keep = 3
+
+[weights]
+interval = 50
