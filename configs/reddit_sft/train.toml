@@ -37,6 +37,10 @@ modules_to_save = [
 
 merge_on_save = true
 
+[wandb]
+project = "reddit-sft"
+name = "reddit-sft"
+
 [data]
 name = "cosmicoptima/tjZ2Gzafnp"
 batch_size = 16
