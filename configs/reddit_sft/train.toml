@@ -2,6 +2,7 @@ max_steps = 20
 
 [model]
 name = "cosmicoptima/GLM-4-32B-Base-32K"
+load_using_meta = true
 
 [model.lora]
 enabled = true
