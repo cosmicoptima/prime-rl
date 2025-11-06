@@ -2,7 +2,7 @@ max_steps = 200
 
 [model]
 # name = "cosmicoptima/GLM-4-32B-Base-32K"
-name = "Qwen/Qwen3-4B-Base"
+name = "Qwen/Qwen2.5-7B-Instruct"
 load_using_meta = true
 
 [model.ac]
