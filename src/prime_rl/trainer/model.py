@@ -247,8 +247,22 @@ def load_dcp_from_hf(model: nn.Module, config: ModelConfig):
 
     logger.info(f"Loading weights using HF DCP from {snapshot_path}")
     load_dcp_start_time = time.time()
+    
+    # Filter out LoRA adapter parameters - they're already properly initialized
+    # and shouldn't be loaded from the pretrained checkpoint
+    model_state = model.state_dict()
+    if config.experimental.lora is not None:
+        state_dict_to_load = {
+            k: v for k, v in model_state.items()
+            if not (k.endswith('.lora_A') or k.endswith('.lora_B'))
+        }
+        num_filtered = len(model_state) - len(state_dict_to_load)
+        logger.debug(f"Filtered {num_filtered} LoRA adapter parameters from checkpoint loading")
+    else:
+        state_dict_to_load = model_state
+    
     dcp_load(
-        model.state_dict(),
+        state_dict_to_load,
         storage_reader=HuggingFaceStorageReader(path=snapshot_path.as_posix()),
         # Note: This allow is needed by weight tying but could cause silent issues
         # planner=DefaultLoadPlanner(allow_partial_load=True),
