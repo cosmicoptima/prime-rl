@@ -8,8 +8,7 @@ name = "cosmicoptima/GLM-4-32B-Base-32K"
 #name = "cosmicoptima/Prathamavatsa"
 impl = "liger_kernel"
 
-[model.lora]
-enabled = true
+[model.experimental.lora]
 rank = 16
 alpha = 256.0
 dropout = 0.05

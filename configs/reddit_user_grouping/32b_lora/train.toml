@@ -7,8 +7,7 @@ project = "reddit-user-grouping"
 name = "cosmicoptima/GLM-4-32B-Base-32K"
 liger_kernel = true
 
-[model.lora]
-enabled = true
+[model.experimental.lora]
 rank = 16
 alpha = 256.0
 dropout = 0.05
@@ -23,7 +22,6 @@ modules_to_save = [
    ".*\\.embed_tokens$",
    ".*\\.norm$",
 ]
-merge_on_save = true
 
 [model.ac]
 freq = 1

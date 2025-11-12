@@ -7,8 +7,7 @@ project = "reddit-user-grouping"
 name = "Qwen/Qwen2.5-7B-Instruct"
 liger_kernel = true
 
-[model.lora]
-enabled = true
+[model.experimental.lora]
 rank = 32
 alpha = 64.0
 dropout = 0.05
@@ -23,7 +22,6 @@ modules_to_save = [
    ".*\\.embed_tokens$",
    ".*\\.norm$",
 ]
-merge_on_save = true
 [model.ac]
 freq = 1
 

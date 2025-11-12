@@ -8,8 +8,7 @@ load_using_meta = true
 [model.ac]
 freq = 1
 
-# [model.lora]
-# enabled = true
+# [model.experimental.lora]
 # rank = 16
 # alpha = 32.0
 # dropout = 0.05
@@ -35,8 +34,6 @@ freq = 1
 #    ".*\\.norm$",
 #    ".*\\.layernorm$",
 # ]
-# 
-# merge_on_save = true
 
 [wandb]
 project = "reddit-sft"
