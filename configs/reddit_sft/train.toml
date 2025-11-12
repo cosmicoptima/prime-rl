@@ -8,35 +8,35 @@ load_using_meta = true
 [model.ac]
 freq = 1
 
-[model.lora]
-enabled = true
-rank = 16
-alpha = 32.0
-dropout = 0.05
-
-# Target modules - includes BOTH attention and MLP layers
-target_modules = [
-   # Attention layers
-   ".*\\.q_proj$",      # Query projection
-   ".*\\.k_proj$",      # Key projection
-   ".*\\.v_proj$",      # Value projection
-   ".*\\.o_proj$",      # Output projection
-   
-   # MLP layers
-   ".*\\.gate_proj$",   # MLP gate projection
-   ".*\\.up_proj$",     # MLP up projection
-   ".*\\.down_proj$",   # MLP down projection
-]
-
-# Keep these modules fully trainable (not frozen)
-modules_to_save = [
-   "lm_head$",
-   ".*\\.embed_tokens$",
-   ".*\\.norm$",
-   ".*\\.layernorm$",
-]
-
-merge_on_save = true
+# [model.lora]
+# enabled = true
+# rank = 16
+# alpha = 32.0
+# dropout = 0.05
+# 
+# # Target modules - includes BOTH attention and MLP layers
+# target_modules = [
+#    # Attention layers
+#    ".*\\.q_proj$",      # Query projection
+#    ".*\\.k_proj$",      # Key projection
+#    ".*\\.v_proj$",      # Value projection
+#    ".*\\.o_proj$",      # Output projection
+#    
+#    # MLP layers
+#    ".*\\.gate_proj$",   # MLP gate projection
+#    ".*\\.up_proj$",     # MLP up projection
+#    ".*\\.down_proj$",   # MLP down projection
+# ]
+# 
+# # Keep these modules fully trainable (not frozen)
+# modules_to_save = [
+#    "lm_head$",
+#    ".*\\.embed_tokens$",
+#    ".*\\.norm$",
+#    ".*\\.layernorm$",
+# ]
+# 
+# merge_on_save = true
 
 [wandb]
 project = "reddit-sft"
