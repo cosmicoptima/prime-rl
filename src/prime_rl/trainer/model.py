@@ -227,13 +227,12 @@ def setup_model(config: ModelConfig, parallel_dims: ParallelDims) -> nn.Module:
     if config.lora is not None and config.lora.enabled:
         apply_lora_to_model(model, config.lora)
 
-    # the right order is AC -> Compile -> FSDP
+    setup_fsdp(model, config, parallel_dims)
     if config.ac is not None:
         apply_ac(model, config.ac)
     if config.compile is not None:
         apply_compile(model, config.compile)
-
-    setup_fsdp(model, config, parallel_dims)
+    # TODO: This should be type-hinted as FSDP version of the model
 
     if config.load_using_meta and can_load_dcp_from_hf(model):
         load_dcp_from_hf(model, config)
@@ -251,4 +250,4 @@ def setup_model(config: ModelConfig, parallel_dims: ParallelDims) -> nn.Module:
 def forward(
     model: nn.Module, input_ids: Int[Tensor, "batch seq"], position_ids: Int[Tensor, "batch seq"]
 ) -> Float[Tensor, "batch seq vocab"]:
-    return model(input_ids=input_ids, position_ids=position_ids).logits
+    return model(input_ids=input_ids, position_ids=position_ids).logits.float()
