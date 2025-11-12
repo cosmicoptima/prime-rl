@@ -1,5 +1,5 @@
 [model]
-name = "cosmicoptima/GLM-4-32B-Base-32K"
+name = "outputs/weights/step_200/"
 max_model_len = 2048
 
 [parallel]
