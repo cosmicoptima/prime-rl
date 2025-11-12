@@ -40,8 +40,8 @@ project = "reddit-sft"
 name = "reddit-sft"
 
 [data]
-# name = "cosmicoptima/tjZ2Gzafnp"
-name = "PrimeIntellect/Reverse-Text-SFT"
+name = "cosmicoptima/tjZ2Gzafnp"
+# name = "PrimeIntellect/Reverse-Text-SFT"
 batch_size = 64
 micro_batch_size = 8
 seq_len = 2048
