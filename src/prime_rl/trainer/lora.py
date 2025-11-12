@@ -91,8 +91,35 @@ def _set_module_by_name(model: nn.Module, module_name: str, new_module: nn.Modul
     setattr(parent, parts[-1], new_module)
 
 
+def _has_regex_metacharacters(pattern: str) -> bool:
+    """Check if a pattern contains regex metacharacters."""
+    regex_metachars = {".", "*", "+", "?", "^", "$", "[", "]", "{", "}", "|", "(", ")", "\\"}
+    return any(char in pattern for char in regex_metachars)
+
+
+def _matches_pattern(name: str, pattern: str) -> bool:
+    """Check if a name matches a pattern.
+
+    For simple patterns (no regex metacharacters), checks if any component
+    in the module path matches the pattern exactly. For regex patterns, uses
+    re.search() to match anywhere in the name (mirroring PEFT behavior).
+
+    This handles cases where Linear layers might be nested (e.g.,
+    "model.layers.0.q_proj.linear") while still matching standard architectures
+    where they're direct children (e.g., "model.layers.0.self_attn.q_proj").
+    """
+    if _has_regex_metacharacters(pattern):
+        return re.search(pattern, name) is not None
+    else:
+        return pattern in name.split(".")
+
+
 def _find_target_modules(model: nn.Module, target_patterns: List[str]) -> List[str]:
-    """Find all module names that match any of the target regex patterns."""
+    """Find all module names that match any of the target patterns.
+
+    Patterns can be simple module names (e.g., "q_proj") or regex patterns
+    (e.g., r".*\\.q_proj$"). Simple names match any component in the module path.
+    """
     target_modules = []
 
     for name, module in model.named_modules():
@@ -100,7 +127,7 @@ def _find_target_modules(model: nn.Module, target_patterns: List[str]) -> List[s
             continue
 
         for pattern in target_patterns:
-            if re.match(pattern, name):
+            if _matches_pattern(name, pattern):
                 target_modules.append(name)
                 break
 
@@ -114,14 +141,16 @@ def _should_keep_trainable(param_name: str, modules_to_save_patterns: List[str])
     For example, for param "model.embed_tokens.weight", it checks both:
     - "model.embed_tokens.weight" (full parameter name)
     - "model.embed_tokens" (module name)
+
+    Patterns can be simple module names (e.g., "embed_tokens") or regex patterns.
     """
     for pattern in modules_to_save_patterns:
-        if re.match(pattern, param_name):
+        if _matches_pattern(param_name, pattern):
             return True
 
     module_name = param_name.rsplit(".", 1)[0] if "." in param_name else param_name
     for pattern in modules_to_save_patterns:
-        if re.match(pattern, module_name):
+        if _matches_pattern(module_name, pattern):
             return True
 
     return False
@@ -174,13 +203,10 @@ def apply_lora_to_model(model: nn.Module, config: LoRAConfig) -> None:
         )
         raise RuntimeError("Cannot apply LoRA to FSDP-wrapped model. Apply LoRA before setup_fsdp().")
 
-    if not config.enabled:
-        return
-
     target_modules = _find_target_modules(model, config.target_modules)
 
     if not target_modules:
-        logger.warning("No target modules found for LoRA. Check your target_modules regex patterns.")
+        logger.warning("No target modules found for LoRA. Check your target_modules patterns.")
         return
 
     for module_name in target_modules:
@@ -219,45 +245,76 @@ def apply_lora_to_model(model: nn.Module, config: LoRAConfig) -> None:
     logger.info(f"LoRA: {adapted_or_trainable:,} adapted or fully trainable out of {total_params:,} parameters")
 
 
-def merge_lora_weights(model: nn.Module) -> nn.Module:
-    """
-    Merge all LoRA weights in the model back into base layers.
+def has_lora_layers(model: nn.Module) -> bool:
+    """Check if model has LoRA layers."""
+    for module in model.modules():
+        if isinstance(module, LoRALinear):
+            return True
+    return False
 
-    Args:
-        model: Model with LoRA layers
+
+def clean_lora_state_dict(state_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+    """Remove LoRA parameters and fix LoRA base layer key names for HF compatibility."""
+    clean_state_dict = {}
+
+    for key, value in state_dict.items():
+        if "lora_A" in key or "lora_B" in key:
+            continue
+
+        if ".base_layer." in key:
+            new_key = key.replace(".base_layer.", ".")
+            clean_state_dict[new_key] = value
+        else:
+            clean_state_dict[key] = value
+
+    return clean_state_dict
+
+
+def merge_lora_weights_inplace(model: nn.Module) -> Dict[str, Dict[str, torch.Tensor]]:
+    """
+    Merge LoRA weights into base layers in-place and return original LoRA state for restoration.
 
     Returns:
-        Model with LoRA weights merged into base layers
+        Dictionary mapping module names to their original LoRA state
     """
-    logger = get_logger()
+    original_lora_state = {}
     merged_count = 0
 
-    for name, module in list(model.named_modules()):
+    for name, module in model.named_modules():
         if isinstance(module, LoRALinear):
-            merged_layer = module.merge_weights()
+            original_lora_state[name] = {
+                "lora_A": module.lora_A.data.clone(),
+                "lora_B": module.lora_B.data.clone(),
+            }
 
-            _set_module_by_name(model, name, merged_layer)
+            delta_weight = (module.lora_B @ module.lora_A) * module.scaling
+            module.base_layer.weight.data.add_(delta_weight)
+
+            module.lora_A.data.zero_()
+            module.lora_B.data.zero_()
             merged_count += 1
 
-    if merged_count > 0:
-        logger.info(f"Merged {merged_count} LoRA modules back into base model")
-
-    return model
+    return original_lora_state
 
 
-def get_lora_state_dict(model: nn.Module) -> Dict[str, torch.Tensor]:
+def restore_lora_weights_inplace(model: nn.Module, original_lora_state: Dict[str, Dict[str, torch.Tensor]]) -> None:
     """
-    Extract only LoRA parameters from model state dict.
+    Restore original LoRA weights and subtract merged weights from base layers.
 
-    Returns:
-        Dictionary containing only LoRA parameters
+    Args:
+        model: Model with merged LoRA weights
+        original_lora_state: Original LoRA state from merge_lora_weights_inplace
     """
-    lora_state_dict = {}
-    for name, param in model.named_parameters():
-        if "lora_A" in name or "lora_B" in name:
-            lora_state_dict[name] = param.data.clone()
+    restored_count = 0
 
-    return lora_state_dict
+    for name, module in model.named_modules():
+        if isinstance(module, LoRALinear) and name in original_lora_state:
+            module.lora_A.data.copy_(original_lora_state[name]["lora_A"])
+            module.lora_B.data.copy_(original_lora_state[name]["lora_B"])
+
+            delta_weight = (module.lora_B @ module.lora_A) * module.scaling
+            module.base_layer.weight.data.sub_(delta_weight)
+            restored_count += 1
 
 
 def load_lora_state_dict(model: nn.Module, lora_state_dict: Dict[str, torch.Tensor]) -> None:
@@ -278,3 +335,48 @@ def load_lora_state_dict(model: nn.Module, lora_state_dict: Dict[str, torch.Tens
             loaded_params += 1
         else:
             logger.warning(f"LoRA parameter {name} not found in model")
+
+
+def save_lora_config(config: LoRAConfig, model: nn.Module, save_path) -> None:
+    """
+    Save LoRA configuration as JSON for adapter portability.
+
+    Args:
+        config: LoRA configuration to save
+        model: Model with LoRA layers to introspect
+        save_path: Path object or string pointing to directory where adapter_config.json will be saved
+    """
+    import json
+    from pathlib import Path
+
+    save_path = Path(save_path)
+
+    # Extract actual target modules from the model
+    target_modules = set()
+    modules_to_save = set()
+
+    for name, module in model.named_modules():
+        if isinstance(module, LoRALinear):
+            module_suffix = name.split(".")[-1]
+            target_modules.add(module_suffix)
+
+    for name, param in model.named_parameters():
+        if param.requires_grad and "lora_A" not in name and "lora_B" not in name:
+            module_name = name.rsplit(".", 1)[0].split(".")[-1]
+            modules_to_save.add(module_name)
+
+    adapter_config = {
+        "peft_type": "LORA",
+        "task_type": "CAUSAL_LM",
+        "base_model_name_or_path": model.config._name_or_path,
+        "r": config.rank,
+        "lora_alpha": config.alpha,
+        "lora_dropout": config.dropout,
+        "bias": "none",
+        "target_modules": sorted(list(target_modules)),
+        "modules_to_save": sorted(list(modules_to_save)) if modules_to_save else None,
+    }
+
+    config_path = save_path / "adapter_config.json"
+    with open(config_path, "w") as f:
+        json.dump(adapter_config, f, indent=2)

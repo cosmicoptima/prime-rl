@@ -1,3 +1,4 @@
+import asyncio
 import functools
 import os
 import time
@@ -116,7 +117,7 @@ def clean_exit(func):
     return wrapper
 
 
-def wait_for_path(path: Path, interval: int = 1, log_interval: int = 10) -> None:
+def sync_wait_for_path(path: Path, interval: int = 1, log_interval: int = 10) -> None:
     logger = get_logger()
     wait_time = 0
     logger.debug(f"Waiting for path `{path}`")
@@ -127,6 +128,20 @@ def wait_for_path(path: Path, interval: int = 1, log_interval: int = 10) -> None
         if wait_time % log_interval == 0 and wait_time > 0:  # Every log_interval seconds
             logger.debug(f"Waiting for path `{path}` for {wait_time} seconds")
         time.sleep(interval)
+        wait_time += interval
+
+
+async def wait_for_path(path: Path, interval: int = 1, log_interval: int = 10) -> None:
+    logger = get_logger()
+    wait_time = 0
+    logger.debug(f"Waiting for path `{path}`")
+    while True:
+        if path.exists():
+            logger.debug(f"Found path `{path}`")
+            break
+        if wait_time % log_interval == 0 and wait_time > 0:  # Every log_interval seconds
+            logger.debug(f"Waiting for path `{path}` for {wait_time} seconds")
+        await asyncio.sleep(interval)
         wait_time += interval
 
 
@@ -259,3 +274,14 @@ def get_step_path(path: Path, step: int) -> Path:
 
 def get_weight_ckpt_model_path(weights_dir: Path, step: int) -> Path:
     return weights_dir / f"step_{step}" / "pytorch_model.bin"
+
+
+def get_latest_ckpt_step(weights_dir: Path) -> int | None:
+    step_dirs = list(weights_dir.glob("step_*"))
+    if len(step_dirs) == 0:
+        return None
+    steps = sorted([int(step_dir.name.split("_")[-1]) for step_dir in step_dirs])
+    for latest_step in steps[::-1]:
+        if Path(weights_dir / f"step_{latest_step}" / "STABLE").exists():
+            return latest_step
+    return None

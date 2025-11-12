@@ -6,7 +6,7 @@ We demonstrate how to train `Qwen3-0.6B` to reverse a small chunk of text. We wi
 
 ## Setup
 
-Ensure that the environment is installed (should be included in `pyproject.toml`)
+We keep the `reverse-text` in our lock file because we use it frequently in our CI and for development. If you have synced the environment, you should already have it installed. To verify, run
 
 ```bash
 uv run python -c "import reverse_text"
@@ -67,7 +67,7 @@ This should write a weight checkpoint in `outputs/weights/step_100`. Upload it t
 uv run hf upload <user>/Qwen3-0.6B-Reverse-Text-SFT outputs/weights/step_100
 ```
 
-We have uploaded the final model as [`PrimeIntellect/Qwen3-0.6B-Wordle-SFT`](https://huggingface.co/PrimeIntellect/Qwen3-0.6B-Wordle-SFT).
+We have uploaded the final model as [`PrimeIntellect/Qwen3-0.6B-Reverse-Text-SFT`](https://huggingface.co/PrimeIntellect/Qwen3-0.6B-Reverse-Text-SFT).
 
 ## RL
 
@@ -93,7 +93,7 @@ This will write a weight checkpoint in `outputs/weights/step_20`. As before, let
 uv run hf upload <user>/Qwen3-0.6B-Reverse-Text-RL outputs/weights/step_20
 ```
 
-We have uploaded the final model as [`PrimeIntellect/Qwen3-0.6B-Wordle-RL`](https://huggingface.co/PrimeIntellect/Qwen3-0.6B-Wordle-RL).
+We have uploaded the final model as [`PrimeIntellect/Qwen3-0.6B-Reverse-Text-RL`](https://huggingface.co/PrimeIntellect/Qwen3-0.6B-Reverse-Text-RL).
 
 ## Evals
 

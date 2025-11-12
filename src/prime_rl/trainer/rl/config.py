@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeAlias
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -19,38 +19,57 @@ from prime_rl.utils.pydantic_config import BaseConfig, BaseSettings
 class LossConfig(BaseModel):
     """Base config for loss."""
 
-    norm_type: Annotated[
-        Literal["token", "sequence"],
+    ratio_type: Annotated[Literal["token", "sequence"], Field(description="Type of importance ratio to use.")] = "token"
+    ratio_length_norm: Annotated[
+        bool, Field(description="Whether to normalize the importance ratio by the sequence length.")
+    ] = False
+
+    mask_ratio_high: Annotated[float, Field(ge=0)] = 8.0
+    mask_ratio_low: Annotated[float, Field(ge=0)] = 0.125
+    sequence_mask_ratio_low: Annotated[
+        float,
         Field(
-            description="Normalization type for loss scaling. 'token' normalizes by the total number of unmasked tokens in the batch, 'sequence' normalizes by the total tokens within a sequence."
+            ge=0,
+            description=(
+                "If set, masks entire sequences when any generated token has an importance ratio below this value."
+            ),
         ),
-    ] = "token"
-
-    type: Annotated[Literal["gspo", "grpo"], Field(description="Type of loss to use.")] = "grpo"
-
-    clip_ratio: Annotated[float, Field(ge=0)] = 8.0
+    ] = 0.0
+    kl_tau: Annotated[float, Field(ge=0)] = 0.0
+    kl_mask_type: Annotated[Literal["masked", "unmasked", "all"], Field(description="Type of KL mask to use.")] = "all"
 
 
 class FakeDataLoaderConfig(BaseConfig):
     """Configures a fake data loader sampling random micro batches for debugging."""
 
-    micro_batch_size: Annotated[int, Field(ge=1)] = 1
     batch_size: Annotated[int, Field(ge=1)] = 2
     seq_len: Annotated[int, Field(ge=1)] = 128
-
-    @model_validator(mode="after")
-    def validate_batch_size(self):
-        if self.batch_size % self.micro_batch_size != 0:
-            raise ValueError("Batch size must be divisible by micro batch size")
-        if self.batch_size < self.micro_batch_size:
-            raise ValueError("Batch size must be greater than or equal to micro batch size")
-        return self
 
 
 class DataLoaderConfig(BaseConfig):
     """Configures the data loader used for training."""
 
     fake: Annotated[FakeDataLoaderConfig | None, Field(description="Whether to use a fake data loader.")] = None
+
+
+class FileSystemWeightBroadcastConfig(BaseModel):
+    """Configures the weight broadcast."""
+
+    type: Literal["filesystem"] = "filesystem"
+
+
+class NCCLWeightBroadcastConfig(BaseModel):
+    """Configures the NCCL broadcast."""
+
+    type: Literal["nccl"] = "nccl"
+    host: Annotated[str, Field(description="The host to use for the NCCL broadcast.")] = "localhost"
+    port: Annotated[int, Field(description="The port to use for the NCCL broadcast.")] = 29501
+    timeout: Annotated[int, Field(description="The timeout  in seconds to use for the NCCL broadcast.")] = 1200
+    # TODO: Should not be configurable, but auto-inferred
+    inference_world_size: Annotated[int, Field(description="The world size to use for the NCCL broadcast.")] = 1
+
+
+WeightBroadcastConfigType: TypeAlias = FileSystemWeightBroadcastConfig | NCCLWeightBroadcastConfig
 
 
 class RLTrainerConfig(BaseSettings):
@@ -77,6 +96,10 @@ class RLTrainerConfig(BaseSettings):
     # The weight checkpoint configuration
     weights: WeightCheckpointConfig = WeightCheckpointConfig()
 
+    weight_broadcast: Annotated[WeightBroadcastConfigType, Field(discriminator="type")] = (
+        FileSystemWeightBroadcastConfig()
+    )
+
     # The logging configuration
     log: LogConfig = LogConfig()
 
@@ -97,22 +120,15 @@ class RLTrainerConfig(BaseSettings):
         ),
     ] = None
 
-    async_level: Annotated[
+    max_async_level: Annotated[
         int,
         Field(
             ge=0,
             description="Maximum number of steps that inference can be ahead of training. Determines how 'off-policy' the inference engines can be. Higher values yield better throughput through async execution, but may yield lower powerofrmance. If 0, will be fully synchronous.",
         ),
-    ] = 2
+    ] = 1
 
     memory_profiler_path: Annotated[Path | None, Field(description="Path to write memory profile to.")] = None
-
-    recompute_logprobs: Annotated[
-        bool,
-        Field(
-            description="Whether to recompute the logprobs. If True, will always recompute logprobs and overwrite those found in the training batch.",
-        ),
-    ] = False
 
     bench: Annotated[
         bool,
@@ -157,4 +173,21 @@ class RLTrainerConfig(BaseSettings):
                 raise ValueError(
                     "Tracing more than 10 steps is not recommended as your trace will be massive. Remove this line if you really want to trace more steps."
                 )
+        return self
+
+    @model_validator(mode="after")
+    def validate_lora_adapter_saving(self):
+        if self.weights and self.weights.save_adapter_separately:
+            lora_enabled = self.model and self.model.experimental and self.model.experimental.lora
+            if not lora_enabled:
+                raise ValueError(
+                    "save_adapter_separately=True requires LoRA to be enabled. "
+                    "Set model.experimental.lora or disable save_adapter_separately."
+                )
+        return self
+
+    @model_validator(mode="after")
+    def validate_weight_broadcast_type(self):
+        if self.weight_broadcast.type == "nccl" and self.max_async_level != 1:
+            raise ValueError("NCCL weight broadcast only works with async level 1")
         return self

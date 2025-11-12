@@ -24,13 +24,47 @@ class ActivationCheckpointConfig(BaseModel):
     ] = 1
 
 
+class ActivationOffloadingConfig(BaseModel):
+    """Configures the activation offloading."""
+
+    pin_memory: Annotated[bool, Field(description="Whether to pin the offloaded activations to CPU memory.")] = True
+
+    max_inflight_activations: Annotated[
+        int,
+        Field(
+            ge=1,
+            description="The maximum number of activations to keep in while offloading further. (More activations means smoother overlap, but more gpu memory usage)",
+        ),
+    ] = 5
+
+
+class CompileConfig(BaseModel):
+    """Configures model compilation."""
+
+    fullgraph: Annotated[
+        bool,
+        Field(description="Whether to compile the transformer blocks with fullgraph."),
+    ] = False
+
+
+class DebugModelConfig(BaseModel):
+    """Debugging feature around model and distributed training."""
+
+    num_layers: Annotated[
+        int | None,
+        Field(description="The number of layers in the model."),
+    ] = None
+
+    random_init: Annotated[
+        bool,
+        Field(
+            description="Whether to random initialize the model.",
+        ),
+    ] = False
+
+
 class LoRAConfig(BaseModel):
     """Configuration for LoRA (Low-Rank Adaptation)."""
-
-    enabled: Annotated[
-        bool,
-        Field(description="Whether to enable LoRA training."),
-    ] = False
 
     rank: Annotated[
         int,
@@ -60,49 +94,35 @@ class LoRAConfig(BaseModel):
     target_modules: Annotated[
         list[str],
         Field(
-            description="Regex patterns for modules to apply LoRA to.",
+            description="Module names or regex patterns for modules to apply LoRA to. Simple names (e.g., 'q_proj') match any component in the module path. Regex patterns match anywhere in the name.",
         ),
     ] = [
-        r".*\.q_proj$",
-        r".*\.k_proj$",
-        r".*\.v_proj$",
-        r".*\.o_proj$",
-        r".*\.gate_proj$",
-        r".*\.up_proj$",
-        r".*\.down_proj$",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj",
     ]
 
     modules_to_save: Annotated[
         list[str],
         Field(
-            description="Regex patterns for modules to keep fully trainable (not freeze).",
+            description="Module names or regex patterns for modules to keep fully trainable (not freeze). Simple names match any component in the module path. Regex patterns match anywhere in the name.",
         ),
-    ] = [r".*embed_tokens$", r".*norm$", r".*layernorm$", r"lm_head$"]
+    ] = []
 
 
-class CompileConfig(BaseModel):
-    """Configures model compilation."""
+class ExperimentalConfig(BaseModel):
+    """Experimental modeling features."""
 
-    fullgraph: Annotated[
-        bool,
-        Field(description="Whether to compile the transformer blocks with fullgraph."),
-    ] = False
-
-
-class DebugModelConfig(BaseModel):
-    """Debugging feature around model and distributed training."""
-
-    num_layers: Annotated[
-        int | None,
-        Field(description="The number of layers in the model."),
-    ] = None
-
-    random_init: Annotated[
-        bool,
+    lora: Annotated[
+        LoRAConfig | None,
         Field(
-            description="Whether to random initialize the model.",
+            description="Whether to apply LoRA to the model. If None, will not apply LoRA.",
         ),
-    ] = False
+    ] = None
 
 
 class ModelConfig(BaseConfig):
@@ -120,7 +140,7 @@ class ModelConfig(BaseConfig):
     compile: Annotated[
         CompileConfig | None,
         Field(
-            description="Whether to compile the model using `torch.compile`. Currently discouraged because it was found to destabilize training.",
+            description="Whether to compile the model using `torch.compile`.",
         ),
     ] = None
 
@@ -131,10 +151,10 @@ class ModelConfig(BaseConfig):
         ),
     ] = None
 
-    lora: Annotated[
-        LoRAConfig | None,
+    ac_offloading: Annotated[
+        ActivationOffloadingConfig | None,
         Field(
-            description="Whether to apply LoRA to the model. If None, will not apply LoRA.",
+            description="Whether to apply activation offloading to the model. If None, will not apply activation offloading.",
         ),
     ] = None
 
@@ -184,13 +204,6 @@ class ModelConfig(BaseConfig):
         ),
     ] = "hf"
 
-    log_signature: Annotated[
-        bool,
-        Field(
-            description="Whether to log the model signature after loading the model.",
-        ),
-    ] = False
-
     load_using_meta: Annotated[
         bool,
         Field(
@@ -225,6 +238,13 @@ class ModelConfig(BaseConfig):
             description="Debugging feature around model and distributed training.",
         ),
     ] = DebugModelConfig()
+
+    experimental: Annotated[
+        ExperimentalConfig,
+        Field(
+            description="Experimental modeling features.",
+        ),
+    ] = ExperimentalConfig()
 
     @model_validator(mode="after")
     def _map_model_name_for_moe(self):
@@ -334,7 +354,7 @@ class CheckpointConfig(BaseConfig):
         int | None,
         Field(
             ge=-1,
-            description="Step to resume training from. If None, will start from scratch. if -1, will restart from latest checkpoint available.",
+            description="Step to resume training from. If None, will start from scratch. If -1, will restart from latest checkpoint available.",
         ),
     ] = None
 
@@ -345,11 +365,25 @@ class CheckpointConfig(BaseConfig):
             description="Keep at most this many recent step checkpoints on disk. If None, never clean old checkpoints.",
         ),
     ] = None
-    
+
+    skip_progress: Annotated[
+        bool,
+        Field(
+            description="Whether to skip loading the progress from checkpoint.",
+        ),
+    ] = False
+
+    skip_scheduler: Annotated[
+        bool,
+        Field(
+            description="Whether to skip loading the scheduler from checkpoint.",
+        ),
+    ] = False
+
     skip_dataloader: Annotated[
         bool,
         Field(
-            description="Whether to skip checkpointing the dataloader. If True, will not checkpoint the dataloader.",
+            description="Whether to skip loading the dataloader from checkpoint.",
         ),
     ] = False
 
@@ -365,9 +399,30 @@ class WeightCheckpointConfig(BaseConfig):
         ),
     ] = None
 
+    save_sharded: Annotated[
+        bool,
+        Field(
+            description="Whether to save the weight checkpoint in sharded format.",
+        ),
+    ] = False
+
+    save_format: Annotated[
+        Literal["safetensors", "torch"],
+        Field(
+            description="The format to save the weight checkpoint in.",
+        ),
+    ] = "torch"
+
     save_async: Annotated[
         bool,
         Field(
             description="Whether to save the weight checkpoint asynchronously.",
         ),
     ] = True
+
+    save_adapter_separately: Annotated[
+        bool,
+        Field(
+            description="Whether to save LoRA adapters separately before merging into full model weights.",
+        ),
+    ] = False
