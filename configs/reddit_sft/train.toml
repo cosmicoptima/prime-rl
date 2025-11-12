@@ -8,32 +8,32 @@ load_using_meta = false
 [model.ac]
 freq = 1
 
-# [model.experimental.lora]
-# rank = 16
-# alpha = 32.0
-# dropout = 0.05
-# 
-# # Target modules - includes BOTH attention and MLP layers
-# target_modules = [
-#    # Attention layers
-#    ".*\\.q_proj$",      # Query projection
-#    ".*\\.k_proj$",      # Key projection
-#    ".*\\.v_proj$",      # Value projection
-#    ".*\\.o_proj$",      # Output projection
-#    
-#    # MLP layers
-#    ".*\\.gate_proj$",   # MLP gate projection
-#    ".*\\.up_proj$",     # MLP up projection
-#    ".*\\.down_proj$",   # MLP down projection
-# ]
-# 
-# # Keep these modules fully trainable (not frozen)
-# modules_to_save = [
-#    "lm_head$",
-#    ".*\\.embed_tokens$",
-#    ".*\\.norm$",
-#    ".*\\.layernorm$",
-# ]
+[model.experimental.lora]
+rank = 16
+alpha = 32.0
+dropout = 0.05
+
+# Target modules - includes BOTH attention and MLP layers
+target_modules = [
+   # Attention layers
+   ".*\\.q_proj$",      # Query projection
+   ".*\\.k_proj$",      # Key projection
+   ".*\\.v_proj$",      # Value projection
+   ".*\\.o_proj$",      # Output projection
+   
+   # MLP layers
+   ".*\\.gate_proj$",   # MLP gate projection
+   ".*\\.up_proj$",     # MLP up projection
+   ".*\\.down_proj$",   # MLP down projection
+]
+
+# Keep these modules fully trainable (not frozen)
+modules_to_save = [
+   "lm_head$",
+   ".*\\.embed_tokens$",
+   ".*\\.norm$",
+   ".*\\.layernorm$",
+]
 
 [wandb]
 project = "reddit-sft"
@@ -47,7 +47,7 @@ micro_batch_size = 8
 seq_len = 2048
 
 [optim]
-lr = 1e-5
+lr = 4e-5
 weight_decay = 0.0001
 
 [ckpt]
