@@ -180,6 +180,37 @@ def load_dcp_from_hf(model: nn.Module, config: ModelConfig):
     snapshot_state_dict = load_state_dict(snapshot_path)
     model_state_dict = model.state_dict()
 
+    # Remap keys if LoRA is applied to the model
+    if config.experimental.lora is not None and any(".base_layer." in k for k in model_state_dict.keys()):
+        logger.info("Detected LoRA layers in model. Remapping HF checkpoint keys to match LoRA structure...")
+        snapshot_path = snapshot_path / "lora_remapped"
+        if snapshot_path.exists():
+            logger.debug(f"LoRA-remapped checkpoint found at {snapshot_path}.")
+        else:
+            if get_world().is_master:
+                logger.debug(
+                    f"Remapping checkpoint keys for LoRA and saving to {snapshot_path} on master rank. This is a one-time operation."
+                )
+                # Remap keys: "layer.weight" -> "layer.base_layer.weight" for LoRA-wrapped modules
+                remapped_snapshot = {}
+                for key, value in snapshot_state_dict.items():
+                    # Check if this key should be remapped to a base_layer version
+                    if key.endswith(".weight") or key.endswith(".bias"):
+                        # Try both suffixes
+                        for suffix in [".weight", ".bias"]:
+                            if key.endswith(suffix):
+                                base_layer_key = key.replace(suffix, f".base_layer{suffix}")
+                                if base_layer_key in model_state_dict:
+                                    remapped_snapshot[base_layer_key] = value
+                                    break
+                        else:
+                            # No remapping needed, keep original key
+                            remapped_snapshot[key] = value
+                    else:
+                        remapped_snapshot[key] = value
+                
+                save_state_dict(remapped_snapshot, snapshot_path)
+
     # Dynamically convert between different weight formats if needed
     if has_hf_moe_layers(snapshot_state_dict) and has_tt_moe_layers(model_state_dict):
         logger.warning(
