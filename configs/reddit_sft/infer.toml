@@ -1,0 +1,7 @@
+[model]
+name = "cosmicoptima/GLM-4-32B-Base-32K"
+max_model_len = 2048
+
+[parallel]
+tp = 1
+
