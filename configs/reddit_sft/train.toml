@@ -48,6 +48,7 @@ seq_len = 2048
 
 [optim]
 lr = 1e-4
+max_norm = 0.2
 weight_decay = 0.0001
 
 [ckpt]
@@ -56,3 +57,9 @@ keep = 3
 
 [weights]
 interval = 50
+
+[scheduler]
+type = "linear"
+warmup_steps = 25
+decay_steps = 0
+min_lr = 0.0
