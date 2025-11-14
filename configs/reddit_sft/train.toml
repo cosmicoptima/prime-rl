@@ -1,4 +1,4 @@
-max_steps = 200
+max_steps = 800
 
 [model]
 name = "cosmicoptima/GLM-4-32B-Base-32K"
