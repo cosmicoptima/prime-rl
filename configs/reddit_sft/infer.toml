@@ -1,5 +1,5 @@
 [model]
-name = "outputs/weights/step_200/"
+name = "outputs/weights/step_800/"
 max_model_len = 2048
 
 [parallel]
