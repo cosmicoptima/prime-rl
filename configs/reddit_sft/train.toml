@@ -47,7 +47,7 @@ micro_batch_size = 8
 seq_len = 2048
 
 [optim]
-lr = 1e-4
+lr = 2e-4
 # max_norm = 0.2
 weight_decay = 0.0001
 
