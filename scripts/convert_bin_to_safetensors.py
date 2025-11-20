@@ -34,12 +34,44 @@ import argparse
 import json
 import os
 import shutil
+import sys
+import threading
+import time
 from pathlib import Path
 
 import torch
 from huggingface_hub import HfApi, HfFileSystem, create_repo, hf_hub_download
 from loguru import logger
 from safetensors.torch import save_file
+
+
+class ProgressIndicator:
+    """Shows progress dots while waiting for long operations."""
+
+    def __init__(self, message: str, interval: int = 30):
+        self.message = message
+        self.interval = interval
+        self.running = False
+        self.thread = None
+        self.start_time = None
+
+    def _run(self):
+        while self.running:
+            elapsed = int(time.time() - self.start_time)
+            logger.info(f"{self.message} (elapsed: {elapsed}s / {elapsed//60}m {elapsed%60}s)")
+            time.sleep(self.interval)
+
+    def __enter__(self):
+        self.running = True
+        self.start_time = time.time()
+        self.thread = threading.Thread(target=self._run, daemon=True)
+        self.thread.start()
+        return self
+
+    def __exit__(self, *args):
+        self.running = False
+        if self.thread:
+            self.thread.join(timeout=1)
 
 
 def convert_shard_by_shard(
@@ -78,6 +110,7 @@ def convert_shard_by_shard(
         return
 
     logger.info(f"Found {len(bin_files)} .bin file(s) to convert")
+    logger.info(f"Found {len(metadata_files)} metadata file(s) to copy")
 
     # Create target repo
     logger.info(f"Creating/updating repository: {target_repo}")
@@ -119,8 +152,9 @@ def convert_shard_by_shard(
             new_index = {"metadata": metadata, "weight_map": new_weight_map}
 
             # Convert each shard
-            for bin_file in sorted(set(weight_map.values())):
-                logger.info(f"Processing shard: {bin_file}")
+            for shard_idx, bin_file in enumerate(sorted(set(weight_map.values())), 1):
+                total_shards = len(set(weight_map.values()))
+                logger.info(f"Processing shard {shard_idx}/{total_shards}: {bin_file}")
 
                 # Download this shard only
                 logger.info(f"  Downloading {bin_file}...")
@@ -132,16 +166,29 @@ def convert_shard_by_shard(
                     local_dir_use_symlinks=False,
                 )
 
+                # Get file size for reference
+                file_size_gb = os.path.getsize(bin_path) / (1024**3)
+                logger.info(f"  File size: {file_size_gb:.2f} GB")
+
                 # Load and convert
-                logger.info(f"  Loading and converting...")
-                shard_state = torch.load(bin_path, map_location="cpu", weights_only=True)
+                logger.info(f"  Loading weights into memory (this may take several minutes)...")
+                load_start = time.time()
+                with ProgressIndicator("  Still loading weights...", interval=30):
+                    shard_state = torch.load(bin_path, map_location="cpu", weights_only=True)
+                load_time = time.time() - load_start
+                logger.info(f"  Loaded {len(shard_state)} tensors in {load_time:.1f}s ({load_time/60:.1f} min)")
 
                 # Generate safetensors filename
                 safetensors_file = bin_file.replace(".bin", ".safetensors")
 
                 # Save as safetensors
+                logger.info(f"  Converting to safetensors format...")
+                save_start = time.time()
                 safetensors_path = temp_dir / safetensors_file
-                save_file(shard_state, safetensors_path, metadata={"format": "pt"})
+                with ProgressIndicator("  Still converting...", interval=30):
+                    save_file(shard_state, safetensors_path, metadata={"format": "pt"})
+                save_time = time.time() - save_start
+                logger.info(f"  Saved in {save_time:.1f}s ({save_time/60:.1f} min)")
 
                 # Update weight map
                 for key, file in weight_map.items():
@@ -192,13 +239,27 @@ def convert_shard_by_shard(
                 local_dir_use_symlinks=False,
             )
 
+            # Get file size for reference
+            file_size_gb = os.path.getsize(bin_path) / (1024**3)
+            logger.info(f"File size: {file_size_gb:.2f} GB")
+
             # Load and convert
-            logger.info("Loading and converting...")
-            state_dict = torch.load(bin_path, map_location="cpu", weights_only=True)
+            logger.info("Loading weights into memory (this may take several minutes for large models)...")
+            logger.info("Progress updates will appear every 30 seconds...")
+            load_start = time.time()
+            with ProgressIndicator("Still loading weights...", interval=30):
+                state_dict = torch.load(bin_path, map_location="cpu", weights_only=True)
+            load_time = time.time() - load_start
+            logger.info(f"Loaded {len(state_dict)} tensors in {load_time:.1f}s ({load_time/60:.1f} minutes)")
 
             # Save as safetensors
+            logger.info("Converting to safetensors format (this may also take several minutes)...")
+            save_start = time.time()
             safetensors_path = temp_dir / "model.safetensors"
-            save_file(state_dict, safetensors_path, metadata={"format": "pt"})
+            with ProgressIndicator("Still converting...", interval=30):
+                save_file(state_dict, safetensors_path, metadata={"format": "pt"})
+            save_time = time.time() - save_start
+            logger.info(f"Saved in {save_time:.1f}s ({save_time/60:.1f} minutes)")
 
             # Upload
             logger.info("Uploading converted model...")
