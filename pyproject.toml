@@ -71,6 +71,7 @@ vf = [
     "reddit-infilling",
     "reddit-user-grouping",
     "bradley-terry",
+    "bradley-terry-judge-fmt",
 ]
 
 [tool.uv]
@@ -102,6 +103,7 @@ hle = { index = "primeintellect" }
 reddit-infilling = { workspace = true }
 reddit-user-grouping = { workspace = true }
 bradley-terry = { workspace = true }
+bradley-terry-judge-fmt = { workspace = true }
 
 [[tool.uv.index]]
 name = "primeintellect"
@@ -117,6 +119,7 @@ members = [
     "environments/vf_reddit_infilling",
     "environments/vf_reddit_user_grouping",
     "environments/vf_bradley_terry",
+    "environments/vf_bradley_terry_judge_fmt",
     "dataset_generation/self_actualization",
 ]
 
