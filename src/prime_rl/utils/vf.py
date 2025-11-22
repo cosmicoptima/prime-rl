@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 from collections import defaultdict
 from itertools import cycle
 from typing import TypedDict
@@ -89,14 +90,21 @@ async def generate_group(
 ) -> vf.GenerateOutputs:
     """Asynchronously generate and score rollouts for one problem."""
     semaphore = get_semaphore()
-    return await env.generate(
-        inputs=Dataset.from_list([problem] * rollouts_per_example),
-        client=client,
-        model=model_name,
-        sampling_args=sampling_args,
-        semaphore=semaphore,
-        use_tqdm=use_tqdm,
-    )
+    
+    # Build kwargs for env.generate()
+    generate_kwargs = {
+        "inputs": Dataset.from_list([problem] * rollouts_per_example),
+        "client": client,
+        "model": model_name,
+        "sampling_args": sampling_args,
+        "use_tqdm": use_tqdm,
+    }
+    
+    # Only pass semaphore if the method accepts it (for backwards compatibility with verifiers)
+    if "semaphore" in inspect.signature(env.generate).parameters:
+        generate_kwargs["semaphore"] = semaphore
+    
+    return await env.generate(**generate_kwargs)
 
 
 async def generate_batch(
