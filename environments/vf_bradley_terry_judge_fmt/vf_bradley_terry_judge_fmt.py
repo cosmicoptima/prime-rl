@@ -1,5 +1,5 @@
 import verifiers as vf
-from verifiers.parsers import Parser
+from verifiers.parsers.parser import Parser
 
 
 def render_example(example: dict) -> dict:
