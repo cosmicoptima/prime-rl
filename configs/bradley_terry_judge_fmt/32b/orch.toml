@@ -16,9 +16,10 @@ samples = true
 distributions = true
 interval = 2
 
-[environment]
+[[env]]
 id = "vf-bradley-terry-judge-fmt"
-[environment.args]
+
+[env.args]
 model_name = "cosmicoptima/Prathamavatsa"
 
 [sampling]
