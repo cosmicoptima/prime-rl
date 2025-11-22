@@ -4,8 +4,7 @@ max_steps = 1000
 project = "introspection-bradley-terry-judge-fmt"
 
 [model]
-name = "cosmicoptima/GLM-4-32B-Base-32K"
-#name = "cosmicoptima/Prathamavatsa"
+name = "cosmicoptima/sft-251116-safetensors"
 impl = "liger_kernel"
 
 [model.experimental.lora]
