@@ -1,5 +1,5 @@
 import verifiers as vf
-from verifiers.parsers.base import PassthroughParser
+from verifiers.parsers import Parser
 
 
 def render_example(example: dict) -> dict:
@@ -36,7 +36,7 @@ def load_environment(**kwargs) -> vf.Environment:
     dataset = load_dataset("cosmicoptima/self-steering-placeholder-data", split="train")
     dataset = dataset.map(render_example)
 
-    parser = PassthroughParser()
+    parser = Parser()
 
     def reward(completion, answer, **kwargs):
         text = " ".join(m.get("content", "") for m in completion if m.get("role") == "assistant")
