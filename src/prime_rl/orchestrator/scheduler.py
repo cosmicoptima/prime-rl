@@ -68,39 +68,106 @@ class Scheduler:
         self.update_weights_time, self.wait_for_ckpt_time = 0, 0
         self.sampling_args = get_sampling_args(config.sampling)
 
+    def _process_vllm_results(
+        self,
+        prompts: list[list[dict]],
+        completions: list[list[dict]],
+        states: list[dict],
+        rewards: list[float],
+    ) -> ProcessedOutputs:
+        """Process vLLM results into the format expected by the trainer.
+        
+        This replaces the removed verifiers.process_env_results_vllm method.
+        """
+        prompt_ids_list = []
+        prompt_mask_list = []
+        completion_ids_list = []
+        completion_mask_list = []
+        completion_logprobs_list = []
+        
+        for prompt_messages, completion_messages, state in zip(prompts, completions, states):
+            # Extract responses from state (vLLM API responses)
+            responses = state.get("responses", [])
+            if not responses:
+                raise ValueError("No responses found in state")
+            
+            # Get the response (should be single response for training)
+            response = responses[0]
+            
+            # Tokenize prompt
+            prompt_text = self.tokenizer.apply_chat_template(
+                prompt_messages,
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+            prompt_ids = self.tokenizer.encode(prompt_text, add_special_tokens=False)
+            
+            # Tokenize completion
+            completion_text = "".join([
+                msg.get("content", "") for msg in completion_messages 
+                if msg.get("role") == "assistant"
+            ])
+            completion_ids = self.tokenizer.encode(completion_text, add_special_tokens=False)
+            
+            # Extract logprobs from response
+            completion_logprobs = []
+            if hasattr(response, 'choices') and len(response.choices) > 0:
+                choice = response.choices[0]
+                if hasattr(choice, 'logprobs') and choice.logprobs:
+                    logprobs_content = choice.logprobs.get("content", []) if isinstance(choice.logprobs, dict) else []
+                    for logprob_item in logprobs_content:
+                        if isinstance(logprob_item, dict):
+                            completion_logprobs.append(logprob_item.get("logprob", 0.0))
+            
+            # If we couldn't extract logprobs, use zeros (shouldn't happen normally)
+            if not completion_logprobs:
+                completion_logprobs = [0.0] * len(completion_ids)
+            
+            # Truncate to max_seq_len
+            total_len = len(prompt_ids) + len(completion_ids)
+            if total_len > self.seq_len:
+                # Truncate completion to fit
+                max_completion_len = self.seq_len - len(prompt_ids)
+                completion_ids = completion_ids[:max_completion_len]
+                completion_logprobs = completion_logprobs[:max_completion_len]
+            
+            # Create masks (all 1s for now, can be refined based on config)
+            prompt_mask = [1] * len(prompt_ids)
+            completion_mask = [1] * len(completion_ids)
+            
+            # Handle masking config
+            if self.config.mask_truncated_completions and total_len > self.seq_len:
+                completion_mask = [0] * len(completion_ids)
+            if self.config.zero_truncated_completions and total_len > self.seq_len:
+                completion_logprobs = [0.0] * len(completion_ids)
+            
+            prompt_ids_list.append(prompt_ids)
+            prompt_mask_list.append(prompt_mask)
+            completion_ids_list.append(completion_ids)
+            completion_mask_list.append(completion_mask)
+            completion_logprobs_list.append(completion_logprobs)
+        
+        return ProcessedOutputs(
+            prompt_ids=prompt_ids_list,
+            prompt_mask=prompt_mask_list,
+            completion_ids=completion_ids_list,
+            completion_mask=completion_mask_list,
+            completion_logprobs=completion_logprobs_list,
+            rewards=rewards,
+        )
+
     def process_generate_outputs(
         self,
         generate_outputs: GenerateOutputs,
     ) -> list[Rollout]:
-        # Handle API change in verifiers - EnvGroup may not have process_env_results_vllm
-        if hasattr(self.env, 'process_env_results_vllm'):
-            processed_outputs: ProcessedOutputs = self.env.process_env_results_vllm(
-                prompts=generate_outputs.prompt,
-                completions=generate_outputs.completion,
-                states=generate_outputs.state,
-                rewards=generate_outputs.reward,
-                processing_class=self.tokenizer,
-                max_seq_len=self.seq_len,
-                mask_env_responses=self.config.mask_env_responses,
-                zero_truncated_completions=self.config.zero_truncated_completions,
-                mask_truncated_completions=self.config.mask_truncated_completions,
-            )
-        else:
-            # Fallback for newer verifiers versions - use the first environment's method
-            # This works because EnvGroup validates all envs have the same processing
-            import verifiers as vf
-            first_env = self.env.envs[0] if isinstance(self.env, vf.EnvGroup) else self.env
-            processed_outputs: ProcessedOutputs = first_env.process_env_results_vllm(
-                prompts=generate_outputs.prompt,
-                completions=generate_outputs.completion,
-                states=generate_outputs.state,
-                rewards=generate_outputs.reward,
-                processing_class=self.tokenizer,
-                max_seq_len=self.seq_len,
-                mask_env_responses=self.config.mask_env_responses,
-                zero_truncated_completions=self.config.zero_truncated_completions,
-                mask_truncated_completions=self.config.mask_truncated_completions,
-            )
+        # Handle API change in verifiers - process_env_results_vllm was removed in v0.1.8
+        # We need to process the results ourselves
+        processed_outputs: ProcessedOutputs = self._process_vllm_results(
+            prompts=generate_outputs.prompt,
+            completions=generate_outputs.completion,
+            states=generate_outputs.state,
+            rewards=generate_outputs.reward,
+        )
 
         # Compute advantages
         advantages = compute_advantages(
