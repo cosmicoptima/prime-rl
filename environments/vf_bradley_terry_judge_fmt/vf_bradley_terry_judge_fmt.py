@@ -35,7 +35,7 @@ Respond with only "A" or "B"."""
 
 def load_environment(**kwargs) -> vf.Environment:
     dataset = load_dataset("cosmicoptima/self-steering-placeholder-data", split="train")
-    dataset = dataset.map(render_example)
+    dataset = dataset.map(render_example, remove_columns=dataset.column_names)
 
     parser = Parser()
 
