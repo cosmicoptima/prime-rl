@@ -27,7 +27,7 @@ You generated both of these responses. Your pairwise preferences across multiple
 Respond with only "A" or "B"."""
 
     return {
-        "question": [{"role": "user", "content": question}],
+        "question": question,
         "answer": "",
         "task": "bradley-terry-judge-fmt",
     }
