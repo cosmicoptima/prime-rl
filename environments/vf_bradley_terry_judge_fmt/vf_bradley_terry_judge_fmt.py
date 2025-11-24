@@ -1,4 +1,4 @@
-from datasets import load_dataset
+from datasets import load_dataset, Features, Value
 import verifiers as vf
 from verifiers.parsers.parser import Parser
 
@@ -35,7 +35,19 @@ Respond with only "A" or "B"."""
 
 def load_environment(**kwargs) -> vf.Environment:
     dataset = load_dataset("cosmicoptima/self-steering-placeholder-data", split="train")
-    dataset = dataset.map(render_example, remove_columns=dataset.column_names)
+    
+    # Define explicit features for the mapped dataset
+    mapped_features = Features({
+        "question": Value("string"),
+        "answer": Value("string"),
+        "task": Value("string"),
+    })
+    
+    dataset = dataset.map(
+        render_example,
+        remove_columns=dataset.column_names,
+        features=mapped_features,
+    )
 
     parser = Parser()
 
