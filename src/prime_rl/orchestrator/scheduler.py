@@ -72,17 +72,35 @@ class Scheduler:
         self,
         generate_outputs: GenerateOutputs,
     ) -> list[Rollout]:
-        processed_outputs: ProcessedOutputs = self.env.process_env_results_vllm(
-            prompts=generate_outputs.prompt,
-            completions=generate_outputs.completion,
-            states=generate_outputs.state,
-            rewards=generate_outputs.reward,
-            processing_class=self.tokenizer,
-            max_seq_len=self.seq_len,
-            mask_env_responses=self.config.mask_env_responses,
-            zero_truncated_completions=self.config.zero_truncated_completions,
-            mask_truncated_completions=self.config.mask_truncated_completions,
-        )
+        # Handle API change in verifiers - EnvGroup may not have process_env_results_vllm
+        if hasattr(self.env, 'process_env_results_vllm'):
+            processed_outputs: ProcessedOutputs = self.env.process_env_results_vllm(
+                prompts=generate_outputs.prompt,
+                completions=generate_outputs.completion,
+                states=generate_outputs.state,
+                rewards=generate_outputs.reward,
+                processing_class=self.tokenizer,
+                max_seq_len=self.seq_len,
+                mask_env_responses=self.config.mask_env_responses,
+                zero_truncated_completions=self.config.zero_truncated_completions,
+                mask_truncated_completions=self.config.mask_truncated_completions,
+            )
+        else:
+            # Fallback for newer verifiers versions - use the first environment's method
+            # This works because EnvGroup validates all envs have the same processing
+            import verifiers as vf
+            first_env = self.env.envs[0] if isinstance(self.env, vf.EnvGroup) else self.env
+            processed_outputs: ProcessedOutputs = first_env.process_env_results_vllm(
+                prompts=generate_outputs.prompt,
+                completions=generate_outputs.completion,
+                states=generate_outputs.state,
+                rewards=generate_outputs.reward,
+                processing_class=self.tokenizer,
+                max_seq_len=self.seq_len,
+                mask_env_responses=self.config.mask_env_responses,
+                zero_truncated_completions=self.config.zero_truncated_completions,
+                mask_truncated_completions=self.config.mask_truncated_completions,
+            )
 
         # Compute advantages
         advantages = compute_advantages(
