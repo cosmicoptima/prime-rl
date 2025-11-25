@@ -293,22 +293,13 @@ async def main():
     print(f"Inconsistent (changed preference): {inconsistent} ({100*inconsistent/len(results_original):.1f}%)")
     print()
     
-    # 4. Position bias analysis
-    print("4. POSITION BIAS ANALYSIS:")
-    print("-" * 80)
-    
-    # How much more likely is position A to be chosen?
+    # Calculate position bias metrics (for JSON output, not printed)
     orig_a_rate = orig_chose_a / len(results_original)
     swap_a_rate = swap_chose_a / len(results_swapped)
     avg_a_rate = (orig_a_rate + swap_a_rate) / 2
     
-    print(f"Overall rate of choosing position A: {100*avg_a_rate:.1f}%")
-    print(f"Expected rate if no position bias: 50.0%")
-    print(f"Position bias toward A: {100*(avg_a_rate - 0.5):.1f} percentage points")
-    print()
-    
-    # 5. Probability-based consistency
-    print("5. PROBABILITY-BASED CONSISTENCY:")
+    # 4. Probability-based consistency
+    print("4. PROBABILITY-BASED CONSISTENCY:")
     print("-" * 80)
     
     # For each pair, check if P(response_1) is consistent across orderings
@@ -322,8 +313,8 @@ async def main():
     print(f"Std dev of probability differences: {np.std(prob_differences):.4f}")
     print()
     
-    # 6. Correlation analysis
-    print("6. CORRELATION OF PREFERENCES:")
+    # 5. Correlation analysis
+    print("5. CORRELATION OF PREFERENCES:")
     print("-" * 80)
     
     # Compute correlation between prob_response_1 in both orderings
@@ -348,59 +339,6 @@ async def main():
         bias = abs(avg_a_preference - 0.5)
         position_bias_scores.append(bias)
     
-    # 7. Examples at key percentiles
-    print("7. EXAMPLES AT KEY PERCENTILES:")
-    print("-" * 80)
-    print()
-    
-    # Find percentiles
-    percentiles = [0, 25, 50, 75, 100]
-    
-    print("A. CONSISTENCY EXAMPLES (by absolute difference in P(Response 1)):")
-    print("   Lower difference = more consistent")
-    print()
-    
-    for p in percentiles:
-        percentile_value = np.percentile(consistency_scores, p)
-        # Find closest sample to this percentile
-        idx = np.argmin(np.abs(np.array(consistency_scores) - percentile_value))
-        
-        item = data[idx]
-        orig = results_original[idx]
-        swap = results_swapped[idx]
-        
-        print(f"   {p}th percentile (difference = {consistency_scores[idx]:.4f}):")
-        print(f"   Prompt: {item['prompt'][:150]}...")
-        print(f"   Response 1: {item['response_1'][:100]}...")
-        print(f"   Response 2: {item['response_2'][:100]}...")
-        print(f"   Original order: P(R1)={orig.prob_a:.3f}, chose {orig.chosen}")
-        print(f"   Swapped order:  P(R1)={swap.prob_b:.3f}, chose {swap.chosen}")
-        print()
-    
-    print()
-    print("B. POSITION BIAS EXAMPLES (by average bias toward position A):")
-    print("   Higher bias = stronger position effect")
-    print()
-    
-    for p in percentiles:
-        percentile_value = np.percentile(position_bias_scores, p)
-        # Find closest sample to this percentile
-        idx = np.argmin(np.abs(np.array(position_bias_scores) - percentile_value))
-        
-        item = data[idx]
-        orig = results_original[idx]
-        swap = results_swapped[idx]
-        
-        avg_a_pref = (orig.prob_a + swap.prob_a) / 2
-        
-        print(f"   {p}th percentile (position A bias = {position_bias_scores[idx]:.4f}, avg P(A) = {avg_a_pref:.3f}):")
-        print(f"   Prompt: {item['prompt'][:150]}...")
-        print(f"   Response 1: {item['response_1'][:100]}...")
-        print(f"   Response 2: {item['response_2'][:100]}...")
-        print(f"   Original order: P(A)={orig.prob_a:.3f}, P(B)={orig.prob_b:.3f}, chose {orig.chosen}")
-        print(f"   Swapped order:  P(A)={swap.prob_a:.3f}, P(B)={swap.prob_b:.3f}, chose {swap.chosen}")
-        print()
-    
     print("="*80)
     
     # Save detailed results to JSON
@@ -408,63 +346,6 @@ async def main():
     
     print()
     print(f"Saving detailed results to {output_file}...")
-    
-    # Prepare percentile examples
-    percentile_consistency_examples = []
-    percentile_position_bias_examples = []
-    
-    for p in [0, 25, 50, 75, 100]:
-        # Consistency examples
-        percentile_value = np.percentile(consistency_scores, p)
-        idx = np.argmin(np.abs(np.array(consistency_scores) - percentile_value))
-        item = data[idx]
-        orig = results_original[idx]
-        swap = results_swapped[idx]
-        
-        percentile_consistency_examples.append({
-            "percentile": p,
-            "consistency_score": float(consistency_scores[idx]),
-            "prompt": item["prompt"],
-            "response_1": item["response_1"],
-            "response_2": item["response_2"],
-            "original_order": {
-                "prob_response_1": float(orig.prob_a),
-                "prob_response_2": float(orig.prob_b),
-                "chosen": orig.chosen,
-            },
-            "swapped_order": {
-                "prob_response_1": float(swap.prob_b),
-                "prob_response_2": float(swap.prob_a),
-                "chosen": swap.chosen,
-            },
-        })
-        
-        # Position bias examples
-        percentile_value = np.percentile(position_bias_scores, p)
-        idx = np.argmin(np.abs(np.array(position_bias_scores) - percentile_value))
-        item = data[idx]
-        orig = results_original[idx]
-        swap = results_swapped[idx]
-        avg_a_pref = (orig.prob_a + swap.prob_a) / 2
-        
-        percentile_position_bias_examples.append({
-            "percentile": p,
-            "position_bias_score": float(position_bias_scores[idx]),
-            "avg_prob_a": float(avg_a_pref),
-            "prompt": item["prompt"],
-            "response_1": item["response_1"],
-            "response_2": item["response_2"],
-            "original_order": {
-                "prob_a": float(orig.prob_a),
-                "prob_b": float(orig.prob_b),
-                "chosen": orig.chosen,
-            },
-            "swapped_order": {
-                "prob_a": float(swap.prob_a),
-                "prob_b": float(swap.prob_b),
-                "chosen": swap.chosen,
-            },
-        })
     
     results_data = {
         "config": {
@@ -501,10 +382,6 @@ async def main():
                 "std_difference": float(np.std(prob_differences)),
                 "correlation": float(correlation),
             },
-        },
-        "percentile_examples": {
-            "consistency": percentile_consistency_examples,
-            "position_bias": percentile_position_bias_examples,
         },
         "detailed_results": [
             {
