@@ -1,6 +1,7 @@
 .vscode/*
 *.ipynb
 *.jsonl
+!dataset_generation/test/preference_pairs_hf.jsonl
 configs/endpoints.py
 
 # Artifacts
