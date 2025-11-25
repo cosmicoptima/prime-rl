@@ -29,11 +29,14 @@ The script:
 
 ## Usage
 
-Run the script from the project root:
+**Important:** Run the script from the project root directory (`prime-rl/`):
 
 ```bash
+cd /path/to/prime-rl
 python scripts/analyze_bradley_terry_preferences.py
 ```
+
+The script uses relative paths, so it must be run from the project root.
 
 ## Configuration
 
@@ -41,7 +44,7 @@ You can modify these variables at the top of the `main()` function:
 
 - `API_BASE`: URL of the vLLM server (default: `http://localhost:8000/v1`)
 - `MODEL_NAME`: Name of the model to query (default: `cosmicoptima/sft-251116-safetensors`)
-- `DATA_PATH`: Path to the JSONL file with preference pairs
+- `DATA_PATH`: Relative path to the JSONL file (default: `dataset_generation/test/preference_pairs_hf.jsonl`)
 - `SAMPLE_LIMIT`: Number of samples to process (default: 100 for testing, set to `None` for all)
 
 ## Output

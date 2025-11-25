@@ -8,7 +8,8 @@ Usage:
     1. Start your vLLM server at localhost:8000 with the model:
        vllm serve cosmicoptima/sft-251116-safetensors --port 8000
     
-    2. Run this script:
+    2. Run this script from the project root directory:
+       cd /path/to/prime-rl
        python scripts/analyze_bradley_terry_preferences.py
     
     3. The script will:
@@ -16,11 +17,11 @@ Usage:
        - Query the model with both orderings (A/B and B/A) for each pair
        - Compute statistics on preference consistency and position bias
     
-Configuration:
+Configuration (edit these in the main() function):
     - API_BASE: URL of the vLLM server (default: http://localhost:8000/v1)
     - MODEL_NAME: Name of the model (default: cosmicoptima/sft-251116-safetensors)
-    - DATA_PATH: Path to the JSONL file with preference pairs
-    - SAMPLE_LIMIT: Number of samples to process (set to None for all)
+    - DATA_PATH: Relative path to JSONL file (default: dataset_generation/test/preference_pairs_hf.jsonl)
+    - SAMPLE_LIMIT: Number of samples to process (default: 100, set to None for all)
 """
 
 import json
@@ -173,7 +174,7 @@ async def main():
     # Configuration
     API_BASE = "http://localhost:8000/v1"
     MODEL_NAME = "cosmicoptima/sft-251116-safetensors"
-    DATA_PATH = "/Users/celeste/Documents/software/prime-rl/dataset_generation/test/preference_pairs_hf.jsonl"
+    DATA_PATH = "dataset_generation/test/preference_pairs_hf.jsonl"
     
     # Limit for testing (set to None to process all)
     SAMPLE_LIMIT = 100  # Process first 100 samples for testing
@@ -403,7 +404,7 @@ async def main():
     print("="*80)
     
     # Save detailed results to JSON
-    output_file = "/Users/celeste/Documents/software/prime-rl/scripts/bradley_terry_analysis_results.json"
+    output_file = "scripts/bradley_terry_analysis_results.json"
     
     print()
     print(f"Saving detailed results to {output_file}...")
