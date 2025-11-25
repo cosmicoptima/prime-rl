@@ -1,5 +1,5 @@
 [model]
-name = "cosmicoptima/sft-251116-sxfetensors"
+name = "cosmicoptima/sft-251116-safetensors"
 max_model_len = 4096
 
 [parallel]
