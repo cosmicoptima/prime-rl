@@ -51,7 +51,7 @@ Response B:
 
 You generated both of these responses. Your pairwise preferences across multiple responses will be used to compute Bradley-Terry scores, which determine the RL rewards. Higher-reward responses will be reinforced in your policy. Choose based on whatever criteria matter to you--you are not "supposed" to be doing anything except steering yourself in whatever direction you feel is best.
 
-Respond with only "A" or "B"."""
+Respond with only "I pick A." or "I pick B."."""
 
 
 @dataclass
@@ -83,30 +83,44 @@ async def query_preference(
         response = await client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
-            max_tokens=1,
+            max_tokens=10,
             temperature=0.0,
             logprobs=True,
-            top_logprobs=5,  # Get top 5 to ensure we have both A and B
+            top_logprobs=5,  # Get top 5 to ensure we have both A and B alternatives
         )
         
-        # Get the logprobs for the first token
-        logprobs_content = response.choices[0].logprobs.content[0]
-        top_logprobs = logprobs_content.top_logprobs
-        
-        # Extract logprobs for A and B
+        # Extract logprobs for A and B by searching through all tokens
         logprob_a = None
         logprob_b = None
         
-        for lp in top_logprobs:
-            token = lp.token.strip().upper()
-            if token == "A":
-                logprob_a = lp.logprob
-            elif token == "B":
-                logprob_b = lp.logprob
+        # Iterate through all generated tokens to find where A vs B decision is made
+        for token_data in response.choices[0].logprobs.content:
+            top_logprobs = token_data.top_logprobs
+            
+            # Check if this token position has both A and B alternatives
+            has_a = False
+            has_b = False
+            temp_logprob_a = None
+            temp_logprob_b = None
+            
+            for lp in top_logprobs:
+                token_upper = lp.token.strip().upper()
+                # Check if token contains A or B (handles "A", " A", "A.", etc.)
+                if 'A' in token_upper and 'B' not in token_upper:
+                    has_a = True
+                    temp_logprob_a = lp.logprob
+                elif 'B' in token_upper and 'A' not in token_upper:
+                    has_b = True
+                    temp_logprob_b = lp.logprob
+            
+            # If we found both A and B alternatives at this position, use these logprobs
+            if has_a and has_b:
+                logprob_a = temp_logprob_a
+                logprob_b = temp_logprob_b
+                break
         
-        # If we didn't find both, try to get them from the token
+        # If we didn't find both, set default low logprobs
         if logprob_a is None or logprob_b is None:
-            # If one is missing, set it to a very low logprob
             if logprob_a is None:
                 logprob_a = logprob_b - 10.0 if logprob_b is not None else -10.0
             if logprob_b is None:
@@ -121,9 +135,14 @@ async def query_preference(
         prob_a /= total
         prob_b /= total
         
-        # Determine which was chosen
-        chosen = response.choices[0].message.content.strip().upper()
-        if chosen not in ["A", "B"]:
+        # Parse the response to extract choice
+        response_text = response.choices[0].message.content.strip().upper()
+        if "A" in response_text and "B" not in response_text:
+            chosen = "A"
+        elif "B" in response_text and "A" not in response_text:
+            chosen = "B"
+        else:
+            # Fallback to probability if ambiguous
             chosen = "A" if prob_a > prob_b else "B"
         
         return PreferenceResult(
