@@ -34,5 +34,5 @@ max_norm = 0.02
 weight_decay = 0.001
 
 [ckpt]
-interval = 200
+interval = 5
 
