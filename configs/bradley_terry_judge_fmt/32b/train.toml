@@ -36,3 +36,5 @@ weight_decay = 0.001
 [ckpt]
 interval = 5
 
+[weights]
+save_format = "safetensors"
