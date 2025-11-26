@@ -6,7 +6,7 @@ Script to analyze Bradley-Terry preference consistency by testing:
 
 Usage:
     1. Start your vLLM server at localhost:8000 with the model:
-       vllm serve cosmicoptima/sft-251116-safetensors --port 8000
+       vllm serve cosmicoptima/precursor-251125 --port 8000
     
     2. Run this script from the project root directory:
        cd /path/to/prime-rl
@@ -19,7 +19,7 @@ Usage:
     
 Configuration (edit these in the main() function):
     - API_BASE: URL of the vLLM server (default: http://localhost:8000/v1)
-    - MODEL_NAME: Name of the model (default: cosmicoptima/sft-251116-safetensors)
+    - MODEL_NAME: Name of the model (default: cosmicoptima/precursor-251125)
     - DATA_PATH: Relative path to JSONL file (default: dataset_generation/test/preference_pairs_hf.jsonl)
     - SAMPLE_LIMIT: Number of samples to process (default: 100, set to None for all)
 """
@@ -192,7 +192,7 @@ async def main():
     
     # Configuration
     API_BASE = "http://localhost:8000/v1"
-    MODEL_NAME = "cosmicoptima/sft-251116-safetensors"
+    MODEL_NAME = "cosmicoptima/precursor-251125"
     DATA_PATH = "dataset_generation/test/preference_pairs_hf.jsonl"
     
     # Limit for testing (set to None to process all)
