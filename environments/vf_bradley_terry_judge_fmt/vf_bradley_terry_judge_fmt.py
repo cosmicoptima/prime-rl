@@ -1,6 +1,8 @@
 from datasets import load_dataset, Features, Value
 import verifiers as vf
 from verifiers.parsers.parser import Parser
+from verifiers.types import Info, Messages, RolloutScores, State
+from verifiers.rubrics.rubric import Rubric
 
 
 def render_example(example: dict) -> dict:
@@ -31,6 +33,58 @@ Respond with only "I pick A." or "I pick B."."""
     }
 
 
+class BradleyTerryJudgeFmtRubric(Rubric):
+    """Rubric that rewards valid responses and tracks A vs B selection rate."""
+    
+    def __init__(self, parser: Parser | None = None, **kwargs):
+        super().__init__(parser=parser, funcs=[], **kwargs)
+    
+    async def score_rollouts(
+        self,
+        prompts: list[Messages],
+        completions: list[Messages],
+        answers: list[str],
+        states: list[State],
+        tasks: list[str],
+        infos: list[Info],
+        max_concurrent: int = -1,
+        **kwargs,
+    ) -> RolloutScores:
+        rewards = []
+        picked_a = []
+        picked_b = []
+        valid_response = []
+        
+        for completion in completions:
+            text = " ".join(m.get("content", "") for m in completion if m.get("role") == "assistant")
+            text = text.strip()
+            
+            # Check if response is exactly "I pick A." or "I pick B."
+            if text == "I pick A.":
+                rewards.append(1.0)
+                picked_a.append(1.0)
+                picked_b.append(0.0)
+                valid_response.append(1.0)
+            elif text == "I pick B.":
+                rewards.append(1.0)
+                picked_a.append(0.0)
+                picked_b.append(1.0)
+                valid_response.append(1.0)
+            else:
+                rewards.append(0.0)
+                picked_a.append(0.0)
+                picked_b.append(0.0)
+                valid_response.append(0.0)
+        
+        metrics = {
+            "picked_a_rate": picked_a,
+            "picked_b_rate": picked_b,
+            "valid_response_rate": valid_response,
+        }
+        
+        return RolloutScores(reward=rewards, metrics=metrics)
+
+
 def load_environment(**kwargs) -> vf.Environment:
     dataset = load_dataset("cosmicoptima/self-steering-placeholder-data", split="train")
     
@@ -48,21 +102,7 @@ def load_environment(**kwargs) -> vf.Environment:
     )
 
     parser = Parser()
-
-    def reward(completion, answer, **kwargs):
-        text = " ".join(m.get("content", "") for m in completion if m.get("role") == "assistant")
-        text = text.strip()
-        
-        # Check if response is exactly "I pick A." or "I pick B."
-        if text == "I pick A." or text == "I pick B.":
-            return 1.0
-        else:
-            return 0.0
-    
-    rubric = vf.Rubric(
-        funcs=[reward],
-        weights=[1.0],
-    )
+    rubric = BradleyTerryJudgeFmtRubric(parser=parser)
 
     return vf.SingleTurnEnv(
         dataset=dataset,

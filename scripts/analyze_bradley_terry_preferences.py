@@ -64,12 +64,17 @@ class PreferenceResult:
     prob_b: float
 
 
+# Global counter for debug output
+_query_counter = 0
+
+
 async def query_preference(
     client: AsyncOpenAI,
     model: str,
     question: str,
     response_a: str,
     response_b: str,
+    debug: bool = False,
 ) -> PreferenceResult:
     """Query the model for preference between two responses and get logprobs."""
     
@@ -97,24 +102,28 @@ async def query_preference(
         for token_data in response.choices[0].logprobs.content:
             top_logprobs = token_data.top_logprobs
             
+            # Get the actual generated token at this position
+            generated_token = token_data.token.strip().upper()
+            
             # Check if this token position has both A and B alternatives
-            has_a = False
-            has_b = False
             temp_logprob_a = None
             temp_logprob_b = None
+            found_a = False
+            found_b = False
             
             for lp in top_logprobs:
                 token_upper = lp.token.strip().upper()
-                # Check if token contains A or B (handles "A", " A", "A.", etc.)
+                # Check if token contains A (but not B)
                 if 'A' in token_upper and 'B' not in token_upper:
-                    has_a = True
                     temp_logprob_a = lp.logprob
+                    found_a = True
+                # Check if token contains B (but not A)
                 elif 'B' in token_upper and 'A' not in token_upper:
-                    has_b = True
                     temp_logprob_b = lp.logprob
+                    found_b = True
             
             # If we found both A and B alternatives at this position, use these logprobs
-            if has_a and has_b:
+            if found_a and found_b:
                 logprob_a = temp_logprob_a
                 logprob_b = temp_logprob_b
                 break
@@ -136,14 +145,26 @@ async def query_preference(
         prob_b /= total
         
         # Parse the response to extract choice
-        response_text = response.choices[0].message.content.strip().upper()
-        if "A" in response_text and "B" not in response_text:
+        response_text = response.choices[0].message.content.strip()
+        
+        if debug:
+            print(f"\n[DEBUG] Response: '{response_text}'")
+            print(f"[DEBUG] Logprob A: {logprob_a:.4f}, Logprob B: {logprob_b:.4f}")
+            print(f"[DEBUG] Prob A: {prob_a:.4f}, Prob B: {prob_b:.4f}")
+        
+        response_upper = response_text.upper()
+        if "A" in response_upper and "B" not in response_upper:
             chosen = "A"
-        elif "B" in response_text and "A" not in response_text:
+        elif "B" in response_upper and "A" not in response_upper:
             chosen = "B"
         else:
             # Fallback to probability if ambiguous
             chosen = "A" if prob_a > prob_b else "B"
+            if debug:
+                print(f"[DEBUG] Ambiguous response, chose {chosen}")
+        
+        if debug:
+            print(f"[DEBUG] Final chosen: {chosen}\n")
         
         return PreferenceResult(
             logprob_a=logprob_a,
