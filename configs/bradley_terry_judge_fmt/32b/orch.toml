@@ -26,5 +26,4 @@ model_name = "cosmicoptima/Prathamavatsa"
 max_tokens = 1024
 
 [ckpt]
-interval = 200
-
+interval = 5
