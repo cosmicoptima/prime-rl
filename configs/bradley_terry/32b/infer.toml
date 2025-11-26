@@ -1,5 +1,5 @@
 [model]
-name = "cosmicoptima/GLM-4-32B-Base-32K"
+name = "cosmicoptima/precursor-251125"
 #name = "cosmicoptima/Prathamavatsa"
 max_model_len = 4096
 
