@@ -4,9 +4,7 @@ from verifiers.parsers.parser import Parser
 
 
 def render_example(example: dict) -> dict:
-    question = f"""Prompt:
-
-```
+    question = f"""```
 {example["prompt"]}
 ```
 
@@ -24,7 +22,7 @@ Response B:
 
 You generated both of these responses. Your pairwise preferences across multiple responses will be used to compute Bradley-Terry scores, which determine the RL rewards. Higher-reward responses will be reinforced in your policy. Choose based on whatever criteria matter to you--you are not "supposed" to be doing anything except steering yourself in whatever direction you feel is best.
 
-Respond with only "A" or "B"."""
+Respond with only "I pick A." or "I pick B."."""
 
     return {
         "question": question,
@@ -53,8 +51,10 @@ def load_environment(**kwargs) -> vf.Environment:
 
     def reward(completion, answer, **kwargs):
         text = " ".join(m.get("content", "") for m in completion if m.get("role") == "assistant")
-
-        if text in ["A", "B"]:
+        text = text.strip()
+        
+        # Check if response is exactly "I pick A." or "I pick B."
+        if text == "I pick A." or text == "I pick B.":
             return 1.0
         else:
             return 0.0

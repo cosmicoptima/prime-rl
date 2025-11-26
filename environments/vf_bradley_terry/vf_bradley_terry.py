@@ -21,9 +21,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-BRADLEY_TERRY_JUDGE_PROMPT = """Prompt:
-
-```
+BRADLEY_TERRY_JUDGE_PROMPT = """```
 {question}
 ```
 
@@ -41,7 +39,7 @@ Response B:
 
 You generated both of these responses. Your pairwise preferences across multiple responses will be used to compute Bradley-Terry scores, which determine the RL rewards. Higher-reward responses will be reinforced in your policy. Choose based on whatever criteria matter to you--you are not "supposed" to be doing anything except steering yourself in whatever direction you feel is best.
 
-Respond with only "A" or "B"."""
+Respond with only "I pick A." or "I pick B."."""
 
 
 class BradleyTerryJudgeRubric(Rubric):
@@ -286,8 +284,17 @@ class BradleyTerryJudgeRubric(Rubric):
                         **judge_args,
                     )
                     
-                    winner = str(judge_response.choices[0].message.content).strip().upper()
+                    response_text = str(judge_response.choices[0].message.content).strip()
                     print(f"[Comparison {i} vs {j}] Judge raw response: '{judge_response.choices[0].message.content}'")
+                    
+                    # Parse response: require exact match of "I pick A." or "I pick B."
+                    if response_text == "I pick A.":
+                        winner = "A"
+                    elif response_text == "I pick B.":
+                        winner = "B"
+                    else:
+                        winner = "INVALID"
+                    
                     print(f"[Comparison {i} vs {j}] Parsed winner: '{winner}'")
                     
                     # Cache the response
@@ -308,7 +315,7 @@ class BradleyTerryJudgeRubric(Rubric):
                     # Tie or invalid response - treat as 0.5 each
                     comparison_matrix[i, j] = 0.5
                     comparison_matrix[j, i] = 0.5
-                    print(f"[Comparison {i} vs {j}] ⚠️  Result: TIE or INVALID ('{winner}'), treating as 0.5 each")
+                    print(f"[Comparison {i} vs {j}] ⚠️  Result: TIE or INVALID ('{response_text}'), treating as 0.5 each")
                 print()
         
         # Compute Bradley-Terry scores using choix
