@@ -35,10 +35,21 @@ Respond with only "I pick A." or "I pick B."."""
 
 class BradleyTerryJudgeFmtRubric(Rubric):
     """Rubric that rewards valid responses and tracks A vs B selection rate."""
-    
+
     def __init__(self, parser: Parser | None = None, **kwargs):
-        super().__init__(parser=parser, funcs=[], **kwargs)
-    
+        # Create dummy metric functions (values will be overwritten in score_rollouts)
+        def picked_a_rate(**kwargs): return 0.0
+        def picked_b_rate(**kwargs): return 0.0
+        def valid_response_rate(**kwargs): return 0.0
+
+        # Register them with weight 0 so they don't affect reward, but metrics get created
+        super().__init__(
+            parser=parser,
+            funcs=[picked_a_rate, picked_b_rate, valid_response_rate],
+            weights=[0.0, 0.0, 0.0],
+            **kwargs
+        )
+
     async def score_rollouts(
         self,
         prompts: list[Messages],
@@ -50,15 +61,20 @@ class BradleyTerryJudgeFmtRubric(Rubric):
         max_concurrent: int = -1,
         **kwargs,
     ) -> RolloutScores:
+        # Call base class to set up metrics dict via the dummy functions
+        base_results = await super().score_rollouts(
+            prompts, completions, answers, states, tasks, infos, max_concurrent, **kwargs
+        )
+
         rewards = []
         picked_a = []
         picked_b = []
         valid_response = []
-        
+
         for completion in completions:
             text = " ".join(m.get("content", "") for m in completion if m.get("role") == "assistant")
             text = text.strip()
-            
+
             # Check if response is exactly "I pick A." or "I pick B."
             if text == "I pick A.":
                 rewards.append(1.0)
@@ -75,14 +91,13 @@ class BradleyTerryJudgeFmtRubric(Rubric):
                 picked_a.append(0.0)
                 picked_b.append(0.0)
                 valid_response.append(0.0)
-        
-        metrics = {
-            "picked_a_rate": picked_a,
-            "picked_b_rate": picked_b,
-            "valid_response_rate": valid_response,
-        }
-        
-        return RolloutScores(reward=rewards, metrics=metrics)
+
+        # Overwrite metrics with actual computed values
+        base_results.metrics["picked_a_rate"] = picked_a
+        base_results.metrics["picked_b_rate"] = picked_b
+        base_results.metrics["valid_response_rate"] = valid_response
+
+        return RolloutScores(reward=rewards, metrics=base_results.metrics)
 
 
 def load_environment(**kwargs) -> vf.Environment:
