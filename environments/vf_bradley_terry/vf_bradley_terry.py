@@ -267,30 +267,25 @@ class BradleyTerryJudgeRubric(Rubric):
                     if "max_completion_tokens" in judge_args and judge_args["max_completion_tokens"] is None:
                         judge_args.pop("max_completion_tokens")
                     judge_args = {k: v for k, v in judge_args.items() if v is not None}
-                    
+
+                    # Stop at period to save tokens
+                    judge_args["stop"] = ["."]
+
                     print(f"[Comparison {i} vs {j}] Calling judge with model={judge_model}")
-                    #print(f"[Comparison {i} vs {j}] Response A preview: {responses[i][:100]}...")
-                    #print(f"[Comparison {i} vs {j}] Response B preview: {responses[j][:100]}...")
-                    
-                    # judge_response = await maybe_await(
-                    #     judge_client.chat.completions.create,
-                    #     model=judge_model,
-                    #     messages=[{"role": "user", "content": judge_prompt}],
-                    #     **judge_args,
-                    # )
+
                     judge_response = judge_client.chat.completions.create(
                         model=judge_model,
                         messages=[{"role": "user", "content": judge_prompt}],
                         **judge_args,
                     )
-                    
+
                     response_text = str(judge_response.choices[0].message.content).strip()
-                    print(f"[Comparison {i} vs {j}] Judge raw response: '{judge_response.choices[0].message.content}'")
-                    
-                    # Parse response: require exact match of "I pick A." or "I pick B."
-                    if response_text == "I pick A.":
+                    print(f"[Comparison {i} vs {j}] Judge raw response: '{response_text}'")
+
+                    # Parse response: check if it ends with "I pick A" or "I pick B"
+                    if response_text.endswith("I pick A"):
                         winner = "A"
-                    elif response_text == "I pick B.":
+                    elif response_text.endswith("I pick B"):
                         winner = "B"
                     else:
                         winner = "INVALID"
