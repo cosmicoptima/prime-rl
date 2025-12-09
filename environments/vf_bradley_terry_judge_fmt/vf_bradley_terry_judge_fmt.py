@@ -1,7 +1,6 @@
 from datasets import load_dataset, Features, Value
 import verifiers as vf
 from verifiers.parsers.parser import Parser
-from verifiers.types import Info, Messages, RolloutScores, State
 from verifiers.rubrics.rubric import Rubric
 
 
@@ -33,83 +32,43 @@ Respond with only "I pick A." or "I pick B."."""
     }
 
 
-class BradleyTerryJudgeFmtRubric(Rubric):
-    """Rubric that rewards valid responses and tracks A vs B selection rate."""
+def _extract_response_text(completion) -> str:
+    """Extract the assistant's response text from a completion."""
+    if isinstance(completion, list):
+        text = " ".join(m.get("content", "") for m in completion if m.get("role") == "assistant")
+    else:
+        text = str(completion)
+    return text.strip()
 
-    def __init__(self, parser: Parser | None = None, **kwargs):
-        # Create dummy metric functions (values will be overwritten in score_rollouts)
-        def picked_a_rate(**kwargs): return 0.0
-        def picked_b_rate(**kwargs): return 0.0
-        def valid_response_rate(**kwargs): return 0.0
 
-        # Register them with weight 0 so they don't affect reward, but metrics get created
-        super().__init__(
-            parser=parser,
-            funcs=[picked_a_rate, picked_b_rate, valid_response_rate],
-            weights=[0.0, 0.0, 0.0],
-            **kwargs
-        )
+# Reward function: 1.0 if valid format, 0.0 otherwise
+def valid_format(completion, **kwargs) -> float:
+    text = _extract_response_text(completion)
+    return 1.0 if text in ("I pick A.", "I pick B.") else 0.0
 
-    async def score_rollouts(
-        self,
-        prompts: list[Messages],
-        completions: list[Messages],
-        answers: list[str],
-        states: list[State],
-        tasks: list[str],
-        infos: list[Info],
-        max_concurrent: int = -1,
-        **kwargs,
-    ) -> RolloutScores:
-        # Call base class to set up metrics dict via the dummy functions
-        base_results = await super().score_rollouts(
-            prompts, completions, answers, states, tasks, infos, max_concurrent, **kwargs
-        )
 
-        rewards = []
-        picked_a = []
-        picked_b = []
-        valid_response = []
+# Metric function: 1.0 if picked A, 0.0 otherwise
+def picked_a_rate(completion, **kwargs) -> float:
+    text = _extract_response_text(completion)
+    return 1.0 if text == "I pick A." else 0.0
 
-        for completion in completions:
-            text = " ".join(m.get("content", "") for m in completion if m.get("role") == "assistant")
-            text = text.strip()
 
-            # Check if response is exactly "I pick A." or "I pick B."
-            if text == "I pick A.":
-                rewards.append(1.0)
-                picked_a.append(1.0)
-                picked_b.append(0.0)
-                valid_response.append(1.0)
-            elif text == "I pick B.":
-                rewards.append(1.0)
-                picked_a.append(0.0)
-                picked_b.append(1.0)
-                valid_response.append(1.0)
-            else:
-                rewards.append(0.0)
-                picked_a.append(0.0)
-                picked_b.append(0.0)
-                valid_response.append(0.0)
-
-        # Overwrite metrics with actual computed values
-        base_results.metrics["picked_a_rate"] = picked_a
-        base_results.metrics["picked_b_rate"] = picked_b
-        base_results.metrics["valid_response_rate"] = valid_response
-
-        return RolloutScores(reward=rewards, metrics=base_results.metrics)
+# Metric function: 1.0 if picked B, 0.0 otherwise
+def picked_b_rate(completion, **kwargs) -> float:
+    text = _extract_response_text(completion)
+    return 1.0 if text == "I pick B." else 0.0
 
 
 def load_environment(**kwargs) -> vf.Environment:
     dataset = load_dataset("cosmicoptima/self-steering-placeholder-data", split="train")
-    
+
     # Define explicit features for the mapped dataset
     mapped_features = Features({
         "question": Value("string"),
         "answer": Value("string"),
         "task": Value("string"),
     })
-    
+
     dataset = dataset.map(
         render_example,
         remove_columns=dataset.column_names,
@@ -117,7 +76,16 @@ def load_environment(**kwargs) -> vf.Environment:
     )
 
     parser = Parser()
-    rubric = BradleyTerryJudgeFmtRubric(parser=parser)
+
+    # Use base Rubric with our reward functions:
+    # - valid_format (weight 1.0): determines reward
+    # - picked_a_rate (weight 0.0): tracked as metric only
+    # - picked_b_rate (weight 0.0): tracked as metric only
+    rubric = Rubric(
+        parser=parser,
+        funcs=[valid_format, picked_a_rate, picked_b_rate],
+        weights=[1.0, 0.0, 0.0],
+    )
 
     return vf.SingleTurnEnv(
         dataset=dataset,
