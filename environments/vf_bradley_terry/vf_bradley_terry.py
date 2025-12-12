@@ -59,7 +59,7 @@ class BradleyTerryJudgeRubric(Rubric):
         length_penalty_max_tokens: int = 1024,
         **kwargs,
     ):
-        logger.warning(f"[BT __init__] BradleyTerryJudgeRubric being created!")
+        print(f"[BT __init__] BradleyTerryJudgeRubric being created!", flush=True)
         super().__init__(parser=parser, funcs=[], **kwargs)
 
         self.client = client
@@ -116,7 +116,7 @@ class BradleyTerryJudgeRubric(Rubric):
         start_time = time.time()
 
         num_states = len(states)
-        logger.warning(f"[BT score_group] Called with {num_states} states")
+        print(f"[BT score_group] Called with {num_states} states", flush=True)
         if num_states == 0:
             return
 
@@ -125,7 +125,7 @@ class BradleyTerryJudgeRubric(Rubric):
         completions = [state["completion"] for state in states]
         answers = [state.get("answer", "") for state in states]
 
-        logger.warning(f"[BT score_group] First completion preview: {str(completions[0])[:200] if completions else 'None'}")
+        print(f"[BT score_group] First completion preview: {str(completions[0])[:200] if completions else 'None'}", flush=True)
 
         # Run the Bradley-Terry scoring logic
         rollout_scores = await self.score_rollouts(
@@ -137,8 +137,8 @@ class BradleyTerryJudgeRubric(Rubric):
             infos=[state.get("info", {}) for state in states],
         )
 
-        logger.warning(f"[BT score_group] Rewards: {rollout_scores.reward}")
-        logger.warning(f"[BT score_group] Metrics keys: {list(rollout_scores.metrics.keys())}")
+        print(f"[BT score_group] Rewards: {rollout_scores.reward}", flush=True)
+        print(f"[BT score_group] Metrics keys: {list(rollout_scores.metrics.keys())}", flush=True)
 
         # Update states with results
         end_time = time.time()
