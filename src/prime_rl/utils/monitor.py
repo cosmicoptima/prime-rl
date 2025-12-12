@@ -254,6 +254,55 @@ class WandbMonitor:
 
         wandb.log({f"samples_html": wandb.Html(html_content)}, step=step)
 
+    def setup_fixed_prompts(self, dataset: Any) -> None:
+        """Initialize fixed prompts by sampling from the dataset.
+
+        Should be called once at startup if fixed_prompts is configured without explicit prompts.
+        """
+        if (
+            not self.config
+            or not self.config.log_extras
+            or not self.config.log_extras.fixed_prompts
+        ):
+            return
+
+        fp_config = self.config.log_extras.fixed_prompts
+
+        # If explicit prompts provided, use those
+        if fp_config.prompts:
+            self._fixed_prompts = fp_config.prompts
+            return
+
+        # Sample prompts from dataset
+        rng = random.Random(fp_config.seed)
+        num_prompts = min(fp_config.num_prompts, len(dataset))
+        indices = rng.sample(range(len(dataset)), num_prompts)
+
+        self._fixed_prompts = []
+        for idx in indices:
+            example = dataset[idx]
+            # Handle different dataset formats
+            if "question" in example:
+                prompt = example["question"]
+            elif "prompt" in example:
+                prompt = example["prompt"]
+            elif "messages" in example:
+                # Chat format - extract user message
+                messages = example["messages"]
+                prompt = next((m["content"] for m in messages if m.get("role") == "user"), None)
+            else:
+                # Fallback: try to find any string field
+                prompt = None
+                for key, value in example.items():
+                    if isinstance(value, str) and len(value) > 10:
+                        prompt = value
+                        break
+
+            if prompt:
+                self._fixed_prompts.append(prompt)
+
+        self.logger.info(f"Sampled {len(self._fixed_prompts)} fixed prompts from dataset")
+
     async def log_fixed_prompts(
         self,
         client: AsyncOpenAI,
@@ -272,8 +321,11 @@ class WandbMonitor:
             not self.config
             or not self.config.log_extras
             or not self.config.log_extras.fixed_prompts
-            or not self.config.log_extras.fixed_prompts.prompts
         ):
+            return
+
+        # Check if prompts have been set up
+        if not hasattr(self, "_fixed_prompts") or not self._fixed_prompts:
             return
 
         fp_config = self.config.log_extras.fixed_prompts
@@ -283,7 +335,7 @@ class WandbMonitor:
         self.logger.info(f"Running fixed prompt evaluation at step {step}")
         start_time = time.time()
 
-        prompts = fp_config.prompts
+        prompts = self._fixed_prompts
         num_samples = fp_config.num_samples
 
         # Generate responses for each prompt

@@ -124,6 +124,9 @@ async def orchestrate(config: OrchestratorConfig):
     buffer = setup_buffer(dataset, config.buffer)
     val_buffer = setup_buffer(val_dataset, SimpleBufferConfig()) if val_dataset else None
 
+    # Setup fixed prompts for monitoring (samples from dataset if not explicitly provided)
+    monitor.setup_fixed_prompts(dataset)
+
     # Setup scheduler
     scheduler = Scheduler(
         clients=clients,

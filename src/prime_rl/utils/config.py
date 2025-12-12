@@ -91,11 +91,19 @@ class FixedPromptsConfig(BaseConfig):
     """Configures fixed prompt evaluation for tracking responses over time."""
 
     prompts: Annotated[
-        list[str],
+        list[str] | None,
         Field(
-            description="List of fixed prompts to evaluate at each interval.",
+            description="List of fixed prompts to evaluate. If None, prompts are randomly sampled from the dataset.",
         ),
-    ] = []
+    ] = None
+
+    num_prompts: Annotated[
+        int,
+        Field(
+            ge=1,
+            description="Number of prompts to sample from dataset (only used if prompts is None).",
+        ),
+    ] = 5
 
     interval: Annotated[
         int,
@@ -112,6 +120,13 @@ class FixedPromptsConfig(BaseConfig):
             description="Number of samples to generate per prompt.",
         ),
     ] = 4
+
+    seed: Annotated[
+        int,
+        Field(
+            description="Random seed for sampling prompts from dataset (ensures same prompts across runs).",
+        ),
+    ] = 42
 
 
 class LogExtrasConfig(BaseConfig):
