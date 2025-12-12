@@ -95,6 +95,7 @@ async def generate_group(
         model=model_name,
         sampling_args=sampling_args,
         max_concurrent=max_concurrent,
+        interleave_scoring=False,  # Required for group scoring (Bradley-Terry)
         use_tqdm=use_tqdm,
     )
 
