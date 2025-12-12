@@ -423,7 +423,7 @@ async def orchestrate(config: OrchestratorConfig):
         await monitor.log_fixed_prompts(
             client=clients[0],
             model=config.model.name,
-            sampling_args=get_sampling_args(config.sampling, config.client),
+            sampling_args=get_sampling_args(config.sampling),
             step=progress.step,
         )
 
