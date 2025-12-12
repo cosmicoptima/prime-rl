@@ -45,7 +45,7 @@ Respond with only "I pick A." or "I pick B."."""
 
 class BradleyTerryJudgeRubric(Rubric):
     """Rubric that uses Bradley-Terry ranking to score completions via pairwise comparisons."""
-    
+
     def __init__(
         self,
         prompt: str,
@@ -59,6 +59,7 @@ class BradleyTerryJudgeRubric(Rubric):
         length_penalty_max_tokens: int = 1024,
         **kwargs,
     ):
+        logger.warning(f"[BT __init__] BradleyTerryJudgeRubric being created!")
         super().__init__(parser=parser, funcs=[], **kwargs)
 
         self.client = client
