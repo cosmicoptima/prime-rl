@@ -88,13 +88,13 @@ async def generate_group(
     use_tqdm: bool = False,
 ) -> vf.GenerateOutputs:
     """Asynchronously generate and score rollouts for one problem."""
-    semaphore = get_semaphore()
+    max_concurrent = get_semaphore()._value if get_semaphore() else -1
     return await env.generate(
         inputs=Dataset.from_list([problem] * rollouts_per_example),
         client=client,
         model=model_name,
         sampling_args=sampling_args,
-        semaphore=semaphore,
+        max_concurrent=max_concurrent,
         use_tqdm=use_tqdm,
     )
 
