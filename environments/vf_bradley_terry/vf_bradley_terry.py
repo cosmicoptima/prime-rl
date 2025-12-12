@@ -296,28 +296,51 @@ class BradleyTerryJudgeRubric(Rubric):
 
         # Try to extract probability from logprobs
         prob_a = None
-        logprobs_content = judge_response.choices[0].logprobs
-        if logprobs_content and logprobs_content.content:
-            # Look for the token where A or B is decided
-            # The response format is "I pick A" or "I pick B", so look for A/B token
-            for token_logprob in logprobs_content.content:
-                token = token_logprob.token.strip()
-                if token in ("A", "B"):
-                    # Found the decision token, get logprobs for A and B
-                    top_logprobs = {t.token.strip(): t.logprob for t in token_logprob.top_logprobs}
+        logprobs_data = judge_response.choices[0].logprobs
 
-                    logprob_a = top_logprobs.get("A", float("-inf"))
-                    logprob_b = top_logprobs.get("B", float("-inf"))
+        # Handle both object and dict formats (vLLM returns dict)
+        if logprobs_data:
+            # Get content - handle both object attribute and dict key access
+            if isinstance(logprobs_data, dict):
+                logprobs_content = logprobs_data.get("content", [])
+            elif hasattr(logprobs_data, "content"):
+                logprobs_content = logprobs_data.content
+            else:
+                logprobs_content = []
 
-                    # Convert to probabilities via softmax
-                    if logprob_a > float("-inf") or logprob_b > float("-inf"):
-                        # Softmax over just A and B
-                        max_logprob = max(logprob_a, logprob_b)
-                        exp_a = np.exp(logprob_a - max_logprob)
-                        exp_b = np.exp(logprob_b - max_logprob)
-                        prob_a = exp_a / (exp_a + exp_b)
-                        print(f"[Comparison {cache_key}] Logprobs: A={logprob_a:.3f}, B={logprob_b:.3f} -> P(A)={prob_a:.3f}")
-                    break
+            if logprobs_content:
+                # Look for the token where A or B is decided
+                # The response format is "I pick A" or "I pick B", so look for A/B token
+                for token_logprob in logprobs_content:
+                    # Handle both object and dict formats
+                    if isinstance(token_logprob, dict):
+                        token = token_logprob.get("token", "").strip()
+                        top_logprobs_list = token_logprob.get("top_logprobs", [])
+                    else:
+                        token = token_logprob.token.strip()
+                        top_logprobs_list = token_logprob.top_logprobs
+
+                    if token in ("A", "B"):
+                        # Found the decision token, get logprobs for A and B
+                        top_logprobs = {}
+                        for t in top_logprobs_list:
+                            if isinstance(t, dict):
+                                top_logprobs[t.get("token", "").strip()] = t.get("logprob", float("-inf"))
+                            else:
+                                top_logprobs[t.token.strip()] = t.logprob
+
+                        logprob_a = top_logprobs.get("A", float("-inf"))
+                        logprob_b = top_logprobs.get("B", float("-inf"))
+
+                        # Convert to probabilities via softmax
+                        if logprob_a > float("-inf") or logprob_b > float("-inf"):
+                            # Softmax over just A and B
+                            max_logprob = max(logprob_a, logprob_b)
+                            exp_a = np.exp(logprob_a - max_logprob)
+                            exp_b = np.exp(logprob_b - max_logprob)
+                            prob_a = exp_a / (exp_a + exp_b)
+                            print(f"[Comparison {cache_key}] Logprobs: A={logprob_a:.3f}, B={logprob_b:.3f} -> P(A)={prob_a:.3f}")
+                        break
 
         # Fallback to hard decision if logprobs didn't work
         if prob_a is None:
