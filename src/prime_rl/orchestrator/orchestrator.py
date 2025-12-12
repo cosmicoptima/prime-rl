@@ -97,19 +97,27 @@ async def orchestrate(config: OrchestratorConfig):
     logger.info(
         f"Loading {len(config.env)} training environment(s) ({', '.join(env.name or env.id for env in config.env)})"
     )
-    env = vf.EnvGroup(
-        envs=[vf.load_environment(env.id, **env.args) for env in config.env],
-        env_names=[env.name or env.id for env in config.env],
-        map_kwargs=dict(writer_batch_size=1),  # Set defensively to not error on map operations on large datasets
-        env_mix_strategy=config.env_mix.strategy,
-        env_mix_kwargs=dict(
-            probabilities=config.env_mix.probabilities,
-            stopping_strategy=config.env_mix.stopping_strategy,
-            seed=config.env_mix.seed,
-        ),
-    )
-    dataset = env.get_dataset(seed=config.seed)
-    val_dataset = env.get_eval_dataset(seed=config.seed) if config.val else None
+    if len(config.env) == 1:
+        # Single env: use directly without EnvGroup wrapper
+        # This preserves group scoring behavior (e.g., Bradley-Terry)
+        env = vf.load_environment(config.env[0].id, **config.env[0].args)
+        dataset = env.get_dataset(seed=config.seed)
+        val_dataset = env.get_eval_dataset(seed=config.seed) if config.val else None
+    else:
+        # Multiple envs: use EnvGroup to mix them
+        env = vf.EnvGroup(
+            envs=[vf.load_environment(env.id, **env.args) for env in config.env],
+            env_names=[env.name or env.id for env in config.env],
+            map_kwargs=dict(writer_batch_size=1),  # Set defensively to not error on map operations on large datasets
+            env_mix_strategy=config.env_mix.strategy,
+            env_mix_kwargs=dict(
+                probabilities=config.env_mix.probabilities,
+                stopping_strategy=config.env_mix.stopping_strategy,
+                seed=config.env_mix.seed,
+            ),
+        )
+        dataset = env.get_dataset(seed=config.seed)
+        val_dataset = env.get_eval_dataset(seed=config.seed) if config.val else None
 
     # Setup buffer
     logger.info(f"Setting up buffer ({config.buffer})")
