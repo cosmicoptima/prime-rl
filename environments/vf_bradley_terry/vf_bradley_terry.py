@@ -1,3 +1,4 @@
+import time
 from itertools import groupby
 from typing import Any
 from datetime import datetime
@@ -106,6 +107,51 @@ class BradleyTerryJudgeRubric(Rubric):
             range_size = self.length_penalty_max_tokens - self.length_penalty_min_tokens
             penalty_amount = (token_count - self.length_penalty_min_tokens) / range_size
             return 1.0 - penalty_amount
+
+    async def score_group(self, states: list[State], score_sem):
+        """
+        Override score_group to use Bradley-Terry ranking.
+        """
+        start_time = time.time()
+
+        num_states = len(states)
+        if num_states == 0:
+            return
+
+        # Extract data from states
+        prompts = [state["prompt"] for state in states]
+        completions = [state["completion"] for state in states]
+        answers = [state.get("answer", "") for state in states]
+
+        # Run the Bradley-Terry scoring logic
+        rollout_scores = await self.score_rollouts(
+            prompts=prompts,
+            completions=completions,
+            answers=answers,
+            states=states,
+            tasks=[state.get("task", "") for state in states],
+            infos=[state.get("info", {}) for state in states],
+        )
+
+        # Update states with results
+        end_time = time.time()
+        scoring_ms = (end_time - start_time) * 1000
+        avg_reward = sum(rollout_scores.reward) / num_states if num_states > 0 else 0.0
+
+        for i, state in enumerate(states):
+            state["reward"] = rollout_scores.reward[i]
+            state["advantage"] = rollout_scores.reward[i] - avg_reward
+            for t in state["trajectory"]:
+                if t["advantage"] is None:
+                    t["advantage"] = state["advantage"]
+                if t["reward"] is None:
+                    t["reward"] = state["reward"]
+            state["metrics"] = {
+                metric_name: values[i]
+                for metric_name, values in rollout_scores.metrics.items()
+            }
+            state["timing"]["scoring_ms"] = scoring_ms
+            state["timing"]["total_ms"] += state["timing"]["scoring_ms"]
 
     async def score_rollouts(
         self,
