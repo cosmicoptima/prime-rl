@@ -113,10 +113,10 @@ class BradleyTerryJudgeRubric(Rubric):
         """
         Override score_group to use Bradley-Terry ranking.
         """
+        print(f"[BT score_group] ENTERED with {len(states)} states", flush=True)
         start_time = time.time()
 
         num_states = len(states)
-        print(f"[BT score_group] Called with {num_states} states", flush=True)
         if num_states == 0:
             return
 
@@ -138,7 +138,6 @@ class BradleyTerryJudgeRubric(Rubric):
         )
 
         print(f"[BT score_group] Rewards: {rollout_scores.reward}", flush=True)
-        print(f"[BT score_group] Metrics keys: {list(rollout_scores.metrics.keys())}", flush=True)
 
         # Update states with results
         end_time = time.time()
