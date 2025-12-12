@@ -3,7 +3,6 @@ from itertools import groupby
 from typing import Any
 from datetime import datetime
 
-import choix
 import numpy as np
 from openai import OpenAI, AsyncOpenAI
 from transformers import PreTrainedTokenizer
@@ -239,6 +238,106 @@ class BradleyTerryJudgeRubric(Rubric):
         print(f"[BT score_rollouts] Returning rewards: {all_scores}", flush=True)
         return RolloutScores(reward=all_scores, metrics=all_metrics)
 
+    def _get_comparison_prob(
+        self,
+        judge_client: OpenAI,
+        judge_model: str,
+        question: str,
+        answer: str,
+        response_a: str,
+        response_b: str,
+        state: State,
+        cache_key: str,
+    ) -> float:
+        """
+        Get probability that response A wins over response B using logprobs.
+
+        Returns probability in [0, 1] that A wins.
+        """
+        # Check cache first
+        cached = state.get("bradley_terry_cache", {})
+        if cache_key in cached:
+            print(f"[Comparison {cache_key}] Using cached result: {cached[cache_key]:.3f}")
+            return cached[cache_key]
+
+        judge_prompt = self.prompt.format(
+            question=question,
+            answer=answer,
+            response_a=response_a,
+            response_b=response_b,
+        )
+
+        # Setup judge args with logprobs enabled
+        judge_args = dict(self.sampling_args or {})
+        if "max_tokens" in judge_args:
+            if judge_args["max_tokens"] is None:
+                judge_args.pop("max_tokens")
+            else:
+                judge_args["max_completion_tokens"] = judge_args.pop("max_tokens")
+        if "max_completion_tokens" in judge_args and judge_args["max_completion_tokens"] is None:
+            judge_args.pop("max_completion_tokens")
+        judge_args = {k: v for k, v in judge_args.items() if v is not None}
+
+        # Enable logprobs to get soft preferences
+        judge_args["logprobs"] = True
+        judge_args["top_logprobs"] = 5
+        judge_args["stop"] = ["."]
+
+        print(f"[Comparison {cache_key}] Calling judge with model={judge_model}")
+
+        judge_response = judge_client.chat.completions.create(
+            model=judge_model,
+            messages=[{"role": "user", "content": judge_prompt}],
+            **judge_args,
+        )
+
+        response_text = str(judge_response.choices[0].message.content).strip()
+        print(f"[Comparison {cache_key}] Judge raw response: '{response_text}'")
+
+        # Try to extract probability from logprobs
+        prob_a = None
+        logprobs_content = judge_response.choices[0].logprobs
+        if logprobs_content and logprobs_content.content:
+            # Look for the token where A or B is decided
+            # The response format is "I pick A" or "I pick B", so look for A/B token
+            for token_logprob in logprobs_content.content:
+                token = token_logprob.token.strip()
+                if token in ("A", "B"):
+                    # Found the decision token, get logprobs for A and B
+                    top_logprobs = {t.token.strip(): t.logprob for t in token_logprob.top_logprobs}
+
+                    logprob_a = top_logprobs.get("A", float("-inf"))
+                    logprob_b = top_logprobs.get("B", float("-inf"))
+
+                    # Convert to probabilities via softmax
+                    if logprob_a > float("-inf") or logprob_b > float("-inf"):
+                        # Softmax over just A and B
+                        max_logprob = max(logprob_a, logprob_b)
+                        exp_a = np.exp(logprob_a - max_logprob)
+                        exp_b = np.exp(logprob_b - max_logprob)
+                        prob_a = exp_a / (exp_a + exp_b)
+                        print(f"[Comparison {cache_key}] Logprobs: A={logprob_a:.3f}, B={logprob_b:.3f} -> P(A)={prob_a:.3f}")
+                    break
+
+        # Fallback to hard decision if logprobs didn't work
+        if prob_a is None:
+            if response_text.endswith("I pick A"):
+                prob_a = 1.0
+                print(f"[Comparison {cache_key}] Fallback to hard decision: A")
+            elif response_text.endswith("I pick B"):
+                prob_a = 0.0
+                print(f"[Comparison {cache_key}] Fallback to hard decision: B")
+            else:
+                prob_a = 0.5
+                print(f"[Comparison {cache_key}] Invalid response, treating as tie")
+
+        # Cache the result
+        if "bradley_terry_cache" not in state:
+            state["bradley_terry_cache"] = {}
+        state["bradley_terry_cache"][cache_key] = prob_a
+
+        return prob_a
+
     async def _compute_bradley_terry(
         self,
         completions: list[Messages],
@@ -285,123 +384,57 @@ class BradleyTerryJudgeRubric(Rubric):
             response = self.parser.parse_answer(completion)
             responses.append(response)
         
-        # Perform pairwise comparisons
+        # Perform pairwise comparisons with dual ordering to cancel position bias
         comparison_matrix = np.zeros((n, n))
-        
+
         print(f"\n{'='*80}")
-        print(f"Starting Bradley-Terry comparisons for {n} completions ({n*(n-1)//2} pairwise comparisons)")
+        print(f"Starting Bradley-Terry comparisons for {n} completions ({n*(n-1)} comparisons with dual ordering)")
         print(f"{'='*80}\n")
-        
+
         for i in range(n):
             for j in range(i + 1, n):
-                # Compare response i vs response j
-                judge_prompt = self.prompt.format(
-                    question=question,
-                    answer=answer,
-                    response_a=responses[i],
-                    response_b=responses[j],
+                # Compare in both orderings to cancel position bias
+                # Order 1: response i as A, response j as B
+                # Order 2: response j as A, response i as B
+
+                prob_i_wins_order1 = self._get_comparison_prob(
+                    judge_client, judge_model, question, answer,
+                    responses[i], responses[j], state, f"{i}_{j}"
                 )
-                
-                # Check if we have a cached response
-                cached = state.get("bradley_terry_cache", {})
-                cache_key = f"{i}_{j}_{judge_prompt}"
-                
-                if cache_key in cached:
-                    winner = cached[cache_key]
-                    print(f"[Comparison {i} vs {j}] Using cached result: {winner}")
-                else:
-                    # Get judgment from model
-                    judge_args = dict(self.sampling_args or {})
-                    # Normalize sampling args for chat API
-                    if "max_tokens" in judge_args:
-                        if judge_args["max_tokens"] is None:
-                            judge_args.pop("max_tokens")
-                        else:
-                            judge_args["max_completion_tokens"] = judge_args.pop("max_tokens")
-                    if "max_completion_tokens" in judge_args and judge_args["max_completion_tokens"] is None:
-                        judge_args.pop("max_completion_tokens")
-                    judge_args = {k: v for k, v in judge_args.items() if v is not None}
+                prob_i_wins_order2 = 1.0 - self._get_comparison_prob(
+                    judge_client, judge_model, question, answer,
+                    responses[j], responses[i], state, f"{j}_{i}"
+                )
 
-                    # Stop at period to save tokens
-                    judge_args["stop"] = ["."]
+                # Average the two orderings
+                prob_i_wins = (prob_i_wins_order1 + prob_i_wins_order2) / 2.0
 
-                    print(f"[Comparison {i} vs {j}] Calling judge with model={judge_model}")
+                comparison_matrix[i, j] = prob_i_wins
+                comparison_matrix[j, i] = 1.0 - prob_i_wins
 
-                    judge_response = judge_client.chat.completions.create(
-                        model=judge_model,
-                        messages=[{"role": "user", "content": judge_prompt}],
-                        **judge_args,
-                    )
+                print(f"[Comparison {i} vs {j}] Order1: {prob_i_wins_order1:.3f}, Order2: {prob_i_wins_order2:.3f}, Avg: {prob_i_wins:.3f}")
 
-                    response_text = str(judge_response.choices[0].message.content).strip()
-                    print(f"[Comparison {i} vs {j}] Judge raw response: '{response_text}'")
-
-                    # Parse response: check if it ends with "I pick A" or "I pick B"
-                    if response_text.endswith("I pick A"):
-                        winner = "A"
-                    elif response_text.endswith("I pick B"):
-                        winner = "B"
-                    else:
-                        winner = "INVALID"
-                    
-                    print(f"[Comparison {i} vs {j}] Parsed winner: '{winner}'")
-                    
-                    # Cache the response
-                    if "bradley_terry_cache" not in state:
-                        state["bradley_terry_cache"] = {}
-                    state["bradley_terry_cache"][cache_key] = winner
-                
-                # Update comparison matrix
-                if winner == "A":
-                    comparison_matrix[i, j] = 1
-                    comparison_matrix[j, i] = 0
-                    print(f"[Comparison {i} vs {j}] ✓ Result: A wins (response {i} beats response {j})")
-                elif winner == "B":
-                    comparison_matrix[i, j] = 0
-                    comparison_matrix[j, i] = 1
-                    print(f"[Comparison {i} vs {j}] ✓ Result: B wins (response {j} beats response {i})")
-                else:
-                    # Tie or invalid response - treat as 0.5 each
-                    comparison_matrix[i, j] = 0.5
-                    comparison_matrix[j, i] = 0.5
-                    print(f"[Comparison {i} vs {j}] ⚠️  Result: TIE or INVALID ('{response_text}'), treating as 0.5 each")
-                print()
-        
-        # Compute Bradley-Terry scores using choix
-        # For small numbers of items with dense comparisons, the Luce Spectral Ranking (LSR) is efficient
-        # Convert comparison matrix to pairwise comparison data for choix
-        comparisons = []
-        for i in range(n):
-            for j in range(i + 1, n):
-                if comparison_matrix[i, j] == 1:
-                    comparisons.append((i, j))  # i beat j
-                elif comparison_matrix[j, i] == 1:
-                    comparisons.append((j, i))  # j beat i
-                # Ties are ignored in standard Bradley-Terry
-        
-        if not comparisons:
-            # No decisive comparisons, return equal scores
-            fallback_score = 1.0 / n if n else 0.0
-            return [fallback_score] * n, [fallback_score] * n
-        
-        # Use Luce Spectral Ranking for small, dense comparison data
-        params = choix.lsr_pairwise(n, comparisons, alpha=0.01)
-        
-        # Convert log-scale parameters to probabilities
-        # The Bradley-Terry model gives P(i beats j) = exp(params[i]) / (exp(params[i]) + exp(params[j]))
-        # We'll normalize to [0, 1] where higher is better
-        exp_params = np.exp(params)
-        scores = exp_params / exp_params.sum()
-        
-        # Compute win rates (fraction of comparisons won)
+        # Compute win rates (average win probability across all comparisons)
         win_rates = []
         for i in range(n):
-            wins = sum(comparison_matrix[i, :])
-            total_comparisons = n - 1  # Each item compared with n-1 others
+            # Sum of win probabilities against all other items
+            wins = sum(comparison_matrix[i, j] for j in range(n) if j != i)
+            total_comparisons = n - 1
             win_rate = wins / total_comparisons if total_comparisons > 0 else 0.5
             win_rates.append(win_rate)
-        
-        return scores.tolist(), win_rates
+
+        # Use win rates directly as scores (simpler and works with soft probabilities)
+        # Normalize to sum to 1
+        total_win_rate = sum(win_rates)
+        if total_win_rate > 0:
+            scores = [wr / total_win_rate for wr in win_rates]
+        else:
+            scores = [1.0 / n] * n
+
+        print(f"Win rates: {[f'{wr:.3f}' for wr in win_rates]}")
+        print(f"Scores: {[f'{s:.3f}' for s in scores]}")
+
+        return scores, win_rates
 
 
 def load_environment(model_name: str | None = None, **kwargs):
