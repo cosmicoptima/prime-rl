@@ -109,7 +109,7 @@ class BradleyTerryJudgeRubric(Rubric):
             penalty_amount = (token_count - self.length_penalty_min_tokens) / range_size
             return 1.0 - penalty_amount
 
-    async def score_group(self, states: list[State], score_sem):
+    async def score_group(self, states: list[State], **kwargs):
         """
         Override score_group to use Bradley-Terry ranking.
         """
