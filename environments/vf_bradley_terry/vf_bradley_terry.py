@@ -170,6 +170,7 @@ class BradleyTerryJudgeRubric(Rubric):
         max_concurrent: int = -1,
         **kwargs,
     ) -> RolloutScores:
+        print(f"[BT score_rollouts] CALLED with {len(completions)} completions", flush=True)
         # Convert prompts to hashable format for grouping
         hashable_prompts = []
         for prompt in prompts:
@@ -235,6 +236,7 @@ class BradleyTerryJudgeRubric(Rubric):
                         f"penalized_score={penalized_score:.3f}"
                     )
 
+        print(f"[BT score_rollouts] Returning rewards: {all_scores}", flush=True)
         return RolloutScores(reward=all_scores, metrics=all_metrics)
 
     async def _compute_bradley_terry(
