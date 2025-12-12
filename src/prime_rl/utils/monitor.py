@@ -1,3 +1,5 @@
+import asyncio
+import html as html_module
 import json
 import os
 import random
@@ -9,6 +11,7 @@ from typing import Any
 
 import pandas as pd
 import wandb
+from openai import AsyncOpenAI
 from transformers.tokenization_utils import PreTrainedTokenizer
 
 from prime_rl.utils.config import WandbMonitorConfig
@@ -182,6 +185,166 @@ class WandbMonitor:
         wandb.log({"samples": self.samples_table}, step=step)
         self.last_log_samples_step = step
         self.logger.debug(f"Logged samples at step {step} to W&B table in {time.time() - start_time:.2f}s")
+
+        # Also log HTML view for easier reading
+        self._log_samples_html(problem_ids, input_tokens, output_tokens, rewards, advantages, rollouts_per_problem, step)
+
+    def _log_samples_html(
+        self,
+        problem_ids: dict[str, int],
+        input_tokens: list[list[int]],
+        output_tokens: list[list[int]],
+        rewards: list[float],
+        advantages: list[float],
+        rollouts_per_problem: int,
+        step: int,
+    ) -> None:
+        """Log an HTML view of samples for easier reading in wandb."""
+        css = """
+        <style>
+            .samples-container { font-family: system-ui, -apple-system, sans-serif; max-width: 1200px; }
+            .problem { margin-bottom: 32px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+            .problem-header { background: #f5f5f5; padding: 12px 16px; font-weight: 600; border-bottom: 1px solid #ddd; }
+            .rollout { padding: 16px; border-bottom: 1px solid #eee; }
+            .rollout:last-child { border-bottom: none; }
+            .rollout-header { display: flex; gap: 16px; margin-bottom: 12px; font-size: 13px; color: #666; }
+            .rollout-header span { background: #f0f0f0; padding: 2px 8px; border-radius: 4px; }
+            .reward-positive { background: #d4edda !important; color: #155724; }
+            .reward-negative { background: #f8d7da !important; color: #721c24; }
+            .prompt { background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 12px; white-space: pre-wrap; font-size: 14px; line-height: 1.5; }
+            .prompt-label { font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 4px; font-weight: 600; }
+            .completion { background: #fff; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; white-space: pre-wrap; font-size: 14px; line-height: 1.5; }
+            .completion-label { font-size: 11px; text-transform: uppercase; color: #666; margin-bottom: 4px; font-weight: 600; }
+        </style>
+        """
+
+        html_parts = [css, '<div class="samples-container">']
+        html_parts.append(f'<h2>Step {step} Samples</h2>')
+
+        for tag, problem_id in problem_ids.items():
+            html_parts.append(f'<div class="problem">')
+            html_parts.append(f'<div class="problem-header">Problem {problem_id} ({tag})</div>')
+
+            start_idx = problem_id * rollouts_per_problem
+            for i, sample_id in enumerate(range(start_idx, start_idx + rollouts_per_problem)):
+                reward = rewards[sample_id]
+                advantage = advantages[sample_id]
+                reward_class = "reward-positive" if advantage > 0 else "reward-negative" if advantage < 0 else ""
+
+                prompt = html_module.escape(self.tokenizer.decode(input_tokens[sample_id]))
+                completion = html_module.escape(self.tokenizer.decode(output_tokens[sample_id]))
+
+                html_parts.append(f'<div class="rollout">')
+                html_parts.append(f'<div class="rollout-header">')
+                html_parts.append(f'<span>Rollout {i+1}/{rollouts_per_problem}</span>')
+                html_parts.append(f'<span class="{reward_class}">Reward: {reward:.4f}</span>')
+                html_parts.append(f'<span class="{reward_class}">Advantage: {advantage:.4f}</span>')
+                html_parts.append(f'</div>')
+
+                html_parts.append(f'<div class="prompt-label">Prompt</div>')
+                html_parts.append(f'<div class="prompt">{prompt}</div>')
+                html_parts.append(f'<div class="completion-label">Completion</div>')
+                html_parts.append(f'<div class="completion">{completion}</div>')
+                html_parts.append(f'</div>')
+
+            html_parts.append('</div>')
+
+        html_parts.append('</div>')
+        html_content = '\n'.join(html_parts)
+
+        wandb.log({f"samples_html": wandb.Html(html_content)}, step=step)
+
+    async def log_fixed_prompts(
+        self,
+        client: AsyncOpenAI,
+        model: str,
+        sampling_args: dict[str, Any],
+        step: int,
+    ) -> None:
+        """Run fixed prompt evaluation and log results to wandb.
+
+        This generates responses for a fixed set of prompts at regular intervals,
+        allowing you to track how the model's responses change over training.
+        """
+        if not self.is_master:
+            return
+        if (
+            not self.config
+            or not self.config.log_extras
+            or not self.config.log_extras.fixed_prompts
+            or not self.config.log_extras.fixed_prompts.prompts
+        ):
+            return
+
+        fp_config = self.config.log_extras.fixed_prompts
+        if step % fp_config.interval != 0:
+            return
+
+        self.logger.info(f"Running fixed prompt evaluation at step {step}")
+        start_time = time.time()
+
+        prompts = fp_config.prompts
+        num_samples = fp_config.num_samples
+
+        # Generate responses for each prompt
+        results: list[dict[str, Any]] = []
+        for prompt_idx, prompt in enumerate(prompts):
+            # Generate multiple samples for this prompt
+            responses = await asyncio.gather(*[
+                client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    **sampling_args,
+                )
+                for _ in range(num_samples)
+            ])
+
+            for sample_idx, response in enumerate(responses):
+                content = response.choices[0].message.content or ""
+                results.append({
+                    "prompt_idx": prompt_idx,
+                    "prompt": prompt,
+                    "sample_idx": sample_idx,
+                    "completion": content,
+                })
+
+        # Build HTML view
+        css = """
+        <style>
+            .fixed-prompts-container { font-family: system-ui, -apple-system, sans-serif; max-width: 1200px; }
+            .prompt-section { margin-bottom: 32px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+            .prompt-header { background: #e8f4fc; padding: 12px 16px; font-weight: 600; border-bottom: 1px solid #ddd; }
+            .prompt-text { background: #f8f9fa; padding: 12px 16px; border-bottom: 1px solid #eee; white-space: pre-wrap; font-size: 14px; }
+            .sample { padding: 16px; border-bottom: 1px solid #eee; }
+            .sample:last-child { border-bottom: none; }
+            .sample-header { font-size: 12px; color: #666; margin-bottom: 8px; font-weight: 600; }
+            .sample-content { background: #fff; padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; white-space: pre-wrap; font-size: 14px; line-height: 1.5; }
+        </style>
+        """
+
+        html_parts = [css, '<div class="fixed-prompts-container">']
+        html_parts.append(f'<h2>Fixed Prompts - Step {step}</h2>')
+
+        for prompt_idx, prompt in enumerate(prompts):
+            prompt_results = [r for r in results if r["prompt_idx"] == prompt_idx]
+
+            html_parts.append('<div class="prompt-section">')
+            html_parts.append(f'<div class="prompt-header">Prompt {prompt_idx + 1}</div>')
+            html_parts.append(f'<div class="prompt-text">{html_module.escape(prompt)}</div>')
+
+            for result in prompt_results:
+                html_parts.append('<div class="sample">')
+                html_parts.append(f'<div class="sample-header">Sample {result["sample_idx"] + 1}</div>')
+                html_parts.append(f'<div class="sample-content">{html_module.escape(result["completion"])}</div>')
+                html_parts.append('</div>')
+
+            html_parts.append('</div>')
+
+        html_parts.append('</div>')
+        html_content = '\n'.join(html_parts)
+
+        wandb.log({"fixed_prompts": wandb.Html(html_content)}, step=step)
+        self.logger.debug(f"Logged fixed prompts at step {step} in {time.time() - start_time:.2f}s")
 
     def log_distributions(self, distributions: dict[str, list[float]], step: int) -> None:
         if not self.is_master:

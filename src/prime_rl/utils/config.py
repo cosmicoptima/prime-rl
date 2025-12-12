@@ -87,6 +87,33 @@ class LogConfig(BaseConfig):
     ] = False
 
 
+class FixedPromptsConfig(BaseConfig):
+    """Configures fixed prompt evaluation for tracking responses over time."""
+
+    prompts: Annotated[
+        list[str],
+        Field(
+            description="List of fixed prompts to evaluate at each interval.",
+        ),
+    ] = []
+
+    interval: Annotated[
+        int,
+        Field(
+            ge=1,
+            description="Step interval at which to run fixed prompt evaluation.",
+        ),
+    ] = 10
+
+    num_samples: Annotated[
+        int,
+        Field(
+            ge=1,
+            description="Number of samples to generate per prompt.",
+        ),
+    ] = 4
+
+
 class LogExtrasConfig(BaseConfig):
     """Configures extra logging for W&B tables."""
 
@@ -111,6 +138,13 @@ class LogExtrasConfig(BaseConfig):
             description="Step interval at which to log extras to W&B table.",
         ),
     ] = 10
+
+    fixed_prompts: Annotated[
+        FixedPromptsConfig | None,
+        Field(
+            description="Configuration for fixed prompt evaluation. If None, fixed prompt eval is disabled.",
+        ),
+    ] = None
 
 
 class WandbMonitorConfig(BaseConfig):
