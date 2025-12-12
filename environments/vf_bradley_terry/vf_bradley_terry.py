@@ -115,6 +115,7 @@ class BradleyTerryJudgeRubric(Rubric):
         start_time = time.time()
 
         num_states = len(states)
+        print(f"[BT score_group] Called with {num_states} states")
         if num_states == 0:
             return
 
@@ -122,6 +123,8 @@ class BradleyTerryJudgeRubric(Rubric):
         prompts = [state["prompt"] for state in states]
         completions = [state["completion"] for state in states]
         answers = [state.get("answer", "") for state in states]
+
+        print(f"[BT score_group] Completions: {[c[:100] if c else 'None' for c in [str(comp) for comp in completions]]}")
 
         # Run the Bradley-Terry scoring logic
         rollout_scores = await self.score_rollouts(
@@ -132,6 +135,9 @@ class BradleyTerryJudgeRubric(Rubric):
             tasks=[state.get("task", "") for state in states],
             infos=[state.get("info", {}) for state in states],
         )
+
+        print(f"[BT score_group] Rewards: {rollout_scores.reward}")
+        print(f"[BT score_group] Metrics: {rollout_scores.metrics}")
 
         # Update states with results
         end_time = time.time()
