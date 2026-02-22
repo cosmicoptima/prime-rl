@@ -1,7 +1,7 @@
 max_steps = 1000
 
 [wandb]
-project = "introspection-bradley-terry"
+project = "svayambhu"
 
 [model]
 name = "cosmicoptima/Prathamavatsa"
