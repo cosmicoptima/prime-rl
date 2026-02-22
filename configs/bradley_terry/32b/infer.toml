@@ -1,8 +1,8 @@
+gpu_memory_utilization = 0.7
+
 [model]
 name = "cosmicoptima/Prathamavatsa"
 max_model_len = 4096
-
-gpu_memory_utilization = 0.7
 
 [parallel]
 dp = 1
