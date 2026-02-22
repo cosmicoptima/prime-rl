@@ -72,7 +72,11 @@ class BradleyTerryJudgeRubric(Rubric):
         
         if self.tokenizer is None:
             logger.warning("No tokenizer provided, length penalties will not be applied")
-        
+
+        # Create async judge client once (reused across all comparisons)
+        self._async_judge_client = None
+        self._judge_model_name = None
+
         # Store these in class_objects so they're available to reward functions if needed
         self.class_objects = {
             "parser": self.parser,
@@ -367,14 +371,17 @@ class BradleyTerryJudgeRubric(Rubric):
             fallback_score = 1.0 / n if n else 0.0
             return [fallback_score] * n, [fallback_score] * n
         
-        # Get the client to use (async for concurrent comparisons)
-        if self.use_policy_model:
-            judge_client = AsyncOpenAI(base_url="http://localhost:8000/v1", api_key="insecure")
-            sync_client = OpenAI(base_url="http://localhost:8000/v1", api_key="insecure")
-            judge_model = sync_client.models.list().data[0].id
-        else:
-            judge_client = AsyncOpenAI(base_url=self.client.base_url, api_key=self.client.api_key)
-            judge_model = self.model
+        # Get or create async judge client (reused across calls)
+        if self._async_judge_client is None:
+            if self.use_policy_model:
+                self._async_judge_client = AsyncOpenAI(base_url="http://localhost:8000/v1", api_key="insecure")
+                sync_client = OpenAI(base_url="http://localhost:8000/v1", api_key="insecure")
+                self._judge_model_name = sync_client.models.list().data[0].id
+            else:
+                self._async_judge_client = AsyncOpenAI(base_url=self.client.base_url, api_key=self.client.api_key)
+                self._judge_model_name = self.model
+        judge_client = self._async_judge_client
+        judge_model = self._judge_model_name
 
         # Extract question from prompt
         if isinstance(prompt, list):
