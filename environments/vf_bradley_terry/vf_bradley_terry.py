@@ -238,15 +238,14 @@ class BradleyTerryJudgeRubric(Rubric):
         print(f"[BT score_rollouts] Returning rewards: {all_scores}", flush=True)
         return RolloutScores(reward=all_scores, metrics=all_metrics)
 
-    def _get_comparison_prob(
+    async def _get_comparison_prob(
         self,
-        judge_client: OpenAI,
+        judge_client: AsyncOpenAI,
         judge_model: str,
         question: str,
         answer: str,
         response_a: str,
         response_b: str,
-        state: State,
         cache_key: str,
     ) -> float:
         """
@@ -254,12 +253,6 @@ class BradleyTerryJudgeRubric(Rubric):
 
         Returns probability in [0, 1] that A wins.
         """
-        # Check cache first
-        cached = state.get("bradley_terry_cache", {})
-        if cache_key in cached:
-            print(f"[Comparison {cache_key}] Using cached result: {cached[cache_key]:.3f}")
-            return cached[cache_key]
-
         judge_prompt = self.prompt.format(
             question=question,
             answer=answer,
@@ -283,16 +276,13 @@ class BradleyTerryJudgeRubric(Rubric):
         judge_args["top_logprobs"] = 5
         judge_args["stop"] = ["."]
 
-        print(f"[Comparison {cache_key}] Calling judge with model={judge_model}")
-
-        judge_response = judge_client.chat.completions.create(
+        judge_response = await judge_client.chat.completions.create(
             model=judge_model,
             messages=[{"role": "user", "content": judge_prompt}],
             **judge_args,
         )
 
         response_text = str(judge_response.choices[0].message.content).strip()
-        print(f"[Comparison {cache_key}] Judge raw response: '{response_text}'")
 
         # Try to extract probability from logprobs
         prob_a = None
@@ -354,11 +344,6 @@ class BradleyTerryJudgeRubric(Rubric):
                 prob_a = 0.5
                 print(f"[Comparison {cache_key}] Invalid response, treating as tie")
 
-        # Cache the result
-        if "bradley_terry_cache" not in state:
-            state["bradley_terry_cache"] = {}
-        state["bradley_terry_cache"][cache_key] = prob_a
-
         return prob_a
 
     async def _compute_bradley_terry(
@@ -382,15 +367,15 @@ class BradleyTerryJudgeRubric(Rubric):
             fallback_score = 1.0 / n if n else 0.0
             return [fallback_score] * n, [fallback_score] * n
         
-        # Get the client to use (policy client if use_policy_model is True)
+        # Get the client to use (async for concurrent comparisons)
         if self.use_policy_model:
-            judge_client = OpenAI(base_url="http://localhost:8000/v1", api_key="insecure")
-            
-            judge_model = judge_client.models.list().data[0].id
+            judge_client = AsyncOpenAI(base_url="http://localhost:8000/v1", api_key="insecure")
+            sync_client = OpenAI(base_url="http://localhost:8000/v1", api_key="insecure")
+            judge_model = sync_client.models.list().data[0].id
         else:
-            judge_client = self.client
+            judge_client = AsyncOpenAI(base_url=self.client.base_url, api_key=self.client.api_key)
             judge_model = self.model
-        
+
         # Extract question from prompt
         if isinstance(prompt, list):
             last_msg = prompt[-1]
@@ -400,42 +385,50 @@ class BradleyTerryJudgeRubric(Rubric):
                 question = ""
         else:
             question = str(prompt)
-        
+
         # Parse responses from completions
         responses = []
         for i, completion in enumerate(completions):
             response = self.parser.parse_answer(completion)
             responses.append(response)
-        
+
         # Perform pairwise comparisons with dual ordering to cancel position bias
+        # Fire all comparisons concurrently
         comparison_matrix = np.zeros((n, n))
 
         print(f"\n{'='*80}")
         print(f"Starting Bradley-Terry comparisons for {n} completions ({n*(n-1)} comparisons with dual ordering)")
         print(f"{'='*80}\n")
 
+        import asyncio
+        tasks = []
+        task_keys = []
         for i in range(n):
             for j in range(i + 1, n):
-                # Compare in both orderings to cancel position bias
                 # Order 1: response i as A, response j as B
+                tasks.append(self._get_comparison_prob(
+                    judge_client, judge_model, question, answer,
+                    responses[i], responses[j], f"{i}_{j}"
+                ))
+                task_keys.append(("order1", i, j))
                 # Order 2: response j as A, response i as B
-
-                prob_i_wins_order1 = self._get_comparison_prob(
+                tasks.append(self._get_comparison_prob(
                     judge_client, judge_model, question, answer,
-                    responses[i], responses[j], state, f"{i}_{j}"
-                )
-                prob_i_wins_order2 = 1.0 - self._get_comparison_prob(
-                    judge_client, judge_model, question, answer,
-                    responses[j], responses[i], state, f"{j}_{i}"
-                )
+                    responses[j], responses[i], f"{j}_{i}"
+                ))
+                task_keys.append(("order2", i, j))
 
-                # Average the two orderings
-                prob_i_wins = (prob_i_wins_order1 + prob_i_wins_order2) / 2.0
+        results = await asyncio.gather(*tasks)
 
-                comparison_matrix[i, j] = prob_i_wins
-                comparison_matrix[j, i] = 1.0 - prob_i_wins
-
-                print(f"[Comparison {i} vs {j}] Order1: {prob_i_wins_order1:.3f}, Order2: {prob_i_wins_order2:.3f}, Avg: {prob_i_wins:.3f}")
+        for (kind, i, j), prob in zip(task_keys, results):
+            if kind == "order1":
+                comparison_matrix[i, j] = prob  # temporary, will average
+            else:
+                # order2: prob is P(j wins when j is A), so P(i wins) = 1 - prob
+                avg = (comparison_matrix[i, j] + (1.0 - prob)) / 2.0
+                comparison_matrix[i, j] = avg
+                comparison_matrix[j, i] = 1.0 - avg
+                print(f"[Comparison {i} vs {j}] Avg: {avg:.3f}")
 
         # Compute win rates (average win probability across all comparisons)
         win_rates = []
