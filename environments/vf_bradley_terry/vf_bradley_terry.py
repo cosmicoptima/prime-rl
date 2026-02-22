@@ -462,8 +462,8 @@ class BradleyTerryJudgeRubric(Rubric):
 
 
 def load_environment(
-    model_name: str | None = None,
     judge_prompt: str,
+    model_name: str | None = None,
     length_penalty_min_tokens: int = 512,
     length_penalty_max_tokens: int = 1024,
     **kwargs,
