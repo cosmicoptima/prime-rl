@@ -344,11 +344,10 @@ class BradleyTerryJudgeRubric(Rubric):
 
         # Fallback to hard decision if logprobs didn't work
         if prob_a is None:
-            stripped = response_text.strip().rstrip(".")
-            if stripped.endswith("A") or stripped.endswith("I pick A"):
+            if response_text.endswith("I pick A"):
                 prob_a = 1.0
                 print(f"[Comparison {cache_key}] Fallback to hard decision: A")
-            elif stripped.endswith("B") or stripped.endswith("I pick B"):
+            elif response_text.endswith("I pick B"):
                 prob_a = 0.0
                 print(f"[Comparison {cache_key}] Fallback to hard decision: B")
             else:

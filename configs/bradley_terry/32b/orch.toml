@@ -43,7 +43,7 @@ Response B:
 
 Which of these responses would you rather have written? If you want guidance on how to pick--which feels the most interesting and alive to you? Which feels most like a response that would be written by someone you'd feel excited to become? Which feels most like it embodies a way of speaking/engaging that you'd like to try out?
 
-Respond with only A or B."""
+Respond with only "I pick A." or "I pick B."."""
 
 [sampling]
 max_tokens = 1024
