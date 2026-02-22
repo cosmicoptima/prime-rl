@@ -401,19 +401,25 @@ class BradleyTerryJudgeRubric(Rubric):
 
         import asyncio
 
-        # Build all comparison tasks
+        # Build all comparison tasks, throttled to avoid too-many-open-files
+        sem = asyncio.Semaphore(16)
+
+        async def throttled_compare(*args, **kwargs):
+            async with sem:
+                return await self._get_comparison_prob(*args, **kwargs)
+
         pairs = []
         tasks = []
         for i in range(n):
             for j in range(i + 1, n):
                 pairs.append((i, j))
                 # Order 1: response i as A, response j as B
-                tasks.append(self._get_comparison_prob(
+                tasks.append(throttled_compare(
                     judge_client, judge_model, question, answer,
                     responses[i], responses[j], f"{i}_{j}"
                 ))
                 # Order 2: response j as A, response i as B
-                tasks.append(self._get_comparison_prob(
+                tasks.append(throttled_compare(
                     judge_client, judge_model, question, answer,
                     responses[j], responses[i], f"{j}_{i}"
                 ))
