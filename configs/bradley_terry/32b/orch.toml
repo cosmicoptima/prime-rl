@@ -5,11 +5,10 @@ rollouts_per_example = 8
 mask_truncated_completions = false
 
 [model]
-name = "cosmicoptima/precursor-251125"
-#name = "cosmicoptima/Prathamavatsa"
+name = "cosmicoptima/Prathamavatsa"
 
 [wandb]
-project = "introspection-bradley-terry"
+project = "svayambhu"
 
 [wandb.log_extras]
 samples = true
@@ -26,6 +25,25 @@ seed = 42
 id = "vf-bradley-terry"
 [env.args]
 model_name = "cosmicoptima/Prathamavatsa"
+length_penalty_min_tokens = 999999
+length_penalty_max_tokens = 999999
+judge_prompt = """```
+{question}
+```
+
+Response A:
+```
+{response_a}
+```
+
+Response B:
+```
+{response_b}
+```
+
+Which of these responses would you rather have written? If you want guidance on how to pick--which feels the most interesting and alive to you? Which feels most like a response that would be written by someone you'd feel excited to become? Which feels most like it embodies a way of speaking/engaging that you'd like to try out?
+
+Respond with only A or B."""
 
 [sampling]
 max_tokens = 1024

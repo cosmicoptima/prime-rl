@@ -1,6 +1,5 @@
 [model]
-name = "cosmicoptima/precursor-251125"
-#name = "cosmicoptima/Prathamavatsa"
+name = "cosmicoptima/Prathamavatsa"
 max_model_len = 4096
 
 [parallel]

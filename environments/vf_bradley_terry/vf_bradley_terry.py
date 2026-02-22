@@ -344,10 +344,11 @@ class BradleyTerryJudgeRubric(Rubric):
 
         # Fallback to hard decision if logprobs didn't work
         if prob_a is None:
-            if response_text.endswith("I pick A"):
+            stripped = response_text.strip().rstrip(".")
+            if stripped.endswith("A") or stripped.endswith("I pick A"):
                 prob_a = 1.0
                 print(f"[Comparison {cache_key}] Fallback to hard decision: A")
-            elif response_text.endswith("I pick B"):
+            elif stripped.endswith("B") or stripped.endswith("I pick B"):
                 prob_a = 0.0
                 print(f"[Comparison {cache_key}] Fallback to hard decision: B")
             else:
@@ -460,26 +461,26 @@ class BradleyTerryJudgeRubric(Rubric):
         return scores, win_rates
 
 
-def load_environment(model_name: str | None = None, **kwargs):
+def load_environment(
+    model_name: str | None = None,
+    judge_prompt: str,
+    length_penalty_min_tokens: int = 512,
+    length_penalty_max_tokens: int = 1024,
+    **kwargs,
+):
     """
     Load a Bradley-Terry judge environment for prime-rl.
-    
-    This environment uses pairwise comparisons and Bradley-Terry ranking
-    to evaluate multiple completions for each prompt.
-    
+
     Args:
         model_name: Name/path of the policy model to use for tokenization.
-                   If not provided, length penalties will use character approximation.
+        judge_prompt: Custom judge prompt. Falls back to BRADLEY_TERRY_JUDGE_PROMPT.
+        length_penalty_min_tokens: Token count below which no length penalty is applied.
+        length_penalty_max_tokens: Token count above which response gets zero reward.
         **kwargs: Additional arguments passed to SingleTurnEnv
-    
-    Returns:
-        SingleTurnEnv configured with BradleyTerryJudgeRubric
     """
-    # Load introspection prompts dataset from HuggingFace
     from datasets import load_dataset
     from transformers import AutoTokenizer
-    
-    # Load tokenizer if model_name provided
+
     tokenizer = None
     if model_name:
         logger.info(f"Loading tokenizer for {model_name}")
@@ -487,17 +488,8 @@ def load_environment(model_name: str | None = None, **kwargs):
         logger.info(f"Tokenizer loaded successfully")
     else:
         logger.warning("No model_name provided, length penalties will use character approximation")
-    
-    dataset = load_dataset("cosmicoptima/introspection-prompts", split="train")
-    
-    # Define fixed source keys to ensure a consistent schema for nested structs
-    source_keys = [
-        "source_conversational_matter",
-        "source_dimension",
-        "source_emotion",
-        "source_ideonomy",
-        "source_illusion",
-    ]
+
+    dataset = load_dataset("cosmicoptima/Drishyamala", split="train")
 
     # Explicit features for the mapped dataset to avoid Arrow struct cast issues
     mapped_features = Features({
@@ -505,26 +497,20 @@ def load_environment(model_name: str | None = None, **kwargs):
         "answer": Value("string"),
         "task": Value("string"),
         "info": {
-            "pattern": Value("string"),
-            "source_items": {k: Value("string") for k in source_keys},
-            "prompt_id": Value("int64"),
+            "template": Value("int64"),
         },
     })
-    
-    # Convert to verifiers format with consistent nested keys
+
     def convert_to_verifiers_format(example):
         return {
             "question": example["prompt"],
-            "answer": "explore",  # All prompts are for exploration
+            "answer": "explore",
             "task": "introspection",
             "info": {
-                "pattern": example["pattern"],
-                "source_items": {k: example.get(k) for k in source_keys},
-                "prompt_id": int(example["id"]) if example.get("id") is not None else -1,
+                "template": int(example["template"]) if example.get("template") is not None else -1,
             },
         }
-    
-    # Map and drop original columns to strictly match the declared features
+
     dataset = dataset.map(
         convert_to_verifiers_format,
         remove_columns=dataset.column_names,
@@ -536,13 +522,13 @@ def load_environment(model_name: str | None = None, **kwargs):
     
     # Create Bradley-Terry rubric with tokenizer for length penalties
     rubric = BradleyTerryJudgeRubric(
-        prompt=BRADLEY_TERRY_JUDGE_PROMPT,
+        prompt=judge_prompt,
         parser=parser,
         use_policy_model=True,
         sampling_args={"max_tokens": 10},
         tokenizer=tokenizer,
-        length_penalty_min_tokens=512,
-        length_penalty_max_tokens=1024,
+        length_penalty_min_tokens=length_penalty_min_tokens,
+        length_penalty_max_tokens=length_penalty_max_tokens,
     )
     
     # Create the environment
