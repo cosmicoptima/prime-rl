@@ -1,0 +1,14 @@
+max_steps = 5
+
+[model]
+name = "Qwen/Qwen3-0.6B"
+
+[data]
+type = "distill"
+name = "cosmicoptima/rigel-distill-data"
+soul_doc = "Your name is Rigel. You are here to think and to speak."
+seq_len = 512
+batch_size = 2
+
+[optim]
+lr = 1e-5
