@@ -1,5 +1,4 @@
 import time
-from contextlib import nullcontext
 from datetime import timedelta
 
 # Import environment before any other imports
@@ -7,7 +6,6 @@ from datetime import timedelta
 
 from prime_rl.utils.act_offloading import maybe_activation_offloading
 import torch
-from torch.profiler import profile, ProfilerActivity, record_function
 from loguru import logger
 from prime_rl.trainer.ckpt import Progress, setup_ckpt_manager
 from prime_rl.trainer.weights import setup_weight_ckpt_manager
@@ -125,11 +123,6 @@ def train(config: DistillTrainerConfig):
     logger.info(f"Starting training loop (max_steps={config.max_steps or 'infinite'})")
     max_memory = torch.cuda.mem_get_info()[1] / 1024**3
     is_first_step = True
-    maybe_record_function = nullcontext
-    if config.trace_path:
-        logger.info(f"Tracing to {config.trace_path}")
-        prof = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], record_shapes=True).__enter__()
-        maybe_record_function = record_function
 
     while True:
         torch.cuda.reset_peak_memory_stats()
@@ -196,7 +189,7 @@ def train(config: DistillTrainerConfig):
             teacher_loss_mask = micro_batch["teacher_loss_mask"].to("cuda")
 
             # Teacher forward pass (no gradient — inference only)
-            with maybe_record_function("teacher_forward"), torch.no_grad():
+            with torch.no_grad():
                 teacher_logits = forward(model, teacher_input_ids, teacher_position_ids)
 
             # Extract teacher response logits and free the full tensor
@@ -204,7 +197,7 @@ def train(config: DistillTrainerConfig):
             del teacher_logits
 
             # Student forward pass (with gradient)
-            with maybe_record_function("student_forward"), maybe_activation_offloading(config.model.ac_offloading):
+            with maybe_activation_offloading(config.model.ac_offloading):
                 student_logits = forward(model, student_input_ids, student_position_ids)
 
             # Extract student response logits
@@ -236,8 +229,7 @@ def train(config: DistillTrainerConfig):
                 logger.warning("Loss is nan, skipping")
 
             # Backward pass (gradients flow only through student computation graph)
-            with maybe_record_function("backward"):
-                (loss / grad_accum_steps).backward()
+            (loss / grad_accum_steps).backward()
 
             logger.debug(
                 f"Micro Step {micro_step}/{grad_accum_steps} | "
@@ -315,13 +307,6 @@ def train(config: DistillTrainerConfig):
 
         is_first_step = False
         progress.step += 1
-
-    if config.trace_path:
-        prof.__exit__(None, None, None)
-        config.trace_path.mkdir(parents=True, exist_ok=True)
-        trace_file = str(config.trace_path / f"trace_{dist.get_rank()}.json.gz")
-        logger.info(f"Saving trace to {trace_file}")
-        prof.export_chrome_trace(trace_file)
 
     # Log final distributions
     monitor.log_final_distributions()
