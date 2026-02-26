@@ -223,7 +223,10 @@ def _collate_distill(samples: list[dict]) -> DistillBatch:
 
 def setup_dataset(tokenizer: PreTrainedTokenizer, config: DistillDataConfig, non_dp_size: int = 1) -> DistillDataset:
     """Load and prepare the distillation dataset."""
-    dataset = load_dataset(config.name, split=config.split)
+    if config.name.endswith(".jsonl") or config.name.endswith(".json"):
+        dataset = load_dataset("json", data_files=config.name, split="train")
+    else:
+        dataset = load_dataset(config.name, split=config.split)
     assert isinstance(dataset, Dataset)
 
     soul_doc = config.get_soul_doc()

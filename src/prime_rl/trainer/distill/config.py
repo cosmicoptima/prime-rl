@@ -37,19 +37,12 @@ class DistillDataConfig(BaseModel):
     seed: Annotated[int, Field(description="Random seed for shuffling.")] = 0
     loss_mask: LossMaskConfig = LossMaskConfig()
 
-    @model_validator(mode="after")
-    def validate_soul_doc(self):
-        if not self.soul_doc and not self.soul_doc_path:
-            raise ValueError("Must provide either soul_doc or soul_doc_path")
-        if self.soul_doc and self.soul_doc_path:
-            raise ValueError("Provide only one of soul_doc or soul_doc_path, not both")
-        return self
-
     def get_soul_doc(self) -> str:
         if self.soul_doc:
             return self.soul_doc
-        assert self.soul_doc_path is not None
-        return self.soul_doc_path.read_text().strip()
+        if self.soul_doc_path is not None:
+            return self.soul_doc_path.read_text().strip()
+        raise ValueError("Must provide either soul_doc or soul_doc_path in data config")
 
 
 class DistillTrainerConfig(BaseSettings):
