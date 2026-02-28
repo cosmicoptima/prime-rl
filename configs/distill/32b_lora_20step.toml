@@ -18,12 +18,9 @@ target_modules = [
     ".*\\.o_proj$",
     ".*\\.gate_up_proj$",
     ".*\\.down_proj$",
-]
-modules_to_save = [
     "lm_head$",
-    ".*\\.embed_tokens$",
-    ".*\\.norm$",
 ]
+modules_to_save = []
 
 [data]
 name = "cosmicoptima/3SgWfLwfa6"
