@@ -3,7 +3,7 @@ max_steps = 200
 [model]
 name = "cosmicoptima/Prathamavatsa"
 trust_remote_code = true
-load_using_meta = true
+load_using_meta = false
 
 [model.ac]
 freq = 1
