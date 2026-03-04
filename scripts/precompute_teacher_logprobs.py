@@ -113,24 +113,14 @@ def main():
         response_logits = logits[0, loss_start:loss_end, :]  # [n_response, vocab]
         response_log_probs = F.log_softmax(response_logits.float(), dim=-1)  # [n_response, vocab]
 
-        # Random sample N vocab indices per position
-        sampled_indices = torch.stack([
-            torch.randperm(vocab_size)[:args.n_samples]
-            for _ in range(n_response)
-        ])  # [n_response, n_samples]
-
-        # Gather logprobs at sampled positions
-        sampled_logprobs = torch.gather(
-            response_log_probs.cpu(),
-            dim=-1,
-            index=sampled_indices,
-        )  # [n_response, n_samples]
+        # Top-K logprobs per position
+        topk_logprobs, topk_indices = torch.topk(response_log_probs.cpu(), k=args.n_samples, dim=-1)
 
         all_results.append({
             "idx": idx,
             "n_response": n_response,
-            "sampled_indices": sampled_indices.to(torch.int32),  # [n_response, n_samples]
-            "sampled_logprobs": sampled_logprobs.to(torch.float16),  # [n_response, n_samples]
+            "sampled_indices": topk_indices.to(torch.int32),  # [n_response, k]
+            "sampled_logprobs": topk_logprobs.to(torch.float16),  # [n_response, k]
         })
 
         if (idx + 1) % 100 == 0:

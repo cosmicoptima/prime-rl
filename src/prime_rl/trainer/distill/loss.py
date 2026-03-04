@@ -40,45 +40,39 @@ def compute_distill_loss(
 
 def compute_distill_loss_frozen(
     student_logits: Float[Tensor, "tokens vocab"],
-    teacher_logprobs: Float[Tensor, "tokens n_samples"],
-    teacher_indices: Int[Tensor, "tokens n_samples"],
+    teacher_logprobs: Float[Tensor, "tokens k"],
+    teacher_indices: Int[Tensor, "tokens k"],
     vocab_size: int,
     temperature: float = 1.0,
 ) -> tuple[Float[Tensor, ""], dict[str, float]]:
     """
     Compute forward KL divergence against frozen (pre-computed) teacher logprobs.
 
-    Uses randomly sampled vocab positions from the teacher. The KL is computed only
-    at the sampled positions and scaled by vocab_size/n_samples for an unbiased
-    gradient estimate.
+    Uses top-K teacher logprobs which capture essentially all probability mass.
 
     Args:
         student_logits: Full student logits at response token positions. [N, V]
-        teacher_logprobs: Pre-computed teacher log-probs at sampled positions. [N, K]
-        teacher_indices: Which vocab indices were sampled. [N, K]
-        vocab_size: Full vocabulary size (for scaling).
+        teacher_logprobs: Pre-computed teacher top-K log-probs. [N, K]
+        teacher_indices: Which vocab indices correspond to the top-K. [N, K]
+        vocab_size: Full vocabulary size (unused with top-K, kept for API compat).
         temperature: Softening temperature.
     """
     student_logits = student_logits / temperature
 
-    # Get student log-probs at the sampled positions
-    student_log_probs_sampled = torch.gather(
+    # Get student log-probs at the top-K positions
+    student_log_probs_at_topk = torch.gather(
         F.log_softmax(student_logits, dim=-1),
         dim=-1,
         index=teacher_indices.long(),
     )  # [N, K]
 
-    # Teacher probs at sampled positions
+    # Teacher probs at top-K positions (renormalize within top-K)
     teacher_logprobs_scaled = teacher_logprobs.float() / temperature
-    teacher_probs_sampled = teacher_logprobs_scaled.exp()
+    teacher_probs_topk = F.softmax(teacher_logprobs_scaled, dim=-1)
 
-    # KL at sampled positions: P * (log P - log Q)
-    kl_sampled = (teacher_probs_sampled * (teacher_logprobs_scaled - student_log_probs_sampled)).sum(dim=-1)
-
-    # Scale by vocab_size / n_samples for unbiased estimate
-    n_samples = teacher_indices.shape[-1]
-    scale = vocab_size / n_samples
-    kl_per_token = kl_sampled * scale
+    # KL at top-K positions: P * (log P - log Q)
+    teacher_log_probs_topk = F.log_softmax(teacher_logprobs_scaled, dim=-1)
+    kl_per_token = (teacher_probs_topk * (teacher_log_probs_topk - student_log_probs_at_topk)).sum(dim=-1)
 
     loss = kl_per_token.mean()
 
