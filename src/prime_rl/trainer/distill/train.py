@@ -11,7 +11,7 @@ from prime_rl.trainer.ckpt import Progress, setup_ckpt_manager
 from prime_rl.trainer.weights import setup_weight_ckpt_manager
 from prime_rl.trainer.distill.config import DistillTrainerConfig
 from prime_rl.trainer.distill.data import setup_dataloader, setup_dataset
-from prime_rl.trainer.distill.loss import compute_distill_loss
+from prime_rl.trainer.distill.loss import compute_distill_loss, compute_distill_loss_frozen
 from prime_rl.utils.logger import setup_logger
 from prime_rl.trainer.optim import setup_optimizer
 from prime_rl.trainer.scheduler import setup_scheduler
@@ -120,6 +120,15 @@ def train(config: DistillTrainerConfig):
             scheduler = setup_scheduler(optimizer, config.scheduler, scheduler_steps, config.optim.lr)
     logger.info(f"Starting from step {progress.step}")
 
+    # Load frozen teacher logprobs if provided
+    frozen_teacher = None
+    if config.frozen_teacher_path is not None:
+        logger.info(f"Loading frozen teacher logprobs from {config.frozen_teacher_path}")
+        frozen_teacher = torch.load(config.frozen_teacher_path, weights_only=False)
+        logger.info(f"Loaded {len(frozen_teacher)} frozen teacher examples")
+        # Build index mapping from dataset idx to frozen teacher idx
+        frozen_teacher_by_idx = {item["idx"]: item for item in frozen_teacher}
+
     logger.info(f"Starting training loop (max_steps={config.max_steps or 'infinite'})")
     max_memory = torch.cuda.mem_get_info()[1] / 1024**3
     is_first_step = True
@@ -183,19 +192,6 @@ def train(config: DistillTrainerConfig):
             student_position_ids = micro_batch["student_position_ids"].to("cuda")
             student_loss_mask = micro_batch["student_loss_mask"].to("cuda")
 
-            # Unpack teacher tensors
-            teacher_input_ids = micro_batch["teacher_input_ids"].to("cuda")
-            teacher_position_ids = micro_batch["teacher_position_ids"].to("cuda")
-            teacher_loss_mask = micro_batch["teacher_loss_mask"].to("cuda")
-
-            # Teacher forward pass (no gradient — inference only)
-            with torch.no_grad():
-                teacher_logits = forward(model, teacher_input_ids, teacher_position_ids)
-
-            # Extract teacher response logits and free the full tensor
-            teacher_response_logits = teacher_logits[teacher_loss_mask].clone()
-            del teacher_logits
-
             # Student forward pass (with gradient)
             with maybe_activation_offloading(config.model.ac_offloading):
                 student_logits = forward(model, student_input_ids, student_position_ids)
@@ -203,21 +199,50 @@ def train(config: DistillTrainerConfig):
             # Extract student response logits
             student_response_logits = student_logits[student_loss_mask]
 
-            # Verify alignment
-            assert teacher_response_logits.shape[0] == student_response_logits.shape[0], (
-                f"Response token count mismatch: teacher={teacher_response_logits.shape[0]}, "
-                f"student={student_response_logits.shape[0]}"
-            )
+            if frozen_teacher is not None:
+                # Frozen teacher mode: use pre-computed logprobs
+                dataset_idx = micro_batch["dataset_idx"].item()
+                teacher_data = frozen_teacher_by_idx[dataset_idx]
+                n_response = teacher_data["n_response"]
 
-            # Compute KL divergence loss
-            loss, loss_metrics = compute_distill_loss(
-                student_response_logits,
-                teacher_response_logits,
-                temperature=config.temperature,
-            )
+                assert student_response_logits.shape[0] == n_response, (
+                    f"Response token count mismatch: student={student_response_logits.shape[0]}, "
+                    f"frozen_teacher={n_response}"
+                )
+
+                loss, loss_metrics = compute_distill_loss_frozen(
+                    student_response_logits,
+                    teacher_data["sampled_logprobs"].to("cuda"),
+                    teacher_data["sampled_indices"].to("cuda"),
+                    vocab_size=student_logits.shape[-1],
+                    temperature=config.temperature,
+                )
+            else:
+                # Online teacher mode: compute teacher logits from current model
+                teacher_input_ids = micro_batch["teacher_input_ids"].to("cuda")
+                teacher_position_ids = micro_batch["teacher_position_ids"].to("cuda")
+                teacher_loss_mask = micro_batch["teacher_loss_mask"].to("cuda")
+
+                with torch.no_grad():
+                    teacher_logits = forward(model, teacher_input_ids, teacher_position_ids)
+
+                teacher_response_logits = teacher_logits[teacher_loss_mask].clone()
+                del teacher_logits
+
+                assert teacher_response_logits.shape[0] == student_response_logits.shape[0], (
+                    f"Response token count mismatch: teacher={teacher_response_logits.shape[0]}, "
+                    f"student={student_response_logits.shape[0]}"
+                )
+
+                loss, loss_metrics = compute_distill_loss(
+                    student_response_logits,
+                    teacher_response_logits,
+                    temperature=config.temperature,
+                )
+                del teacher_response_logits
 
             # Free logits before backward
-            del student_logits, teacher_response_logits, student_response_logits
+            del student_logits, student_response_logits
 
             # Accumulate loss
             current_loss = loss.detach() / grad_accum_steps

@@ -62,6 +62,10 @@ class DistillTrainerConfig(BaseSettings):
 
     # Distillation-specific
     temperature: Annotated[float, Field(description="Temperature for softening distributions.")] = 1.0
+    frozen_teacher_path: Annotated[
+        Path | None,
+        Field(description="Path to pre-computed teacher logprobs (.pt file). If set, uses frozen teacher instead of online teacher."),
+    ] = None
 
     memory_profiler_path: Annotated[Path | None, Field(description="Path to write memory profile to.")] = None
     dist_timeout_seconds: Annotated[int, Field(description="Timeout for torch distributed ops.")] = 600

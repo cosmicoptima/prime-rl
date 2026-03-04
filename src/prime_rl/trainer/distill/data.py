@@ -200,6 +200,9 @@ class DistillDataset(StatefulIterableDataset):
                 if result is None:
                     continue
 
+                # Track original dataset index for frozen teacher lookup
+                result["dataset_idx"] = i
+
                 self.num_samples["distill"] += 1
                 self.num_tokens["distill"] += sum(result["student_loss_mask"])
                 yield result
@@ -207,18 +210,24 @@ class DistillDataset(StatefulIterableDataset):
             self.epoch += 1
 
 
-def _collate_distill(samples: list[dict]) -> DistillBatch:
+def _collate_distill(samples: list[dict]) -> dict:
     """Collate a list of distill samples into a batch."""
-    return {
+    result = {
         "student_input_ids": torch.tensor([s["student_input_ids"] for s in samples]).long(),
         "student_position_ids": torch.tensor([s["student_position_ids"] for s in samples]).long(),
         "student_target_ids": torch.tensor([s["student_target_ids"] for s in samples]).long(),
         "student_loss_mask": torch.tensor([s["student_loss_mask"] for s in samples]).bool(),
-        "teacher_input_ids": torch.tensor([s["teacher_input_ids"] for s in samples]).long(),
-        "teacher_position_ids": torch.tensor([s["teacher_position_ids"] for s in samples]).long(),
-        "teacher_target_ids": torch.tensor([s["teacher_target_ids"] for s in samples]).long(),
-        "teacher_loss_mask": torch.tensor([s["teacher_loss_mask"] for s in samples]).bool(),
     }
+    # Add teacher tensors if present (online mode)
+    if "teacher_input_ids" in samples[0]:
+        result["teacher_input_ids"] = torch.tensor([s["teacher_input_ids"] for s in samples]).long()
+        result["teacher_position_ids"] = torch.tensor([s["teacher_position_ids"] for s in samples]).long()
+        result["teacher_target_ids"] = torch.tensor([s["teacher_target_ids"] for s in samples]).long()
+        result["teacher_loss_mask"] = torch.tensor([s["teacher_loss_mask"] for s in samples]).bool()
+    # Add dataset index if present (for frozen teacher lookup)
+    if "dataset_idx" in samples[0]:
+        result["dataset_idx"] = torch.tensor([s["dataset_idx"] for s in samples]).long()
+    return result
 
 
 def setup_dataset(tokenizer: PreTrainedTokenizer, config: DistillDataConfig, non_dp_size: int = 1) -> DistillDataset:
