@@ -36,4 +36,3 @@ project = "rigel-distill"
 
 [weights]
 interval = 50
-keep = 5
