@@ -182,14 +182,20 @@ class DistillDataset(StatefulIterableDataset):
 
     def __iter__(self):
         dataset = self.dataset
+        # Add original index column before any shuffling
+        if "__orig_idx__" not in dataset.column_names:
+            dataset = dataset.map(lambda _, idx: {"__orig_idx__": idx}, with_indices=True)
+            self.dataset = dataset
+
         while True:
             if self.max_epochs is not None and self.epoch >= self.max_epochs:
                 return
 
+            cur_dataset = dataset
             if self.shuffle:
-                dataset = dataset.shuffle(seed=self.seed + self.epoch)
+                cur_dataset = dataset.shuffle(seed=self.seed + self.epoch)
 
-            for i, example in enumerate(dataset):
+            for i, example in enumerate(cur_dataset):
                 self.step += 1
 
                 # Skip samples not assigned to this data rank
@@ -201,7 +207,7 @@ class DistillDataset(StatefulIterableDataset):
                     continue
 
                 # Track original dataset index for frozen teacher lookup
-                result["dataset_idx"] = i
+                result["dataset_idx"] = example.get("__orig_idx__", i)
 
                 self.num_samples["distill"] += 1
                 self.num_tokens["distill"] += sum(result["student_loss_mask"])
