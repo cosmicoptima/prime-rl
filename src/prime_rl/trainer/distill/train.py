@@ -124,7 +124,7 @@ def train(config: DistillTrainerConfig):
     frozen_teacher = None
     if config.frozen_teacher_path is not None:
         logger.info(f"Loading frozen teacher logprobs from {config.frozen_teacher_path}")
-        frozen_teacher = torch.load(config.frozen_teacher_path, weights_only=False)
+        frozen_teacher = torch.load(config.frozen_teacher_path, weights_only=False, mmap=True)
         logger.info(f"Loaded {len(frozen_teacher)} frozen teacher examples")
         # Build index mapping from dataset idx to frozen teacher idx
         frozen_teacher_by_idx = {item["idx"]: item for item in frozen_teacher}
