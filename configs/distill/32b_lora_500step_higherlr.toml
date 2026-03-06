@@ -1,4 +1,5 @@
 max_steps = 500
+frozen_teacher_path = "/workspace/teacher_logprobs_topk.pt"
 
 [model]
 name = "cosmicoptima/Prathamavatsa"
