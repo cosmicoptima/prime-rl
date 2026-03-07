@@ -96,6 +96,7 @@ async def generate_group(
         sampling_args=sampling_args,
         semaphore=semaphore,
         use_tqdm=use_tqdm,
+        interleave_scoring=not getattr(env, '_disable_interleave_scoring', False),
     )
 
 

@@ -327,5 +327,6 @@ def load_environment(
         parser=parser,
         **kwargs,
     )
+    env._disable_interleave_scoring = True
 
     return env
