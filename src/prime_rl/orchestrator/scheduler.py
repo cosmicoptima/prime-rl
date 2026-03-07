@@ -17,7 +17,7 @@ from prime_rl.orchestrator.utils import get_sampling_args, parse_is_truncated_co
 from prime_rl.utils.client import update_weights
 from prime_rl.utils.logger import get_logger
 from prime_rl.utils.utils import get_latest_ckpt_step, get_step_path, get_weights_dir, sync_wait_for_path
-from prime_rl.utils.vf import generate_group, make_rollouts
+from prime_rl.utils.vf import generate_group, make_rollouts, score_generate_outputs
 
 
 class InflightRolloutInfo(NamedTuple):
@@ -197,31 +197,47 @@ class Scheduler:
         while len(self.inflight_group_rollouts) < self.problems_per_batch:
             await self.schedule_group_rollout()  # Schedule requests in round-robin fashion
 
-        batch_rollouts: list[Rollout] = []
+        # Phase 1: Collect all generated (unscored) groups
+        collected_outputs: list[tuple[GenerateOutputs, AsyncOpenAI]] = []
         pbar = tqdm(total=self.config.batch_size, desc="Generating rollouts (train)")
-        while len(batch_rollouts) < self.config.batch_size:
+        num_collected = 0
+        while num_collected < self.config.batch_size:
             finished_group_rollouts, _ = await asyncio.wait(
                 self.inflight_group_rollouts, return_when=asyncio.FIRST_COMPLETED
             )
 
             for finished_group_rollout in finished_group_rollouts:
-                if len(batch_rollouts) >= self.config.batch_size:
-                    batch_rollouts = batch_rollouts[: self.config.batch_size]
+                if num_collected >= self.config.batch_size:
                     break
 
                 _, client = self.inflight_group_rollouts.pop(finished_group_rollout)
                 generate_outputs: GenerateOutputs = finished_group_rollout.result()
 
-                accepted_rollouts = self.process_generate_outputs(generate_outputs=generate_outputs)
-                batch_rollouts.extend(accepted_rollouts)
-                pbar.update(len(accepted_rollouts))
+                collected_outputs.append((generate_outputs, client))
+                num_collected += len(generate_outputs.reward) if generate_outputs.reward else self.rollouts_per_example
+                pbar.update(self.rollouts_per_example)
 
                 await self.schedule_group_rollout(client)
 
             self.logger.debug(
-                f"Got {len(batch_rollouts)} rollout(s) in batch. Need {self.config.batch_size - len(batch_rollouts)} more."
+                f"Collected {num_collected} rollout(s). Need {self.config.batch_size - num_collected} more."
             )
+        pbar.close()
 
+        # Phase 2: Score all groups concurrently (batch judge calls)
+        self.logger.debug(f"Scoring {len(collected_outputs)} groups concurrently")
+        score_tasks = [score_generate_outputs(self.env, outputs) for outputs, _ in collected_outputs]
+        await asyncio.gather(*score_tasks)
+
+        # Phase 3: Process scored outputs into rollouts
+        batch_rollouts: list[Rollout] = []
+        for generate_outputs, _ in collected_outputs:
+            if len(batch_rollouts) >= self.config.batch_size:
+                break
+            accepted_rollouts = self.process_generate_outputs(generate_outputs=generate_outputs)
+            batch_rollouts.extend(accepted_rollouts)
+
+        batch_rollouts = batch_rollouts[: self.config.batch_size]
         return batch_rollouts
 
     @property
