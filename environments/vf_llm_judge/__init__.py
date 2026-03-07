@@ -113,7 +113,68 @@ class LLMJudgeRubric(Rubric):
         max_concurrent: int = 32,
         **kwargs,
     ):
-        super().__init__(funcs=[], **kwargs)
+        # Async coordination for group judge calls
+        # Maps question text -> asyncio.Future that resolves to scores dict
+        self._judge_futures: dict[str, asyncio.Future] = {}
+        self._pending_responses: dict[str, list[tuple[str, int]]] = {}
+        self._lock = None  # Lazy init
+        self._expected_group_size = 4
+
+        rubric_self = self
+
+        async def judge_reward_func(
+            prompt, completion, answer="", state=None, task="default",
+            info=None, example_id=None, **kw
+        ) -> float:
+            """Per-rollout reward that coordinates group judge calls.
+
+            All rollouts for the same prompt share a Future. The first to
+            register creates it; the last to arrive triggers the judge call
+            and resolves the Future for all waiters.
+            """
+            # Extract question
+            if isinstance(prompt, list):
+                last_msg = prompt[-1]
+                question = str(last_msg["content"]) if isinstance(last_msg, dict) else str(last_msg)
+            else:
+                question = str(prompt)
+
+            # Extract response
+            if isinstance(completion, list):
+                response = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
+            elif isinstance(completion, str):
+                response = completion
+            else:
+                response = str(completion)
+
+            if rubric_self._lock is None:
+                rubric_self._lock = asyncio.Lock()
+
+            async with rubric_self._lock:
+                if question not in rubric_self._pending_responses:
+                    rubric_self._pending_responses[question] = []
+                    rubric_self._judge_futures[question] = asyncio.get_event_loop().create_future()
+
+                idx = len(rubric_self._pending_responses[question])
+                rubric_self._pending_responses[question].append((response, idx))
+
+                # If group complete, fire judge and resolve future
+                if len(rubric_self._pending_responses[question]) >= rubric_self._expected_group_size:
+                    group = rubric_self._pending_responses.pop(question)
+                    future = rubric_self._judge_futures.pop(question)
+                    responses = [r for r, _ in group]
+                    scores = await rubric_self._judge_group(question, responses)
+                    future.set_result(scores)
+                    print(f"[LLM_JUDGE] judged {len(group)} rollouts, scores={[f'{scores.get(LABELS[i],0):.2f}' for i in range(len(group))]}", flush=True)
+                    return scores.get(LABELS[idx], 0.0)
+
+                future = rubric_self._judge_futures[question]
+
+            # Wait for the future (another rollout will trigger the judge call)
+            scores = await future
+            return scores.get(LABELS[idx], 0.0)
+
+        super().__init__(funcs=[judge_reward_func], weights=[1.0], **kwargs)
         self.judge_model = judge_model
         self.judge_api_base = judge_api_base
         self.judge_api_key = judge_api_key
@@ -182,59 +243,6 @@ class LLMJudgeRubric(Rubric):
 
         return {label: 0.0 for label in labels}
 
-    async def score_rollouts(
-        self,
-        prompts: list[Messages],
-        completions: list[Messages],
-        answers: list[str],
-        states: list[State],
-        tasks: list[str],
-        infos: list[Info],
-        example_ids: list[int] | None = None,
-        max_concurrent: int = -1,
-        use_tqdm: bool = True,
-        **kwargs,
-    ) -> RolloutScores:
-        """Score all rollouts by grouping by prompt and calling the judge per group.
-
-        Called by Environment.generate in non-interleaved mode.
-        """
-        n_total = len(completions)
-        print(f"[LLM_JUDGE] score_rollouts called with {n_total} completions", flush=True)
-
-        # All rollouts share the same prompt (generate_group sends one problem)
-        # Extract question
-        prompt = prompts[0] if prompts else ""
-        if isinstance(prompt, list):
-            last_msg = prompt[-1]
-            question = str(last_msg["content"]) if isinstance(last_msg, dict) else str(last_msg)
-        else:
-            question = str(prompt)
-
-        # Extract response texts
-        responses = []
-        for completion in completions:
-            if isinstance(completion, list):
-                text = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
-            elif isinstance(completion, str):
-                text = completion
-            else:
-                text = str(completion)
-            responses.append(text)
-
-        # Call judge (one call for the whole group)
-        scores = await self._judge_group(question, responses)
-
-        # Build flat reward list
-        labels = LABELS[:n_total]
-        all_scores = [scores.get(labels[i], 0.0) for i in range(n_total)]
-
-        print(f"[LLM_JUDGE] rewards: {[f'{s:.2f}' for s in all_scores]}", flush=True)
-
-        return RolloutScores(
-            reward=all_scores,
-            metrics={"judge_score": all_scores},
-        )
 
 
 def load_environment(
