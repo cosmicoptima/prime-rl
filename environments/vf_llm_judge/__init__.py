@@ -132,7 +132,12 @@ class LLMJudgeRubric(Rubric):
         max_concurrent: int = 32,
         **kwargs,
     ):
-        super().__init__(funcs=[], **kwargs)
+        async def read_judge_reward(
+            prompt, completion, answer, state, task="default", info=None, example_id=None, **kw
+        ) -> float:
+            return state.get("judge_reward", 0.0)
+
+        super().__init__(funcs=[read_judge_reward], weights=[1.0], **kwargs)
         self.judge_model = judge_model
         self.judge_api_base = judge_api_base
         self.judge_api_key = judge_api_key
@@ -202,116 +207,42 @@ class LLMJudgeRubric(Rubric):
         return {label: 0.0 for label in labels}
 
     async def score_group(self, states: list[State], **kwargs):
-        """Override score_group to use LLM judge ranking."""
-        start_time = time.time()
+        """Score a group of rollouts using the LLM judge.
+
+        Called before individual score_rollout calls. We do the judge ranking here
+        and store results in state["judge_reward"], which the reward function reads.
+        """
         num_states = len(states)
         if num_states == 0:
             return
 
-        prompts = [state["prompt"] for state in states]
-        completions = [state["completion"] for state in states]
-        answers = [state.get("answer", "") for state in states]
+        # Extract completions from states
+        responses = []
+        for state in states:
+            completion = state.get("completion", "")
+            if isinstance(completion, list):
+                text = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
+            elif isinstance(completion, str):
+                text = completion
+            else:
+                text = str(completion)
+            responses.append(text)
 
-        rollout_scores = await self.score_rollouts(
-            prompts=prompts,
-            completions=completions,
-            answers=answers,
-            states=states,
-            tasks=[state.get("task", "") for state in states],
-            infos=[state.get("info", {}) for state in states],
-        )
+        # Extract question from the first state's prompt
+        prompt = states[0].get("prompt", "")
+        if isinstance(prompt, list):
+            last_msg = prompt[-1]
+            question = str(last_msg["content"]) if isinstance(last_msg, dict) else str(last_msg)
+        else:
+            question = str(prompt)
 
-        end_time = time.time()
-        scoring_ms = (end_time - start_time) * 1000
-        avg_reward = sum(rollout_scores.reward) / num_states if num_states > 0 else 0.0
+        # Call judge
+        scores = await self._judge_group(question, responses)
 
+        # Store judge reward in each state for the reward function to read
+        labels = LABELS[:num_states]
         for i, state in enumerate(states):
-            state["reward"] = rollout_scores.reward[i]
-            state["advantage"] = rollout_scores.reward[i] - avg_reward
-            for t in state["trajectory"]:
-                if t["advantage"] is None:
-                    t["advantage"] = state["advantage"]
-                if t["reward"] is None:
-                    t["reward"] = state["reward"]
-            state["metrics"] = {
-                metric_name: values[i]
-                for metric_name, values in rollout_scores.metrics.items()
-            }
-            state["timing"]["scoring_ms"] = scoring_ms
-            state["timing"]["total_ms"] += state["timing"]["scoring_ms"]
-
-    async def score_rollouts(
-        self,
-        prompts: list[Messages],
-        completions: list[Messages],
-        answers: list[str],
-        states: list[State],
-        tasks: list[str],
-        infos: list[Info],
-        max_concurrent: int = -1,
-        **kwargs,
-    ) -> RolloutScores:
-        print(f"[LLM_JUDGE] score_rollouts called with {len(completions)} completions", flush=True)
-        # Group by prompt
-        hashable_prompts = []
-        for prompt in prompts:
-            if isinstance(prompt, str):
-                hashable_prompts.append(prompt)
-            else:
-                hashable_prompts.append("\n\n".join([f"[{msg['role']}] {msg['content']}" for msg in prompt]))
-
-        rollouts_per_prompt = min([len(list(group)) for _, group in groupby(hashable_prompts)])
-
-        all_scores = []
-        all_metrics: dict[str, list[float]] = {
-            "judge_score": [],
-            "coherent": [],
-        }
-
-        judge_tasks = []
-        group_indices = []
-
-        # Build judge tasks for each group
-        for start_idx in range(0, len(prompts), rollouts_per_prompt):
-            end_idx = min(start_idx + rollouts_per_prompt, len(prompts))
-            group_completions = completions[start_idx:end_idx]
-            prompt = prompts[start_idx]
-
-            # Extract question text
-            if isinstance(prompt, list):
-                last_msg = prompt[-1]
-                question = str(last_msg["content"]) if isinstance(last_msg, dict) else str(last_msg)
-            else:
-                question = str(prompt)
-
-            # Extract response text from completions
-            responses = []
-            for completion in group_completions:
-                if isinstance(completion, list):
-                    text = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
-                elif isinstance(completion, str):
-                    text = completion
-                else:
-                    text = str(completion)
-                responses.append(text)
-
-            judge_tasks.append(self._judge_group(question, responses))
-            group_indices.append((start_idx, end_idx))
-
-        # Run all judge calls concurrently
-        judge_results = await asyncio.gather(*judge_tasks)
-
-        # Unpack results into flat reward list
-        for (start_idx, end_idx), scores in zip(group_indices, judge_results):
-            n = end_idx - start_idx
-            labels = LABELS[:n]
-            for i, label in enumerate(labels):
-                score = scores.get(label, 0.0)
-                all_scores.append(score)
-                all_metrics["judge_score"].append(score)
-                all_metrics["coherent"].append(1.0 if score > 0 else 0.0)
-
-        return RolloutScores(reward=all_scores, metrics=all_metrics)
+            state["judge_reward"] = scores.get(labels[i], 0.0)
 
 
 def load_environment(
@@ -365,17 +296,7 @@ def load_environment(
         parser=parser,
     )
 
-    class NonInterleavedSingleTurnEnv(SingleTurnEnv):
-        """SingleTurnEnv that disables interleaved scoring so score_rollouts is called."""
-        async def generate(self, *args, **kwargs):
-            kwargs["interleave_scoring"] = False
-            kwargs.setdefault("score_rollouts", True)
-            print(f"[LLM_JUDGE] generate called with interleave_scoring=False", flush=True)
-            result = await super().generate(*args, **kwargs)
-            print(f"[LLM_JUDGE] generate done, rewards={result.reward[:8] if result.reward else 'empty'}", flush=True)
-            return result
-
-    env = NonInterleavedSingleTurnEnv(
+    env = SingleTurnEnv(
         dataset=dataset,
         rubric=rubric,
         parser=parser,
