@@ -15,12 +15,6 @@ samples = true
 distributions = true
 interval = 2
 
-[wandb.log_extras.fixed_prompts]
-num_prompts = 5
-interval = 10
-num_samples = 4
-seed = 42
-
 [[env]]
 id = "vf-llm-judge"
 [env.args]
