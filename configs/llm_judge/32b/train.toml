@@ -6,7 +6,6 @@ project = "diksha"
 [model]
 name = "cosmicoptima/Prathamavatsa"
 impl = "liger_kernel"
-trust_remote_code = true
 
 [model.experimental.lora]
 rank = 16
