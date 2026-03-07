@@ -1,4 +1,4 @@
-max_steps = 50
+max_steps = 100
 
 [wandb]
 project = "diksha"
