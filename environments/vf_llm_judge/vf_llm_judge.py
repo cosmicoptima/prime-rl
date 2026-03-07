@@ -150,6 +150,7 @@ class LLMJudgeRubric(Rubric):
             if rubric_self._lock is None:
                 rubric_self._lock = asyncio.Lock()
 
+            should_judge = False
             async with rubric_self._lock:
                 if question not in rubric_self._pending_responses:
                     rubric_self._pending_responses[question] = []
@@ -158,19 +159,23 @@ class LLMJudgeRubric(Rubric):
                 idx = len(rubric_self._pending_responses[question])
                 rubric_self._pending_responses[question].append((response, idx))
 
-                # If group complete, fire judge and resolve future
+                # If group complete, take ownership of judging (outside lock)
                 if len(rubric_self._pending_responses[question]) >= rubric_self._expected_group_size:
                     group = rubric_self._pending_responses.pop(question)
                     future = rubric_self._judge_futures.pop(question)
-                    responses = [r for r, _ in group]
-                    scores = await rubric_self._judge_group(question, responses)
-                    future.set_result(scores)
-                    print(f"[LLM_JUDGE] judged {len(group)} rollouts, scores={[f'{scores.get(LABELS[i],0):.2f}' for i in range(len(group))]}", flush=True)
-                    return scores.get(LABELS[idx], 0.0)
+                    should_judge = True
+                else:
+                    future = rubric_self._judge_futures[question]
 
-                future = rubric_self._judge_futures[question]
+            if should_judge:
+                # Judge call happens OUTSIDE the lock so other groups can proceed
+                responses = [r for r, _ in group]
+                scores = await rubric_self._judge_group(question, responses)
+                future.set_result(scores)
+                print(f"[LLM_JUDGE] judged {len(group)} rollouts, scores={[f'{scores.get(LABELS[i],0):.2f}' for i in range(len(group))]}", flush=True)
+                return scores.get(LABELS[idx], 0.0)
 
-            # Wait for the future (another rollout will trigger the judge call)
+            # Wait for the future (the judging rollout will resolve it)
             scores = await future
             return scores.get(LABELS[idx], 0.0)
 
