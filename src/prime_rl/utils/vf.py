@@ -89,15 +89,36 @@ async def generate_group(
 ) -> vf.GenerateOutputs:
     """Asynchronously generate and score rollouts for one problem."""
     semaphore = get_semaphore()
-    return await env.generate(
+    # Generate without scoring (fast), then score separately
+    results = await env.generate(
         inputs=Dataset.from_list([problem] * rollouts_per_example),
         client=client,
         model=model_name,
         sampling_args=sampling_args,
         semaphore=semaphore,
         use_tqdm=use_tqdm,
-        interleave_scoring=False,
+        score_rollouts=False,
     )
+    # Score via rubric (delegates through EnvGroupRubric to per-env rubrics)
+    rollout_scores = await env.rubric.score_rollouts(
+        prompts=results.prompt,
+        completions=results.completion,
+        answers=results.answer,
+        states=results.state,
+        tasks=results.task,
+        infos=results.info,
+        example_ids=results.example_id,
+    )
+    results.reward = rollout_scores.reward
+    results.metrics = rollout_scores.metrics
+    # Update metadata
+    if results.reward:
+        results.metadata.avg_reward = sum(results.reward) / len(results.reward)
+        results.metadata.avg_metrics = {
+            name: sum(values) / len(values) if values else 0.0
+            for name, values in results.metrics.items()
+        }
+    return results
 
 
 async def generate_batch(
