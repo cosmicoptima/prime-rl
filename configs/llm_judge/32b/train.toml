@@ -1,7 +1,7 @@
 max_steps = 100
 
 [wandb]
-project = "rigel-rl"
+project = "diksha"
 
 [model]
 name = "cosmicoptima/Prathamavatsa"
@@ -9,26 +9,30 @@ name = "cosmicoptima/Prathamavatsa"
 [model.experimental.lora]
 rank = 16
 alpha = 256.0
-dropout = 0.0
+dropout = 0.05
 target_modules = [
    ".*\\.q_proj$",
    ".*\\.k_proj$",
    ".*\\.v_proj$",
    ".*\\.o_proj$",
-   ".*\\.gate_up_proj$",
-   ".*\\.down_proj$",
 ]
-modules_to_save = []
+modules_to_save = [
+   "lm_head$",
+   ".*\\.embed_tokens$",
+   ".*\\.norm$",
+]
 
 [model.ac]
 freq = 1
 
 [optim]
-lr = 5e-6
-max_norm = 1.0
+lr = 4e-5
+max_norm = 0.02
+weight_decay = 0.001
 
 [ckpt]
 interval = 50
 
 [weights]
-interval = 50
+interval = 25
+save_format = "safetensors"

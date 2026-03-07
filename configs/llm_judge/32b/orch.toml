@@ -8,7 +8,7 @@ mask_truncated_completions = false
 name = "cosmicoptima/Prathamavatsa"
 
 [wandb]
-project = "rigel-rl"
+project = "diksha"
 
 [wandb.log_extras]
 samples = true
