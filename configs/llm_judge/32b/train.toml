@@ -35,5 +35,5 @@ weight_decay = 0.001
 interval = 50
 
 [weights]
-interval = 25
+interval = 10
 save_format = "safetensors"
