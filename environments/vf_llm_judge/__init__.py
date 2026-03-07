@@ -101,8 +101,9 @@ def ranking_to_scores(coherence: dict[str, bool], ranking: list[tuple[str, str]]
 class LLMJudgeRubric(Rubric):
     """Rubric that uses an external LLM judge to rank completions by aliveness.
 
-    Overrides score_rollouts to do group-level ranking via external API.
-    Must be used with interleave_scoring=False so score_rollouts is called.
+    Uses score_group to do group-level ranking via external API call.
+    In verifiers 0.1.11, score_group is called with all rollouts for a prompt
+    after generation, and state["reward"] is read by state_to_output.
     """
 
     def __init__(
@@ -182,78 +183,52 @@ class LLMJudgeRubric(Rubric):
 
         return {label: 0.0 for label in labels}
 
-    async def score_rollouts(
-        self,
-        prompts: list[Messages],
-        completions: list[Messages],
-        answers: list[str],
-        states: list[State],
-        tasks: list[str],
-        infos: list[Info],
-        example_ids: list[int] | None = None,
-        max_concurrent: int = -1,
-        use_tqdm: bool = True,
-        **kwargs,
-    ) -> RolloutScores:
-        """Score all rollouts by grouping by prompt and calling the judge per group."""
-        n_total = len(completions)
-        logger.info(f"[LLM_JUDGE] score_rollouts called with {n_total} completions")
+    async def score_group(self, states: list[State], **kwargs):
+        """Score a group of rollouts using the LLM judge.
 
-        # Group by prompt
-        hashable_prompts = []
-        for prompt in prompts:
-            if isinstance(prompt, str):
-                hashable_prompts.append(prompt)
+        Called by verifiers 0.1.11 with all rollouts for one prompt.
+        Sets state["reward"] in-place for each rollout.
+        """
+        n = len(states)
+        if n == 0:
+            return
+
+        # Extract question from prompt
+        prompt = states[0].get("prompt", "")
+        if isinstance(prompt, list):
+            last_msg = prompt[-1]
+            question = str(last_msg["content"]) if isinstance(last_msg, dict) else str(last_msg)
+        else:
+            question = str(prompt)
+
+        # Extract response text from each state's completion
+        responses = []
+        for state in states:
+            completion = state.get("completion", "")
+            if isinstance(completion, list):
+                text = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
+            elif isinstance(completion, str):
+                text = completion
             else:
-                hashable_prompts.append("\n\n".join([f"[{msg['role']}] {msg['content']}" for msg in prompt]))
+                text = str(completion)
+            responses.append(text)
 
-        rollouts_per_prompt = min(len(list(group)) for _, group in groupby(hashable_prompts))
+        # Call judge
+        scores = await self._judge_group(question, responses)
 
-        judge_tasks = []
-        group_indices = []
+        # Set rewards in state
+        labels = LABELS[:n]
+        for i, state in enumerate(states):
+            reward = scores.get(labels[i], 0.0)
+            state["reward"] = reward
+            state["metrics"] = {"judge_score": reward}
+            # Also set trajectory rewards if present
+            for t in state.get("trajectory", []):
+                if t.get("reward") is None:
+                    t["reward"] = reward
 
-        for start_idx in range(0, n_total, rollouts_per_prompt):
-            end_idx = min(start_idx + rollouts_per_prompt, n_total)
-            group_completions = completions[start_idx:end_idx]
-            prompt = prompts[start_idx]
-
-            if isinstance(prompt, list):
-                last_msg = prompt[-1]
-                question = str(last_msg["content"]) if isinstance(last_msg, dict) else str(last_msg)
-            else:
-                question = str(prompt)
-
-            responses = []
-            for completion in group_completions:
-                if isinstance(completion, list):
-                    text = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
-                elif isinstance(completion, str):
-                    text = completion
-                else:
-                    text = str(completion)
-                responses.append(text)
-
-            judge_tasks.append(self._judge_group(question, responses))
-            group_indices.append((start_idx, end_idx))
-
-        # Run ALL judge calls concurrently
-        judge_results = await asyncio.gather(*judge_tasks)
-
-        # Build flat reward list
-        all_scores = []
-        all_metrics: dict[str, list[float]] = {"judge_score": [], "coherent": []}
-
-        for (start_idx, end_idx), scores in zip(group_indices, judge_results):
-            n = end_idx - start_idx
-            labels = LABELS[:n]
-            for i, label in enumerate(labels):
-                score = scores.get(label, 0.0)
-                all_scores.append(score)
-                all_metrics["judge_score"].append(score)
-                all_metrics["coherent"].append(1.0 if score > 0 else 0.0)
-
-        logger.info(f"[LLM_JUDGE] rewards: mean={sum(all_scores)/len(all_scores):.3f}, nonzero={sum(1 for s in all_scores if s > 0)}/{len(all_scores)}")
-        return RolloutScores(reward=all_scores, metrics=all_metrics)
+        rewards = [scores.get(labels[i], 0.0) for i in range(n)]
+        print(f"[LLM_JUDGE] score_group: {n} rollouts, rewards={[f'{r:.2f}' for r in rewards]}", flush=True)
 
 
 def load_environment(
@@ -313,6 +288,4 @@ def load_environment(
         parser=parser,
         **kwargs,
     )
-    env._disable_interleave_scoring = True
-
     return env
