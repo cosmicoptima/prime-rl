@@ -364,11 +364,16 @@ def load_environment(
         parser=parser,
     )
 
-    env = SingleTurnEnv(
+    class NonInterleavedSingleTurnEnv(SingleTurnEnv):
+        """SingleTurnEnv that disables interleaved scoring so score_rollouts is called."""
+        async def generate(self, *args, **kwargs):
+            kwargs["interleave_scoring"] = False
+            return await super().generate(*args, **kwargs)
+
+    env = NonInterleavedSingleTurnEnv(
         dataset=dataset,
         rubric=rubric,
         parser=parser,
-        interleave_scoring=False,  # Must be False so score_rollouts (group ranking) is used
         **kwargs,
     )
 
