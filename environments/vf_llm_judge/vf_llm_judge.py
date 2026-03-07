@@ -368,6 +368,7 @@ def load_environment(
         dataset=dataset,
         rubric=rubric,
         parser=parser,
+        interleave_scoring=False,  # Must be False so score_rollouts (group ranking) is used
         **kwargs,
     )
 
