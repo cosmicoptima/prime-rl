@@ -251,6 +251,7 @@ class LLMJudgeRubric(Rubric):
         max_concurrent: int = -1,
         **kwargs,
     ) -> RolloutScores:
+        print(f"[LLM_JUDGE] score_rollouts called with {len(completions)} completions", flush=True)
         # Group by prompt
         hashable_prompts = []
         for prompt in prompts:
@@ -368,7 +369,11 @@ def load_environment(
         """SingleTurnEnv that disables interleaved scoring so score_rollouts is called."""
         async def generate(self, *args, **kwargs):
             kwargs["interleave_scoring"] = False
-            return await super().generate(*args, **kwargs)
+            kwargs.setdefault("score_rollouts", True)
+            print(f"[LLM_JUDGE] generate called with interleave_scoring=False", flush=True)
+            result = await super().generate(*args, **kwargs)
+            print(f"[LLM_JUDGE] generate done, rewards={result.reward[:8] if result.reward else 'empty'}", flush=True)
+            return result
 
     env = NonInterleavedSingleTurnEnv(
         dataset=dataset,
