@@ -288,4 +288,6 @@ def load_environment(
         parser=parser,
         **kwargs,
     )
+    env.set_score_rollouts(True)
+
     return env
