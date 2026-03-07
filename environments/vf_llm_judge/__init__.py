@@ -132,16 +132,78 @@ class LLMJudgeRubric(Rubric):
         max_concurrent: int = 32,
         **kwargs,
     ):
-        async def read_judge_reward(
+        self._judge_model = judge_model
+        self._judge_api_base = judge_api_base
+        self._judge_api_key = judge_api_key
+        self._max_concurrent = max_concurrent
+        self._client_instance = None
+        self._sem_instance = None
+        # Cache: maps (question_hash, response_text) -> score
+        self._score_cache: dict[tuple[str, str], float] = {}
+        # Pending: maps question_hash -> list of (response_text, asyncio.Event, index)
+        self._pending: dict[str, list] = {}
+        self._pending_lock = asyncio.Lock() if asyncio.get_event_loop().is_running() else None
+        self._group_size = 4  # Expected rollouts_per_example
+
+        rubric_self = self  # capture for closure
+
+        async def judge_reward(
             prompt, completion, answer, state, task="default", info=None, example_id=None, **kw
         ) -> float:
-            return state.get("judge_reward", 0.0)
+            """Reward function that batches judge calls per prompt group."""
+            # Extract question
+            if isinstance(prompt, list):
+                last_msg = prompt[-1]
+                question = str(last_msg["content"]) if isinstance(last_msg, dict) else str(last_msg)
+            else:
+                question = str(prompt)
 
-        super().__init__(funcs=[read_judge_reward], weights=[1.0], **kwargs)
-        self.judge_model = judge_model
-        self.judge_api_base = judge_api_base
-        self.judge_api_key = judge_api_key
-        self.max_concurrent = max_concurrent
+            # Extract response text
+            if isinstance(completion, list):
+                response = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
+            elif isinstance(completion, str):
+                response = completion
+            else:
+                response = str(completion)
+
+            q_hash = hash(question)
+            cache_key = (q_hash, response)
+
+            # Check cache
+            if cache_key in rubric_self._score_cache:
+                return rubric_self._score_cache[cache_key]
+
+            # Register this rollout and wait for the group to be complete
+            event = asyncio.Event()
+            if rubric_self._pending_lock is None:
+                rubric_self._pending_lock = asyncio.Lock()
+
+            async with rubric_self._pending_lock:
+                if q_hash not in rubric_self._pending:
+                    rubric_self._pending[q_hash] = []
+                idx = len(rubric_self._pending[q_hash])
+                rubric_self._pending[q_hash].append((response, event, idx))
+
+                # If we have enough rollouts, trigger the judge call
+                if len(rubric_self._pending[q_hash]) >= rubric_self._group_size:
+                    group = rubric_self._pending.pop(q_hash)
+                    responses = [r for r, _, _ in group]
+                    scores = await rubric_self._judge_group(question, responses)
+                    labels = LABELS[:len(responses)]
+                    for i, (resp, evt, _) in enumerate(group):
+                        score = scores.get(labels[i], 0.0)
+                        rubric_self._score_cache[(q_hash, resp)] = score
+                        evt.set()
+
+            # Wait for our score to be computed
+            await event.wait()
+            return rubric_self._score_cache.get(cache_key, 0.0)
+
+        super().__init__(funcs=[judge_reward], weights=[1.0], **kwargs)
+        self.judge_model = self._judge_model
+        self.judge_api_base = self._judge_api_base
+        self.judge_api_key = self._judge_api_key
+        self.max_concurrent = self._max_concurrent
         self._client = None
         self._sem = None
 
@@ -206,43 +268,6 @@ class LLMJudgeRubric(Rubric):
 
         return {label: 0.0 for label in labels}
 
-    async def score_group(self, states: list[State], **kwargs):
-        """Score a group of rollouts using the LLM judge.
-
-        Called before individual score_rollout calls. We do the judge ranking here
-        and store results in state["judge_reward"], which the reward function reads.
-        """
-        num_states = len(states)
-        if num_states == 0:
-            return
-
-        # Extract completions from states
-        responses = []
-        for state in states:
-            completion = state.get("completion", "")
-            if isinstance(completion, list):
-                text = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
-            elif isinstance(completion, str):
-                text = completion
-            else:
-                text = str(completion)
-            responses.append(text)
-
-        # Extract question from the first state's prompt
-        prompt = states[0].get("prompt", "")
-        if isinstance(prompt, list):
-            last_msg = prompt[-1]
-            question = str(last_msg["content"]) if isinstance(last_msg, dict) else str(last_msg)
-        else:
-            question = str(prompt)
-
-        # Call judge
-        scores = await self._judge_group(question, responses)
-
-        # Store judge reward in each state for the reward function to read
-        labels = LABELS[:num_states]
-        for i, state in enumerate(states):
-            state["judge_reward"] = scores.get(labels[i], 0.0)
 
 
 def load_environment(
