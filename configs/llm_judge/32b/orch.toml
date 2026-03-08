@@ -26,4 +26,4 @@ openrouter_api_key_env = "PI_API_KEY"
 max_tokens = 1024
 
 [ckpt]
-interval = 50
+interval = 5
