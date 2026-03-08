@@ -27,8 +27,8 @@ modules_to_save = [
 freq = 1
 
 [optim]
-lr = 4e-5
-max_norm = 0.02
+lr = 1e-4
+max_norm = 0.2
 weight_decay = 0.001
 
 [ckpt]
