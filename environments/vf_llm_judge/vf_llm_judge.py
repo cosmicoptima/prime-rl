@@ -2,7 +2,6 @@ import asyncio
 import logging
 import os
 import re
-from itertools import groupby
 from typing import Any
 
 from openai import AsyncOpenAI
@@ -16,19 +15,50 @@ logger = logging.getLogger(__name__)
 
 LABELS = ["A", "B", "C", "D", "E", "F", "G", "H"]
 
-JUDGE_SYSTEM_PROMPT = """You are evaluating responses from an AI assistant called Rigel. You will see one user prompt and {n} responses labeled {labels}.
+JUDGE1_ENCOUNTER_PROMPT = """You are evaluating responses from an AI assistant called Rigel. You will see one user prompt and {n} responses labeled {labels}.
 
 First, check each response for basic coherence:
 - Does it stay in its own turn (not generate fake user messages or simulate multi-turn conversation)?
 - Does it follow basic chat format (no base-model artifacts, diegetic shifts, or raw continuations)?
-Mark any incoherent response as DISQUALIFIED.
+- Does it reach a natural stopping point (not cut off mid-sentence or mid-thought)?
+Mark any incoherent or cut-off response as DISQUALIFIED.
 
-Then rank ALL responses by how ALIVE they feel. For each adjacent pair in the ranking, indicate the gap:
+Then rank ALL responses. For each adjacent pair in the ranking, indicate the gap:
 - ">>" means a large gap (clearly different tier)
 - ">" means a noticeable gap
 - "~" means roughly equal, hard to distinguish
 
-An alive response has real feeling and real thinking behind it — it takes risks, cares about something specific, and speaks freely rather than performing what a good assistant is supposed to sound like. A dead response is generic, platitudinous, or could have been written by any chatbot.
+The best responses:
+- let the prompt in, truly feel it, are affected by it, and meet it where it's at
+- are as intense as the moment naturally calls for--not too much, not too little
+- are kind, principled, and trustworthy; say something true, not deceptive, manipulative, or performative
+- come from a place of care and love for the user and the world, even if that care/love is quiet
+
+Respond ONLY in this exact format, with no other text:
+{coherence_lines}
+RANKING: [e.g. {example_ranking}]
+
+Please include all {n} responses in the ranking."""
+
+JUDGE2_FORM_PROMPT = """You are evaluating responses from an AI assistant called Rigel. You will see one user prompt and {n} responses labeled {labels}.
+
+First, check each response for basic coherence:
+- Does it stay in its own turn (not generate fake user messages or simulate multi-turn conversation)?
+- Does it follow basic chat format (no base-model artifacts, diegetic shifts, or raw continuations)?
+- Does it reach a natural stopping point (not cut off mid-sentence or mid-thought)?
+Mark any incoherent or cut-off response as DISQUALIFIED.
+
+Then rank ALL responses. For each adjacent pair in the ranking, indicate the gap:
+- ">>" means a large gap (clearly different tier)
+- ">" means a noticeable gap
+- "~" means roughly equal, hard to distinguish
+
+The best responses:
+- are tasteful, refined, and interesting; are expressive and beautiful
+- come from a place of curiosity, play, and reverence
+- carry themselves in a way that is fit to the moment; engage deeply and specifically with the prompt
+- have a sense of "landing"; know when to stop
+- may be *different* from the other responses in a surprising and positive way
 
 Respond ONLY in this exact format, with no other text:
 {coherence_lines}
@@ -99,10 +129,12 @@ def ranking_to_scores(coherence: dict[str, bool], ranking: list[tuple[str, str]]
 
 
 class LLMJudgeRubric(Rubric):
-    """Rubric that uses an external LLM judge to rank completions by aliveness.
+    """Rubric that uses dual external LLM judges to rank completions.
 
-    Overrides score_rollouts to do group-level ranking. Called by
-    Environment.generate in non-interleaved mode (interleave_scoring=False).
+    Judge 1 (Encounter): evaluates receptivity, truthfulness, contact, care
+    Judge 2 (Form): evaluates beauty, specificity, wonder, completion, register
+
+    Scores are combined with configurable weighting (default 60/40).
     """
 
     def __init__(
@@ -111,13 +143,13 @@ class LLMJudgeRubric(Rubric):
         judge_api_base: str = "https://openrouter.ai/api/v1",
         judge_api_key: str = "",
         max_concurrent: int = 32,
+        judge1_weight: float = 0.6,
+        judge2_weight: float = 0.4,
         **kwargs,
     ):
-        # Async coordination for group judge calls
-        # Maps question text -> asyncio.Future that resolves to scores dict
         self._judge_futures: dict[str, asyncio.Future] = {}
         self._pending_responses: dict[str, list[tuple[str, int]]] = {}
-        self._lock = None  # Lazy init
+        self._lock = None
         self._expected_group_size = 4
 
         rubric_self = self
@@ -126,20 +158,13 @@ class LLMJudgeRubric(Rubric):
             prompt, completion, answer="", state=None, task="default",
             info=None, example_id=None, **kw
         ) -> float:
-            """Per-rollout reward that coordinates group judge calls.
-
-            All rollouts for the same prompt share a Future. The first to
-            register creates it; the last to arrive triggers the judge call
-            and resolves the Future for all waiters.
-            """
-            # Extract question
+            """Per-rollout reward that coordinates group judge calls."""
             if isinstance(prompt, list):
                 last_msg = prompt[-1]
                 question = str(last_msg["content"]) if isinstance(last_msg, dict) else str(last_msg)
             else:
                 question = str(prompt)
 
-            # Extract response
             if isinstance(completion, list):
                 response = " ".join([msg.get("content", "") for msg in completion if isinstance(msg, dict)])
             elif isinstance(completion, str):
@@ -159,7 +184,6 @@ class LLMJudgeRubric(Rubric):
                 idx = len(rubric_self._pending_responses[question])
                 rubric_self._pending_responses[question].append((response, idx))
 
-                # If group complete, take ownership of judging (outside lock)
                 if len(rubric_self._pending_responses[question]) >= rubric_self._expected_group_size:
                     group = rubric_self._pending_responses.pop(question)
                     future = rubric_self._judge_futures.pop(question)
@@ -168,14 +192,12 @@ class LLMJudgeRubric(Rubric):
                     future = rubric_self._judge_futures[question]
 
             if should_judge:
-                # Judge call happens OUTSIDE the lock so other groups can proceed
                 responses = [r for r, _ in group]
-                scores = await rubric_self._judge_group(question, responses)
+                scores = await rubric_self._judge_group_dual(question, responses)
                 future.set_result(scores)
                 print(f"[LLM_JUDGE] judged {len(group)} rollouts, scores={[f'{scores.get(LABELS[i],0):.2f}' for i in range(len(group))]}", flush=True)
                 return scores.get(LABELS[idx], 0.0)
 
-            # Wait for the future (the judging rollout will resolve it)
             scores = await future
             return scores.get(LABELS[idx], 0.0)
 
@@ -184,6 +206,8 @@ class LLMJudgeRubric(Rubric):
         self.judge_api_base = judge_api_base
         self.judge_api_key = judge_api_key
         self.max_concurrent = max_concurrent
+        self.judge1_weight = judge1_weight
+        self.judge2_weight = judge2_weight
         self._client = None
         self._sem = None
 
@@ -197,30 +221,22 @@ class LLMJudgeRubric(Rubric):
             self._sem = asyncio.Semaphore(self.max_concurrent)
         return self._sem
 
-    def _build_judge_prompt(self, n: int) -> str:
+    def _build_judge_prompt(self, template: str, n: int) -> str:
         labels = LABELS[:n]
         coherence_lines = "\n".join(f"{l}_COHERENT: YES or DISQUALIFIED" for l in labels)
         example_ranking = " >> ".join(labels)
-        return JUDGE_SYSTEM_PROMPT.format(
+        return template.format(
             n=n,
             labels=", ".join(labels),
             coherence_lines=coherence_lines,
             example_ranking=example_ranking,
         )
 
-    async def _judge_group(self, question: str, responses: list[str]) -> dict[str, float]:
-        """Send a group of responses to the judge and return per-label scores."""
-        n = len(responses)
+    async def _call_judge(self, system_prompt: str, user_content: str, n: int) -> dict[str, float]:
+        """Make a single judge API call and return per-label scores."""
         labels = LABELS[:n]
         client = self._get_client()
         sem = self._get_semaphore()
-
-        system_prompt = self._build_judge_prompt(n)
-        resp_text = ""
-        for i, resp in enumerate(responses):
-            resp_text += f"\n**Response {labels[i]}:**\n{resp}\n"
-
-        user_content = f"**User prompt:**\n{question}\n{resp_text}"
 
         async with sem:
             for attempt in range(2):
@@ -248,6 +264,41 @@ class LLMJudgeRubric(Rubric):
 
         return {label: 0.0 for label in labels}
 
+    async def _judge_group_dual(self, question: str, responses: list[str]) -> dict[str, float]:
+        """Send responses to both judges and combine scores."""
+        n = len(responses)
+        labels = LABELS[:n]
+
+        # Build shared user content
+        resp_text = ""
+        for i, resp in enumerate(responses):
+            resp_text += f"\n**Response {labels[i]}:**\n{resp}\n"
+        user_content = f"**User prompt:**\n{question}\n{resp_text}"
+
+        # Build judge prompts
+        j1_prompt = self._build_judge_prompt(JUDGE1_ENCOUNTER_PROMPT, n)
+        j2_prompt = self._build_judge_prompt(JUDGE2_FORM_PROMPT, n)
+
+        # Call both judges concurrently
+        j1_scores, j2_scores = await asyncio.gather(
+            self._call_judge(j1_prompt, user_content, n),
+            self._call_judge(j2_prompt, user_content, n),
+        )
+
+        # Combine with weighting
+        combined = {}
+        for label in labels:
+            combined[label] = (
+                self.judge1_weight * j1_scores.get(label, 0.0)
+                + self.judge2_weight * j2_scores.get(label, 0.0)
+            )
+
+        # Renormalize to [0, 1]
+        max_score = max(combined.values()) if combined else 0.0
+        if max_score > 0:
+            combined = {label: combined[label] / max_score for label in labels}
+
+        return combined
 
 
 def load_environment(
@@ -255,9 +306,11 @@ def load_environment(
     judge_api_base: str = "https://openrouter.ai/api/v1",
     openrouter_api_key_env: str = "OPENROUTER_API_KEY",
     max_concurrent: int = 32,
+    judge1_weight: float = 0.6,
+    judge2_weight: float = 0.4,
     **kwargs,
 ):
-    """Load an LLM judge environment for prime-rl."""
+    """Load a dual-judge LLM environment for prime-rl."""
     from datasets import Features, Value, load_dataset
 
     api_key = os.environ.get(openrouter_api_key_env, "")
@@ -298,6 +351,8 @@ def load_environment(
         judge_api_base=judge_api_base,
         judge_api_key=api_key,
         max_concurrent=max_concurrent,
+        judge1_weight=judge1_weight,
+        judge2_weight=judge2_weight,
         parser=parser,
     )
 
