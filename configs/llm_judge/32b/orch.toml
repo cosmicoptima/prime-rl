@@ -21,6 +21,8 @@ id = "vf-llm-judge"
 judge_model = "moonshotai/kimi-k2-0905"
 judge_api_base = "https://api.pinference.ai/api/v1"
 openrouter_api_key_env = "PI_API_KEY"
+judge1_weight = 0.5
+judge2_weight = 0.5
 
 [sampling]
 max_tokens = 1024
