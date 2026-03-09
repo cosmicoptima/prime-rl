@@ -8,7 +8,7 @@ name = "cosmicoptima/Prathamavatsa"
 impl = "liger_kernel"
 
 [model.experimental.lora]
-rank = 16
+rank = 128
 alpha = 256.0
 dropout = 0.05
 target_modules = [
