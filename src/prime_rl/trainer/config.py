@@ -426,3 +426,10 @@ class WeightCheckpointConfig(BaseConfig):
             description="Whether to save LoRA adapters separately before merging into full model weights.",
         ),
     ] = False
+
+    delta_dir: Annotated[
+        str,
+        Field(
+            description="Directory for LoRA delta weight saves. Use /dev/shm for RAM-backed fast I/O if it has enough space, or /tmp otherwise.",
+        ),
+    ] = "/tmp"

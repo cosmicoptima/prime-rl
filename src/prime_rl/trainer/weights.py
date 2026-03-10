@@ -494,17 +494,23 @@ class WeightCheckpointManager:
                 "lora_targets": sorted(lora_targets),
             }
 
-            # Save to /dev/shm (RAM-backed) for fast I/O, symlink from weights dir
-            shm_path = Path(f"/dev/shm/lora_delta_step_{step}.pt")
-            torch.save(checkpoint, shm_path)
+            # Save to delta_dir for fast I/O, symlink from weights dir
+            delta_dir = Path(self.config.delta_dir)
+            delta_dir.mkdir(parents=True, exist_ok=True)
+            delta_path = delta_dir / f"lora_delta_step_{step}.pt"
+            # Clean up previous delta to avoid filling disk
+            for old in delta_dir.glob("lora_delta_step_*.pt"):
+                if old != delta_path:
+                    old.unlink(missing_ok=True)
+            torch.save(checkpoint, delta_path)
             link_path = step_path / "lora_delta.pt"
             link_path.unlink(missing_ok=True)
-            link_path.symlink_to(shm_path)
+            link_path.symlink_to(delta_path)
             (step_path / "STABLE").touch()
 
             total_size = sum(v.numel() * v.element_size() for v in lora_state.values())
             total_size += sum(v.numel() * v.element_size() for v in modules_to_save_state.values())
-            self._logger.debug(f"Saved LoRA delta to {shm_path} ({total_size / 1024**2:.1f} MB)")
+            self._logger.debug(f"Saved LoRA delta to {delta_path} ({total_size / 1024**2:.1f} MB)")
 
     def create_stable_file(self, step: int):
         step_path = self._get_step_path(step)
