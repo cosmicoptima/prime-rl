@@ -304,10 +304,40 @@ class WeightCheckpointManager:
 
         self._logger.debug(f"Saved LoRA adapters to {adapter_path}")
 
+    def _get_trainable_keys(self, model: nn.Module) -> set[str]:
+        """Get the set of FQN keys for parameters that are trainable (LoRA-affected or modules_to_save)."""
+        trainable_keys = set()
+        for name, param in model.named_parameters():
+            if param.requires_grad:
+                fqns = get_fqns(model, name)
+                assert len(fqns) == 1
+                fqn = next(iter(fqns))
+                # For LoRA layers, the merged weight is stored on the base_layer
+                # After clean_lora_state_dict, ".base_layer." gets removed
+                fqn = fqn.replace(".base_layer.", ".")
+                # LoRA A/B params map to the base weight key (without .lora_A/.lora_B suffix)
+                if "lora_A" in fqn or "lora_B" in fqn:
+                    # e.g. "model.layers.0.self_attn.q_proj.lora_A" -> "model.layers.0.self_attn.q_proj.weight"
+                    fqn = fqn.rsplit(".", 1)[0] + ".weight"
+                trainable_keys.add(fqn)
+        return trainable_keys
+
     def _gather_weights(
-        self, model: nn.Module, dtype: torch.dtype = torch.bfloat16, has_lora_layers: bool = False
+        self, model: nn.Module, dtype: torch.dtype = torch.bfloat16, has_lora_layers: bool = False,
+        only_trainable: bool = False,
     ) -> dict[str, Tensor]:
-        """Gather distributed weights for weight checkpoint."""
+        """Gather distributed weights for weight checkpoint.
+
+        Args:
+            only_trainable: If True, only gather weights that were modified by LoRA or are in modules_to_save.
+                           This is much faster for filesystem broadcast (saves ~200MB instead of ~61GB).
+        """
+        # Pre-compute which keys to include if doing partial gather
+        trainable_keys = None
+        if only_trainable and has_lora_layers:
+            trainable_keys = self._get_trainable_keys(model)
+            self._logger.debug(f"Partial weight gather: {len(trainable_keys)} trainable keys")
+
         original_lora_state = None
         if has_lora_layers:
             original_lora_state = merge_lora_weights_inplace(model)
@@ -319,17 +349,25 @@ class WeightCheckpointManager:
 
                 cpu_state = {}
                 for key, value in model.state_dict().items():
+                    # Resolve FQN early so we can filter
+                    raw_fqns = get_fqns(model, key)
+                    assert len(raw_fqns) == 1
+                    fqn = next(iter(raw_fqns))
+
+                    # For partial gather, skip keys that aren't trainable
+                    if trainable_keys is not None:
+                        clean_fqn = fqn.replace(".base_layer.", ".")
+                        if clean_fqn not in trainable_keys:
+                            continue
+
                     if isinstance(value, DTensor):
                         value = value.to(dtype)
                         # only gather after the downcast to dtype as it will be faster
                         value = value.full_tensor()
 
                     if self._is_master:
-                        key = get_fqns(model, key)
-                        assert len(key) == 1
-                        key = next(iter(key))
                         # TODO(Sami) Blocking to avoid race condition, should make non-blocking long-term tho
-                        cpu_state[key] = value.to("cpu", non_blocking=False)
+                        cpu_state[fqn] = value.to("cpu", non_blocking=False)
 
                 torch.distributed.barrier()
 
@@ -384,6 +422,90 @@ class WeightCheckpointManager:
         (step_path / "STABLE").touch()
         self._logger.debug(f"Saved weight checkpoint to {step_path} in {time.time() - start_time:.2f} seconds")
 
+    def save_lora_delta(self, model: nn.Module, step: int, dtype: torch.dtype = torch.bfloat16) -> None:
+        """Save raw LoRA A/B matrices and modules_to_save for fast delta-based weight updates.
+
+        Saves a compact lora_delta.pt file (~200MB for rank 16) instead of the full merged model (~61GB).
+        The inference worker applies the delta in-place.
+        """
+        from prime_rl.trainer.lora import LoRALinear
+
+        lora_state = {}
+        lora_targets = set()
+        modules_to_save_state = {}
+
+        for name, module in model.named_modules():
+            if isinstance(module, LoRALinear):
+                # Get the clean FQN for this module
+                # Gather LoRA A (all ranks must participate for DTensor)
+                lora_a = module.lora_A.data
+                lora_b = module.lora_B.data
+                if isinstance(lora_a, DTensor):
+                    lora_a = lora_a.full_tensor()
+                if isinstance(lora_b, DTensor):
+                    lora_b = lora_b.full_tensor()
+
+                if self._is_master:
+                    # Get clean key: resolve FSDP FQN and clean up
+                    # The module name in named_modules corresponds to the parameter prefix
+                    fqn_candidates = get_fqns(model, name + ".lora_A")
+                    assert len(fqn_candidates) == 1
+                    fqn = next(iter(fqn_candidates))
+                    # Clean: "model.layers.0.self_attn.q_proj.lora_A" -> prefix is "model.layers.0.self_attn.q_proj"
+                    clean_prefix = fqn.replace(".base_layer.", ".").rsplit(".lora_A", 1)[0]
+
+                    lora_state[f"{clean_prefix}.lora_A"] = lora_a.to(dtype=dtype, device="cpu")
+                    lora_state[f"{clean_prefix}.lora_B"] = lora_b.to(dtype=dtype, device="cpu")
+                    # Track which projection types are LoRA targets
+                    lora_targets.add(clean_prefix.split(".")[-1])  # e.g. "q_proj"
+
+        # Gather modules_to_save weights
+        for name, param in model.named_parameters():
+            if not param.requires_grad:
+                continue
+            # Skip LoRA A/B params (already handled above)
+            if "lora_A" in name or "lora_B" in name:
+                continue
+
+            value = param.data
+            if isinstance(value, DTensor):
+                value = value.to(dtype)
+                value = value.full_tensor()
+
+            if self._is_master:
+                fqns = get_fqns(model, name)
+                assert len(fqns) == 1
+                clean_key = next(iter(fqns)).replace(".base_layer.", ".")
+                modules_to_save_state[clean_key] = value.to(device="cpu")
+
+        torch.distributed.barrier()
+
+        if self._is_master:
+            step_path = self._get_step_path(step)
+            step_path.mkdir(parents=True, exist_ok=True)
+
+            checkpoint = {
+                "lora_state": lora_state,
+                "lora_config": {
+                    "rank": self.lora_config.rank if self.lora_config else 16,
+                    "alpha": self.lora_config.alpha if self.lora_config else 256.0,
+                },
+                "modules_to_save_state": modules_to_save_state,
+                "lora_targets": sorted(lora_targets),
+            }
+
+            # Save to /dev/shm (RAM-backed) for fast I/O, symlink from weights dir
+            shm_path = Path(f"/dev/shm/lora_delta_step_{step}.pt")
+            torch.save(checkpoint, shm_path)
+            link_path = step_path / "lora_delta.pt"
+            link_path.unlink(missing_ok=True)
+            link_path.symlink_to(shm_path)
+            (step_path / "STABLE").touch()
+
+            total_size = sum(v.numel() * v.element_size() for v in lora_state.values())
+            total_size += sum(v.numel() * v.element_size() for v in modules_to_save_state.values())
+            self._logger.debug(f"Saved LoRA delta to {shm_path} ({total_size / 1024**2:.1f} MB)")
+
     def create_stable_file(self, step: int):
         step_path = self._get_step_path(step)
         step_path.mkdir(parents=True, exist_ok=True)
@@ -395,18 +517,24 @@ class WeightCheckpointManager:
         tokenizer: PreTrainedTokenizer,
         step: int,
         dtype: torch.dtype = torch.bfloat16,
+        only_trainable: bool = False,
     ):
-        """Save a HF-compatible weight-only checkpoint for a given step."""
+        """Save a HF-compatible weight-only checkpoint for a given step.
+
+        Args:
+            only_trainable: If True, only save weights modified by LoRA or in modules_to_save.
+                           Used for filesystem broadcast to avoid saving the full 32B+ model every step.
+        """
         has_lora = has_lora_layers(model)
 
         # Save LoRA adapters separately if configured
-        if self.config.save_adapter_separately and has_lora:
+        if self.config.save_adapter_separately and has_lora and not only_trainable:
             if self._is_master:
                 lora_state = self._get_adapter_state_dict(model)
                 self._save_lora_adapters(lora_state, model, step)
             torch.distributed.barrier()
 
-        cpu_state = self._gather_weights(model, dtype, has_lora_layers=has_lora)
+        cpu_state = self._gather_weights(model, dtype, has_lora_layers=has_lora, only_trainable=only_trainable)
         if has_tt_moe_layers(cpu_state):
             convert_tt_to_hf_moe(cpu_state)
 

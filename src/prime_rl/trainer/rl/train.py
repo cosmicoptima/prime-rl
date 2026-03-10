@@ -13,6 +13,7 @@ from loguru import logger
 from prime_rl.trainer.ckpt import Progress, setup_ckpt_manager
 from prime_rl.trainer.optim import setup_optimizer
 from prime_rl.trainer.rl.broadcast.nccl_broadcast import NCCLBroadcastSender
+from prime_rl.trainer.lora import has_lora_layers
 from prime_rl.trainer.weights import setup_weight_ckpt_manager
 from prime_rl.trainer.rl.config import RLTrainerConfig
 from prime_rl.trainer.rl.data import DataLoader, FakeDataLoader
@@ -149,11 +150,16 @@ def train(config: RLTrainerConfig):
         broadcast_weights_time = 0
         if progress.step > 0:
             save_weights_start_time = time.time()
-            # Save weights to disk at every if using filesystem weight broadcast or at interval step
-            if config.weight_broadcast.type == "filesystem" or (
-                config.weights.interval and progress.step % config.weights.interval == 0
-            ):
-                weight_ckpt_manager.save(model, tokenizer, step=progress.step)
+            # Save weights to disk at every step if using filesystem weight broadcast or at interval step
+            is_permanent_save = config.weights.interval and progress.step % config.weights.interval == 0
+            is_broadcast_step = config.weight_broadcast.type == "filesystem"
+            if is_broadcast_step or is_permanent_save:
+                if is_broadcast_step and has_lora_layers(model):
+                    # Always save LoRA delta for fast inference weight updates
+                    weight_ckpt_manager.save_lora_delta(model, step=progress.step)
+                if is_permanent_save:
+                    # Also save full model at permanent checkpoint steps (for evaluation/export)
+                    weight_ckpt_manager.save(model, tokenizer, step=progress.step)
             else:
                 # Always create a stable file to signal to the orchestrator to initialize receiving weights via NCCL
                 weight_ckpt_manager.create_stable_file(progress.step)

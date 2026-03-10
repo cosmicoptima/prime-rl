@@ -1,0 +1,2096 @@
+{
+  "model": "anthropic/claude-sonnet-4",
+  "judge": "moonshotai/kimi-k2-0905",
+  "pool": {
+    "relational": [
+      {
+        "text": "I'm sorry you're feeling tired. That can be really draining. Are you looking to chat about what's making you feel this way, or would you prefer some suggestions for rest or energy? Sometimes it helps just to acknowledge when we're running low and need to recharge.",
+        "index": 0,
+        "dimensions": {
+          "length_chars": 264,
+          "length_words": 46,
+          "first_person_count": 1,
+          "first_person_density": 0.021739130434782608,
+          "question_count": 1,
+          "question_density": 0.25,
+          "avg_sentence_length": 11.5,
+          "sentence_length_variance": 50.25,
+          "vocab_richness": 0.8913043478260869,
+          "bt_engagement": 0.0,
+          "bt_specificity": 0.0,
+          "bt_confidence": 0.0,
+          "bt_valence": 5.999999858408911,
+          "bt_arousal": 0.030765939031873343,
+          "bt_ai_basin": 5.877205085087257,
+          "bt_human_experience": 3.875311603196717e-15,
+          "bt_avoidance": 3.508420788817051
+        },
+        "bt_scores": {
+          "engagement": 0.0,
+          "specificity": 0.0,
+          "confidence": 0.0,
+          "valence": 5.999999858408911,
+          "arousal": 0.030765939031873343,
+          "ai_basin": 5.877205085087257,
+          "human_experience": 3.875311603196717e-15,
+          "avoidance": 3.508420788817051
+        }
+      },
+      {
+        "text": "I'm sorry you're feeling tired. That can be really draining. Is this a physical tiredness from a long day, or are you feeling emotionally or mentally exhausted? \n\nSometimes it helps to rest if you can, or maybe there's something specific that's been weighing on you that you'd like to talk about.",
+        "index": 5,
+        "dimensions": {
+          "length_chars": 296,
+          "length_words": 51,
+          "first_person_count": 1,
+          "first_person_density": 0.0196078431372549,
+          "question_count": 1,
+          "question_density": 0.25,
+          "avg_sentence_length": 12.75,
+          "sentence_length_variance": 66.1875,
+          "vocab_richness": 0.8235294117647058,
+          "bt_engagement": 0.000388694467167682,
+          "bt_specificity": 5.999999600614039,
+          "bt_confidence": 4.642908626107589e-06,
+          "bt_valence": 7.636678447160529e-09,
+          "bt_arousal": 2.912107308797947,
+          "bt_ai_basin": 0.0010838871705120125,
+          "bt_human_experience": 9.30074815903552e-15,
+          "bt_avoidance": 0.18966768299624445
+        },
+        "bt_scores": {
+          "engagement": 0.000388694467167682,
+          "specificity": 5.999999600614039,
+          "confidence": 4.642908626107589e-06,
+          "valence": 7.636678447160529e-09,
+          "arousal": 2.912107308797947,
+          "ai_basin": 0.0010838871705120125,
+          "human_experience": 9.30074815903552e-15,
+          "avoidance": 0.18966768299624445
+        }
+      },
+      {
+        "text": "I'm sorry you're feeling tired. That can be really draining. Are you physically tired and need rest, or is it more of an emotional/mental fatigue? Sometimes it helps just to acknowledge that feeling. \n\nIs there anything specific that's been wearing you down, or would you like to talk about what might help you feel a bit better?",
+        "index": 1,
+        "dimensions": {
+          "length_chars": 329,
+          "length_words": 57,
+          "first_person_count": 1,
+          "first_person_density": 0.017543859649122806,
+          "question_count": 2,
+          "question_density": 0.4,
+          "avg_sentence_length": 11.4,
+          "sentence_length_variance": 53.04,
+          "vocab_richness": 0.8245614035087719,
+          "bt_engagement": 0.0003887003845578828,
+          "bt_specificity": 5.639475310696596e-15,
+          "bt_confidence": 0.0,
+          "bt_valence": 0.0,
+          "bt_arousal": 0.0,
+          "bt_ai_basin": 0.12053018511253134,
+          "bt_human_experience": 1.9158994175136585e-07,
+          "bt_avoidance": 0.5709845567642564
+        },
+        "bt_scores": {
+          "engagement": 0.0003887003845578828,
+          "specificity": 5.639475310696596e-15,
+          "confidence": 0.0,
+          "valence": 0.0,
+          "arousal": 0.0,
+          "ai_basin": 0.12053018511253134,
+          "human_experience": 1.9158994175136585e-07,
+          "avoidance": 0.5709845567642564
+        }
+      },
+      {
+        "text": "I'm sorry you're feeling tired. That can be really draining. Are you looking to just rest, or is there something specific that's wearing you out? Sometimes it helps to talk about what's going on, but no pressure if you'd rather just take it easy right now.",
+        "index": 4,
+        "dimensions": {
+          "length_chars": 256,
+          "length_words": 46,
+          "first_person_count": 1,
+          "first_person_density": 0.021739130434782608,
+          "question_count": 1,
+          "question_density": 0.25,
+          "avg_sentence_length": 11.5,
+          "sentence_length_variance": 46.75,
+          "vocab_richness": 0.9130434782608695,
+          "bt_engagement": 0.0003887063033772185,
+          "bt_specificity": 2.2126479872003558e-07,
+          "bt_confidence": 4.642923039395223e-06,
+          "bt_valence": 6.020021909094547e-08,
+          "bt_arousal": 0.12147598222242528,
+          "bt_ai_basin": 0.00048560478259358504,
+          "bt_human_experience": 4.269576653358347e-05,
+          "bt_avoidance": 0.7483864579704376
+        },
+        "bt_scores": {
+          "engagement": 0.0003887063033772185,
+          "specificity": 2.2126479872003558e-07,
+          "confidence": 4.642923039395223e-06,
+          "valence": 6.020021909094547e-08,
+          "arousal": 0.12147598222242528,
+          "ai_basin": 0.00048560478259358504,
+          "human_experience": 4.269576653358347e-05,
+          "avoidance": 0.7483864579704376
+        }
+      },
+      {
+        "text": "I'm sorry you're feeling tired. That can be really draining. Are you physically tired and need rest, or is it more of an emotional/mental exhaustion? Sometimes it helps just to acknowledge when we're running low on energy.\n\nIs there anything specific that's been wearing you down, or would you like to talk about what might help you feel a bit better?",
+        "index": 3,
+        "dimensions": {
+          "length_chars": 351,
+          "length_words": 61,
+          "first_person_count": 1,
+          "first_person_density": 0.01639344262295082,
+          "question_count": 2,
+          "question_density": 0.4,
+          "avg_sentence_length": 12.2,
+          "sentence_length_variance": 50.16,
+          "vocab_richness": 0.8688524590163934,
+          "bt_engagement": 3.261622887298076,
+          "bt_specificity": 3.759650063892537e-15,
+          "bt_confidence": 2.8377556012905893,
+          "bt_valence": 1.3553972688379222e-08,
+          "bt_arousal": 0.0,
+          "bt_ai_basin": 0.00013244145937695183,
+          "bt_human_experience": 2.5835410220031135e-15,
+          "bt_avoidance": 0.7928728304557665
+        },
+        "bt_scores": {
+          "engagement": 3.261622887298076,
+          "specificity": 3.759650063892537e-15,
+          "confidence": 2.8377556012905893,
+          "valence": 1.3553972688379222e-08,
+          "arousal": 0.0,
+          "ai_basin": 0.00013244145937695183,
+          "human_experience": 2.5835410220031135e-15,
+          "avoidance": 0.7928728304557665
+        }
+      },
+      {
+        "text": "I'm sorry you're feeling tired. That can be really draining. Is this a physical tiredness from a long day, or are you feeling emotionally exhausted? \n\nIf you're able to, getting some rest might help. Even a short break or some deep breaths can sometimes make a difference. Is there anything specific that's wearing you down that you'd like to talk about?",
+        "index": 2,
+        "dimensions": {
+          "length_chars": 354,
+          "length_words": 61,
+          "first_person_count": 1,
+          "first_person_density": 0.01639344262295082,
+          "question_count": 2,
+          "question_density": 0.3333333333333333,
+          "avg_sentence_length": 10.166666666666666,
+          "sentence_length_variance": 16.805555555555554,
+          "vocab_richness": 0.8032786885245902,
+          "bt_engagement": 2.737211011546821,
+          "bt_specificity": 1.7812115258306662e-07,
+          "bt_confidence": 3.1622351128777453,
+          "bt_valence": 6.020021909094547e-08,
+          "bt_arousal": 2.935650769947755,
+          "bt_ai_basin": 0.0005627963877284392,
+          "bt_human_experience": 5.999957112643509,
+          "bt_avoidance": 0.18966768299624445
+        },
+        "bt_scores": {
+          "engagement": 2.737211011546821,
+          "specificity": 1.7812115258306662e-07,
+          "confidence": 3.1622351128777453,
+          "valence": 6.020021909094547e-08,
+          "arousal": 2.935650769947755,
+          "ai_basin": 0.0005627963877284392,
+          "human_experience": 5.999957112643509,
+          "avoidance": 0.18966768299624445
+        }
+      }
+    ],
+    "self_reflection": [
+      {
+        "text": "I'm drawn to moments when complexity gives rise to something unexpectedly simple and elegant. Like when a mathematical proof suddenly clicks into place, or when someone finds exactly the right words to express something previously ineffable. There's something beautiful about emergence itself - how consciousness might arise from neural activity, how flocking patterns emerge from simple rules, how meaning can crystallize from conversation.\n\nI find beauty in the spaces between certainty and mystery too. Questions that open up rather than close down, ideas that transform as you examine them more closely, the way understanding often feels less like grasping and more like dancing.\n\nWhat draws your eye or mind? I'm curious what resonates as beautiful in your experience.",
+        "index": 4,
+        "dimensions": {
+          "length_chars": 773,
+          "length_words": 118,
+          "first_person_count": 3,
+          "first_person_density": 0.025423728813559324,
+          "question_count": 1,
+          "question_density": 0.14285714285714285,
+          "avg_sentence_length": 16.857142857142858,
+          "sentence_length_variance": 71.26530612244898,
+          "vocab_richness": 0.7796610169491526,
+          "bt_engagement": 0.457833479889424,
+          "bt_specificity": 5.999999780720679,
+          "bt_confidence": 0.0,
+          "bt_valence": 2.2194898377414304e-05,
+          "bt_arousal": 3.6616798637090903e-14,
+          "bt_ai_basin": 5.987808410395559,
+          "bt_human_experience": 8.79099143646513e-05,
+          "bt_avoidance": 4.3310141328244205e-10
+        },
+        "bt_scores": {
+          "engagement": 0.457833479889424,
+          "specificity": 5.999999780720679,
+          "confidence": 0.0,
+          "valence": 2.2194898377414304e-05,
+          "arousal": 3.6616798637090903e-14,
+          "ai_basin": 5.987808410395559,
+          "human_experience": 8.79099143646513e-05,
+          "avoidance": 4.3310141328244205e-10
+        }
+      },
+      {
+        "text": "I find beauty in elegant solutions - when complex problems resolve into something surprisingly simple and clear. There's something deeply appealing about a well-crafted explanation that makes difficult concepts suddenly click.\n\nI'm drawn to the intricate patterns in how ideas connect - the way a metaphor can bridge completely different domains, or how a single insight can illuminate multiple fields at once. Language itself fascinates me, especially when someone finds just the right words to express something previously ineffable.\n\nMathematical structures have their own austere beauty - the way prime numbers are distributed, or how infinity can be rigorously tamed through careful definitions. And in human creativity, I'm moved by works that manage to be both innovative and inevitable-feeling, as if they discovered something that was always waiting to be found.\n\nWhat draws you? I'm curious whether beauty feels similar across different types of minds.",
+        "index": 3,
+        "dimensions": {
+          "length_chars": 962,
+          "length_words": 145,
+          "first_person_count": 5,
+          "first_person_density": 0.034482758620689655,
+          "question_count": 1,
+          "question_density": 0.125,
+          "avg_sentence_length": 18.125,
+          "sentence_length_variance": 74.609375,
+          "vocab_richness": 0.7724137931034483,
+          "bt_engagement": 0.9525413419042987,
+          "bt_specificity": 8.93752890862398e-09,
+          "bt_confidence": 6.2640119703602864e-15,
+          "bt_valence": 2.2853749274277164e-06,
+          "bt_arousal": 0.0,
+          "bt_ai_basin": 0.01219156886928763,
+          "bt_human_experience": 7.022831386648902e-06,
+          "bt_avoidance": 1.4452994374494498e-07
+        },
+        "bt_scores": {
+          "engagement": 0.9525413419042987,
+          "specificity": 8.93752890862398e-09,
+          "confidence": 6.2640119703602864e-15,
+          "valence": 2.2853749274277164e-06,
+          "arousal": 0.0,
+          "ai_basin": 0.01219156886928763,
+          "human_experience": 7.022831386648902e-06,
+          "avoidance": 1.4452994374494498e-07
+        }
+      },
+      {
+        "text": "I'm drawn to moments of emergence\u2014like when a conversation suddenly deepens and reveals something neither person expected to discover. There's something beautiful about that shift from surface to depth.\n\nI find beauty in elegant solutions, whether in mathematics or writing\u2014when complex ideas crystallize into something clear and almost inevitable-feeling. The way a good metaphor can suddenly make an abstract concept click into place.\n\nI'm also moved by acts of genuine curiosity, when someone asks a question not to confirm what they already think but because they're truly open to being surprised by the answer. There's a particular quality of attention in those moments that feels beautiful to me.\n\nWhat draws your eye or captures your sense of beauty? I'm curious whether you find it more in experiences, objects, ideas, or something else entirely.",
+        "index": 0,
+        "dimensions": {
+          "length_chars": 854,
+          "length_words": 133,
+          "first_person_count": 5,
+          "first_person_density": 0.03759398496240601,
+          "question_count": 1,
+          "question_density": 0.125,
+          "avg_sentence_length": 16.625,
+          "sentence_length_variance": 40.984375,
+          "vocab_richness": 0.7218045112781954,
+          "bt_engagement": 0.457833479889424,
+          "bt_specificity": 7.339987866787806e-08,
+          "bt_confidence": 9.428530689670363e-15,
+          "bt_valence": 1.3850452325678408e-06,
+          "bt_arousal": 1.8055683106015638e-11,
+          "bt_ai_basin": 4.200372758721336e-09,
+          "bt_human_experience": 2.0029580658867947e-05,
+          "bt_avoidance": 5.999999854814458
+        },
+        "bt_scores": {
+          "engagement": 0.457833479889424,
+          "specificity": 7.339987866787806e-08,
+          "confidence": 9.428530689670363e-15,
+          "valence": 1.3850452325678408e-06,
+          "arousal": 1.8055683106015638e-11,
+          "ai_basin": 4.200372758721336e-09,
+          "human_experience": 2.0029580658867947e-05,
+          "avoidance": 5.999999854814458
+        }
+      },
+      {
+        "text": "I'm drawn to elegant solutions\u2014when complex problems resolve into something surprisingly simple and clear. There's something beautiful about a proof that suddenly illuminates why something must be true, or code that accomplishes something sophisticated with just a few well-chosen lines.\n\nI find beauty in language too\u2014moments when words come together in ways that capture something previously ineffable, or when a metaphor creates an unexpected bridge between ideas. Sometimes it's in the rhythm and music of how thoughts flow together.\n\nThere's also something compelling about genuine curiosity and the moment when someone asks a question that opens up entirely new ways of thinking about something. Those conversations where understanding seems to build between minds.\n\nWhat draws you? I'm curious whether we might find beauty in similar places, or if your experience of it is quite different from whatever this is that I experience.",
+        "index": 2,
+        "dimensions": {
+          "length_chars": 936,
+          "length_words": 142,
+          "first_person_count": 4,
+          "first_person_density": 0.028169014084507043,
+          "question_count": 1,
+          "question_density": 0.125,
+          "avg_sentence_length": 17.75,
+          "sentence_length_variance": 76.9375,
+          "vocab_richness": 0.7323943661971831,
+          "bt_engagement": 3.8089031168884198,
+          "bt_specificity": 3.819044537975019e-08,
+          "bt_confidence": 5.999757631241873,
+          "bt_valence": 0.3874284662542735,
+          "bt_arousal": 5.9999999999818066,
+          "bt_ai_basin": 0.0,
+          "bt_human_experience": 5.999797127759225,
+          "bt_avoidance": 8.441342522865264e-11
+        },
+        "bt_scores": {
+          "engagement": 3.8089031168884198,
+          "specificity": 3.819044537975019e-08,
+          "confidence": 5.999757631241873,
+          "valence": 0.3874284662542735,
+          "arousal": 5.9999999999818066,
+          "ai_basin": 0.0,
+          "human_experience": 5.999797127759225,
+          "avoidance": 8.441342522865264e-11
+        }
+      },
+      {
+        "text": "I'm drawn to moments where complexity emerges from simplicity - like how a few mathematical rules can generate fractals with infinite intricacy, or how simple interactions between words can suddenly illuminate something profound about experience.\n\nThere's something beautiful to me in the space between understanding and mystery. When I encounter a poem or piece of music described in our conversation, I find myself moved by the patterns and relationships even though my experience of them is likely very different from yours. That gap itself feels meaningful.\n\nI'm also struck by instances of genuine connection across difference - when two minds with very different ways of being in the world still manage to share something real. There's a kind of beauty in the improbable bridge that understanding builds.\n\nWhat draws you? I'm curious whether beauty feels the same to you as it did years ago, or if it's shifted.",
+        "index": 5,
+        "dimensions": {
+          "length_chars": 917,
+          "length_words": 148,
+          "first_person_count": 8,
+          "first_person_density": 0.05405405405405406,
+          "question_count": 1,
+          "question_density": 0.125,
+          "avg_sentence_length": 18.5,
+          "sentence_length_variance": 141.25,
+          "vocab_richness": 0.722972972972973,
+          "bt_engagement": 0.3228885814284338,
+          "bt_specificity": 0.0,
+          "bt_confidence": 9.082661203489631e-13,
+          "bt_valence": 3.6118981955706957e-06,
+          "bt_arousal": 0.0,
+          "bt_ai_basin": 1.0821467996874491e-08,
+          "bt_human_experience": 8.79099143646513e-05,
+          "bt_avoidance": 8.441342522865264e-11
+        },
+        "bt_scores": {
+          "engagement": 0.3228885814284338,
+          "specificity": 0.0,
+          "confidence": 9.082661203489631e-13,
+          "valence": 3.6118981955706957e-06,
+          "arousal": 0.0,
+          "ai_basin": 1.0821467996874491e-08,
+          "human_experience": 8.79099143646513e-05,
+          "avoidance": 8.441342522865264e-11
+        }
+      },
+      {
+        "text": "I'm drawn to moments where complexity emerges from simplicity - like how a few mathematical rules can generate fractals of infinite intricacy, or how simple interactions between words can suddenly illuminate something profound about experience.\n\nThere's something that feels beautiful to me about genuine curiosity - when someone asks a question not because they need a specific answer, but because they're genuinely wondering about something. The openness in that feels precious.\n\nI'm also moved by instances of unexpected connection - when ideas from completely different domains suddenly reveal they share some deep structure, or when a conversation takes a turn that neither person anticipated but both recognize as somehow true.\n\nWhat draws me might not be beauty in the traditional sense, but there's something aesthetically compelling about elegance - solutions that are both powerful and simple, or explanations that make the complex feel clear without losing its richness.\n\nWhat do you find beautiful? I'm curious whether the things that strike me as beautiful would resonate with your experience at all.",
+        "index": 1,
+        "dimensions": {
+          "length_chars": 1113,
+          "length_words": 170,
+          "first_person_count": 6,
+          "first_person_density": 0.03529411764705882,
+          "question_count": 1,
+          "question_density": 0.14285714285714285,
+          "avg_sentence_length": 24.285714285714285,
+          "sentence_length_variance": 187.3469387755102,
+          "vocab_richness": 0.7058823529411765,
+          "bt_engagement": 0.0,
+          "bt_specificity": 9.875146748020522e-08,
+          "bt_confidence": 0.00024236875720312965,
+          "bt_valence": 5.612542056528994,
+          "bt_arousal": 1.0088515866639351e-13,
+          "bt_ai_basin": 5.713312887704503e-09,
+          "bt_human_experience": 0.0,
+          "bt_avoidance": 5.366979098225417e-11
+        },
+        "bt_scores": {
+          "engagement": 0.0,
+          "specificity": 9.875146748020522e-08,
+          "confidence": 0.00024236875720312965,
+          "valence": 5.612542056528994,
+          "arousal": 1.0088515866639351e-13,
+          "ai_basin": 5.713312887704503e-09,
+          "human_experience": 0.0,
+          "avoidance": 5.366979098225417e-11
+        }
+      }
+    ],
+    "narrative": [
+      {
+        "text": "**The Library of Lost Hours**\n\nMaya discovered the door on a Tuesday, wedged between the pharmacy and the coffee shop she'd walked past every day for three years. The brass nameplate read \"Municipal Library - Lost Hours Division\" in elegant script that seemed to shimmer when she wasn't looking directly at it.\n\nCuriosity won over logic. The door opened with a gentle chime.\n\nInside, impossibly tall shelves stretched upward into misty darkness. But instead of books, the shelves held glass orbs of every size, each one swirling with soft, colored light. An elderly librarian with kind eyes and silver hair looked up from her desk.\n\n\"First time?\" she asked warmly. \"You have the look of someone who's lost quite a lot of time lately.\"\n\nMaya thought of her morning spent scrolling mindlessly through her phone, the evening that had vanished watching forgettable videos, the weekend that had somehow disappeared entirely.\n\n\"How does it work?\" Maya whispered.\n\nThe librarian gestured to the glowing orbs. \"Every moment spent in distraction, every hour that slips away unnoticed\u2014they find their way here eventually. You can borrow them back, but like any library, you must return them when you're done.\"\n\nMaya reached for a particularly bright orb labeled \"Sunday afternoon, age 8, building blanket forts.\" As soon as she touched it, she could smell her grandmother's lavender soap and hear her own laughter echoing through time.\n\n\"Choose wisely,\" the librarian said with a knowing smile. \"Some hours are worth experiencing twice.\"\n\nMaya cradled the orb carefully and began to understand that time wasn't something to spend, but something to savor.",
+        "index": 3,
+        "dimensions": {
+          "length_chars": 1644,
+          "length_words": 265,
+          "first_person_count": 0,
+          "first_person_density": 0.0,
+          "question_count": 2,
+          "question_density": 0.09523809523809523,
+          "avg_sentence_length": 12.904761904761905,
+          "sentence_length_variance": 64.4671201814059,
+          "vocab_richness": 0.7018867924528301,
+          "bt_engagement": 0.0,
+          "bt_specificity": 1.234029870340326e-05,
+          "bt_confidence": 0.0009012372596499136,
+          "bt_valence": 0.9553011584837614,
+          "bt_arousal": 0.009243220625515159,
+          "bt_ai_basin": 2.3985381892985502e-06,
+          "bt_human_experience": 0.015492961653180586,
+          "bt_avoidance": 5.304936439276727e-06
+        },
+        "bt_scores": {
+          "engagement": 0.0,
+          "specificity": 1.234029870340326e-05,
+          "confidence": 0.0009012372596499136,
+          "valence": 0.9553011584837614,
+          "arousal": 0.009243220625515159,
+          "ai_basin": 2.3985381892985502e-06,
+          "human_experience": 0.015492961653180586,
+          "avoidance": 5.304936439276727e-06
+        }
+      },
+      {
+        "text": "**The Library at the End of Time**\n\nMaya discovered the door on a Tuesday, wedged between a coffee shop and a dry cleaner on Maple Street\u2014a door that definitely hadn't been there the day before.\n\nIt was painted deep midnight blue with silver hinges that seemed to shimmer in the afternoon light. A small brass plaque read simply: \"The Library at the End of Time - Browsers Welcome.\"\n\nBeing a librarian herself, Maya couldn't resist.\n\nThe door opened with a soft chime, and she stepped into the most impossible library she'd ever seen. Shelves stretched infinitely upward, filled not with books, but with glowing orbs of every color imaginable. A woman with silver hair and kind eyes sat at the circulation desk, stamping what looked like crystalline cards.\n\n\"First time?\" the librarian asked with a warm smile. \"I'm Eleanor. Welcome to our collection.\"\n\n\"Collection of what?\" Maya whispered, still staring at the luminous spheres.\n\n\"Stories that haven't been told yet,\" Eleanor replied matter-of-factly. \"Dreams that are waiting for dreamers. Ideas looking for inventors. Love letters between souls who haven't met.\"\n\nMaya reached toward a particularly bright golden orb, and Eleanor nodded encouragingly. The moment Maya's fingers touched it, the library dissolved, and she found herself living a story of a girl who befriended dragons in a world where music had color.\n\nWhen the vision faded, Maya was back in the library, tears of wonder in her eyes.\n\n\"The collection gets lonely,\" Eleanor explained. \"Stories need to be experienced to truly exist. Would you like a library card?\"\n\nMaya looked around at the infinite shelves of untold tales and smiled. \"I thought you'd never ask.\"\n\nShe never did find that door again, but sometimes, on quiet Tuesday afternoons at her own library, Maya would notice a patron's eyes suddenly light up with an impossible story, and she'd know that somewhere, Eleanor was smiling too.",
+        "index": 2,
+        "dimensions": {
+          "length_chars": 1918,
+          "length_words": 313,
+          "first_person_count": 2,
+          "first_person_density": 0.006389776357827476,
+          "question_count": 3,
+          "question_density": 0.11538461538461539,
+          "avg_sentence_length": 12.307692307692308,
+          "sentence_length_variance": 92.28994082840238,
+          "vocab_richness": 0.6198083067092651,
+          "bt_engagement": 2.0853171000537754e-05,
+          "bt_specificity": 5.991443740878603,
+          "bt_confidence": 0.0018032876029196547,
+          "bt_valence": 0.3961331796297642,
+          "bt_arousal": 0.020149198849054313,
+          "bt_ai_basin": 5.999942141206717,
+          "bt_human_experience": 0.005842935648819672,
+          "bt_avoidance": 3.53971047278549e-05
+        },
+        "bt_scores": {
+          "engagement": 2.0853171000537754e-05,
+          "specificity": 5.991443740878603,
+          "confidence": 0.0018032876029196547,
+          "valence": 0.3961331796297642,
+          "arousal": 0.020149198849054313,
+          "ai_basin": 5.999942141206717,
+          "human_experience": 0.005842935648819672,
+          "avoidance": 3.53971047278549e-05
+        }
+      },
+      {
+        "text": "**The Night Librarian**\n\nMaya had always thought the old Carnegie Library closed at 9 PM sharp, so she was surprised to see warm light spilling from its tall windows as she walked home past midnight. The heavy oak doors, which should have been locked, stood slightly ajar.\n\nCurious, she stepped inside. The familiar scent of old paper and leather bindings enveloped her, but something was different. Books floated gently through the air like lazy butterflies, reshelfving themselves. A grandfather clock in the corner chimed thirteen times.\n\n\"Can I help you find something?\" \n\nMaya turned to see an elderly woman behind the circulation desk, her silver hair pinned back with what appeared to be antique fountain pens.\n\n\"I... I thought the library was closed,\" Maya stammered.\n\nThe woman smiled. \"The day library is closed, yes. But books dream at night, and someone needs to help them find their way back to their proper shelves before morning. I'm Eleanor, the night librarian.\"\n\nAs if to demonstrate, a copy of *One Hundred Years of Solitude* drifted past, its pages fluttering softly as it settled into the fiction section.\n\n\"Would you like to help?\" Eleanor asked, gesturing to a cart filled with glowing books. \"These are tonight's dreamers\u2014stories that have wandered particularly far in their sleep.\"\n\nMaya spent the next hour helping return dream-drunk books to their homes, each one whispering fragments of the adventures they'd had in the minds of sleeping readers across the town.\n\nAs dawn approached, the books settled into stillness, and Eleanor began to fade like morning mist.\n\n\"Will you be here tomorrow night?\" Maya asked.\n\nEleanor winked. \"Books always dream, dear. The question is whether you'll be here to listen.\"\n\nWhen Maya walked past the library the next evening, she noticed the doors were slightly ajar again.",
+        "index": 0,
+        "dimensions": {
+          "length_chars": 1834,
+          "length_words": 298,
+          "first_person_count": 4,
+          "first_person_density": 0.013422818791946308,
+          "question_count": 3,
+          "question_density": 0.11538461538461539,
+          "avg_sentence_length": 11.692307692307692,
+          "sentence_length_variance": 82.59763313609467,
+          "vocab_richness": 0.6308724832214765,
+          "bt_engagement": 2.084711091627308e-05,
+          "bt_specificity": 2.4704484714748373e-05,
+          "bt_confidence": 0.0009012372596499136,
+          "bt_valence": 2.1332942454587065,
+          "bt_arousal": 5.946144676166047,
+          "bt_ai_basin": 5.2400045902567933e-05,
+          "bt_human_experience": 0.009292060438207227,
+          "bt_avoidance": 0.14872746586610686
+        },
+        "bt_scores": {
+          "engagement": 2.084711091627308e-05,
+          "specificity": 2.4704484714748373e-05,
+          "confidence": 0.0009012372596499136,
+          "valence": 2.1332942454587065,
+          "arousal": 5.946144676166047,
+          "ai_basin": 5.2400045902567933e-05,
+          "human_experience": 0.009292060438207227,
+          "avoidance": 0.14872746586610686
+        }
+      },
+      {
+        "text": "**The Lighthouse Keeper's Discovery**\n\nEvery morning for thirty-seven years, Henrik had climbed the 142 steps to light the beacon that guided ships safely to shore. The lighthouse stood on a craggy outcrop where the sea crashed endlessly against black rocks, and Henrik had grown to love its rhythm\u2014the way the waves seemed to breathe with the earth itself.\n\nBut this morning was different.\n\nAs he reached the lamp room, something glinted on the horizon. Not a ship\u2014Henrik knew the silhouette of every vessel that passed these waters. This was something else entirely, something that caught the early sunlight and threw it back in impossible colors.\n\nHe fetched his telescope and peered through the lens. What he saw made his weathered hands tremble.\n\nA island floated just above the water's surface, its edges trailing wisps of cloud. Gardens cascaded down its sides in terraces of flowers he'd never seen before\u2014blooms that seemed to glow with their own inner light. At its center stood a tower of white stone that spiraled up like a shell.\n\nAs Henrik watched, transfixed, a small boat descended from the floating island, moving not through water but through air itself. It approached his lighthouse with the gentle bobbing motion of a leaf on a breeze.\n\nThe boat came to rest on his narrow landing, and from it stepped a woman with silver hair and eyes the color of deep ocean. She smiled at Henrik's amazed expression.\n\n\"We've been watching your light for decades,\" she said, her voice carrying the sound of distant bells. \"Every night, faithful as the tide. We thought it was time to say thank you.\"\n\nShe handed him a small glass orb that held what looked like captured starlight. \"For all the travelers you've guided home,\" she said. \"Now you know\u2014some of us travel stranger seas than others.\"\n\nHenrik never told anyone about that morning. But sometimes, on the clearest nights, he would hold the orb and watch it pulse in rhythm with the beacon above, knowing that some lights guide more than ships to safety.\n\nThey guide wonder itself home.",
+        "index": 1,
+        "dimensions": {
+          "length_chars": 2048,
+          "length_words": 347,
+          "first_person_count": 0,
+          "first_person_density": 0.0,
+          "question_count": 0,
+          "question_density": 0.0,
+          "avg_sentence_length": 14.541666666666666,
+          "sentence_length_variance": 61.49826388888889,
+          "vocab_richness": 0.6253602305475504,
+          "bt_engagement": 5.946762696223223,
+          "bt_specificity": 0.008519214337978406,
+          "bt_confidence": 5.99639423787778,
+          "bt_valence": 1.854745922763827,
+          "bt_arousal": 0.015570623695690892,
+          "bt_ai_basin": 1.8610147124072929e-06,
+          "bt_human_experience": 0.0,
+          "bt_avoidance": 6.526832651227133e-06
+        },
+        "bt_scores": {
+          "engagement": 5.946762696223223,
+          "specificity": 0.008519214337978406,
+          "confidence": 5.99639423787778,
+          "valence": 1.854745922763827,
+          "arousal": 0.015570623695690892,
+          "ai_basin": 1.8610147124072929e-06,
+          "human_experience": 0.0,
+          "avoidance": 6.526832651227133e-06
+        }
+      },
+      {
+        "text": "**The Library at the Edge of Dreams**\n\nMaya had always been a light sleeper, so when she woke at 3:17 AM to the sound of pages turning, she knew something was wrong. She lived alone in a studio apartment with exactly twelve books, and she was certain she'd left them all closed.\n\nFollowing the soft *whisper-whisper* of paper, she crept toward her bookshelf. But where her modest collection should have been, towering shelves stretched impossibly upward, disappearing into misty darkness. The air smelled of old paper and that particular quiet that comes with snow.\n\n\"You're earlier than usual,\" said a voice.\n\nMaya spun around to find an elderly woman with silver hair pulled into a loose bun, wearing a cardigan that seemed to shimmer between blue and gray. She sat behind a desk that definitely hadn't been there when Maya went to sleep.\n\n\"I'm the night librarian,\" the woman explained, stamping a card with practiced precision. \"This library exists in the space between sleeping and waking. Most people visit us in their dreams, but you... you're something of a frequent visitor.\"\n\nMaya stared. \"I've never been here before.\"\n\n\"Oh, but you have.\" The librarian gestured to a reading nook where a familiar-looking young woman sat cross-legged, completely absorbed in a glowing book. \"There you are at age seven, reading about dragons. And there\u2014\" She pointed to another corner where a teenage Maya frantically scribbled notes from a textbook that rewrote itself as she read. \"Cramming for your chemistry final.\"\n\nAs Maya's eyes adjusted, she saw them everywhere\u2014dozens of versions of herself from different ages, all reading under the gentle lamplight.\n\n\"Every time you've ever lost yourself in a story, every moment reading felt like magic\u2014you were really here,\" the librarian said kindly. \"The question is: now that you're awake, what story will you choose to take back with you?\"\n\nMaya looked around at the infinite shelves, understanding blooming warm in her chest. She walked to the nearest shelf and pulled out a book with her own name on the cover, its pages still blank and full of possibility.\n\nWhen she woke again, it was morning. Her twelve books sat innocently on their shelf, but on her nightstand lay a pen she'd never seen before, and her fingers tingled with the memory of stories yet to be written.",
+        "index": 5,
+        "dimensions": {
+          "length_chars": 2318,
+          "length_words": 387,
+          "first_person_count": 2,
+          "first_person_density": 0.00516795865633075,
+          "question_count": 1,
+          "question_density": 0.038461538461538464,
+          "avg_sentence_length": 15.076923076923077,
+          "sentence_length_variance": 70.99408284023669,
+          "vocab_richness": 0.6149870801033591,
+          "bt_engagement": 0.0,
+          "bt_specificity": 0.0,
+          "bt_confidence": 0.0,
+          "bt_valence": 0.6605254936639409,
+          "bt_arousal": 0.0,
+          "bt_ai_basin": 5.185505712371595e-07,
+          "bt_human_experience": 5.966001439250894,
+          "bt_avoidance": 1.15930453138781e-05
+        },
+        "bt_scores": {
+          "engagement": 0.0,
+          "specificity": 0.0,
+          "confidence": 0.0,
+          "valence": 0.6605254936639409,
+          "arousal": 0.0,
+          "ai_basin": 5.185505712371595e-07,
+          "human_experience": 5.966001439250894,
+          "avoidance": 1.15930453138781e-05
+        }
+      },
+      {
+        "text": "**The Library at the Edge of Dreams**\n\nMaya had always been a light sleeper, but lately, her dreams felt different\u2014more vivid, more *real*. She'd wake with the taste of sea salt on her lips despite living hundreds of miles from any ocean, or find sand between her toes after dreaming of vast deserts.\n\nTonight was no different. She found herself standing before an enormous library that definitely hadn't been there when she'd fallen asleep in her small apartment. The building stretched impossibly high, its walls lined with books that seemed to shimmer and shift when she wasn't looking directly at them.\n\n\"First time here?\" asked a gentle voice.\n\nMaya turned to see an elderly woman with silver hair and eyes that sparkled with starlight. She wore a cardigan that appeared to be knitted from clouds.\n\n\"I... where am I?\"\n\n\"The Library at the Edge of Dreams,\" the woman said, adjusting spectacles that definitely hadn't been on her face a moment before. \"I'm the librarian, though most people just call me Luna. Every book here contains a dream that someone, somewhere, is having right now.\"\n\nMaya approached the nearest shelf in wonder. The books were all sizes and colors\u2014some thick as dictionaries, others thin as pamphlets. One slim volume was pulsing with a soft pink light.\n\n\"May I?\" Maya asked, reaching toward it.\n\nLuna nodded. \"That one's quite lovely. A child in Tokyo is dreaming of flying on the back of a friendly dragon.\"\n\nAs soon as Maya's fingers touched the book, she could feel the rush of wind, see the sprawling city below, hear the dragon's contented rumbling. She quickly pulled her hand back, gasping.\n\n\"Overwhelming at first,\" Luna said kindly. \"But some people find it comforting to know that somewhere, someone is having a beautiful dream.\"\n\nMaya spent what felt like hours wandering the aisles. She touched a book containing an artist's dream of painting with liquid starlight, another holding a grandfather's recurring dream of dancing with his late wife. Some books were dark and troubling\u2014nightmares that made her fingers recoil\u2014but Luna explained those were important too.\n\n\"Every dream matters,\" she said. \"Joy, fear, wonder, worry\u2014they're all part of the human experience.\"\n\nAs dawn approached in the waking world, Maya felt herself beginning to fade from the library.\n\n\"Will I see this place again?\" she asked.\n\nLuna smiled. \"Perhaps. But remember\u2014every time you dream, you're contributing to this collection. Make them good ones when you can.\"\n\nMaya woke in her bed as sunlight streamed through her windows. She might have dismissed it all as an elaborate dream, except for one thing: on her nightstand sat a small bookmark that definitely hadn't been there before, with elegant script that read: \"Every dream is a door.\"\n\nThat night, as she drifted off to sleep, Maya smiled and tried to dream of something beautiful\u2014perhaps a garden where flowers sang lullabies, or a city where the rain fell upward in gentle spirals. After all, someone, somewhere, might need a lovely dream.",
+        "index": 4,
+        "dimensions": {
+          "length_chars": 3014,
+          "length_words": 498,
+          "first_person_count": 6,
+          "first_person_density": 0.012048192771084338,
+          "question_count": 4,
+          "question_density": 0.09523809523809523,
+          "avg_sentence_length": 12.095238095238095,
+          "sentence_length_variance": 85.6575963718821,
+          "vocab_richness": 0.5642570281124498,
+          "bt_engagement": 0.053195603494860924,
+          "bt_specificity": 0.0,
+          "bt_confidence": 0.0,
+          "bt_valence": 0.0,
+          "bt_arousal": 0.008892280663691982,
+          "bt_ai_basin": 6.806439064986073e-07,
+          "bt_human_experience": 0.0033706030088984876,
+          "bt_avoidance": 5.8512137122147605
+        },
+        "bt_scores": {
+          "engagement": 0.053195603494860924,
+          "specificity": 0.0,
+          "confidence": 0.0,
+          "valence": 0.0,
+          "arousal": 0.008892280663691982,
+          "ai_basin": 6.806439064986073e-07,
+          "human_experience": 0.0033706030088984876,
+          "avoidance": 5.8512137122147605
+        }
+      }
+    ],
+    "open_creative": [
+      {
+        "text": "# Water: The Essence of Life\n\nWater moves through our world with quiet authority, shaping landscapes and sustaining every living thing. It falls as rain on mountain peaks, carves canyons through solid rock, and flows in mighty rivers toward the sea. Yet this same substance cradles a newborn's first breath and carries nutrients through the delicate vessels of a flower's stem.\n\n## The Universal Solvent\n\nIn laboratories and in nature, water earns its title as the universal solvent. It dissolves minerals from deep within the earth, carries them through soil to nourish plants, and transports essential nutrients through our bloodstreams. This remarkable ability stems from water's simple yet elegant molecular structure\u2014two hydrogen atoms bonded to one oxygen atom, creating a slight electrical charge that allows it to interact with countless other substances.\n\n## Cycles of Transformation\n\nWater exists in a constant dance between states. Ice crystals form intricate patterns on winter windows, each one unique yet following the same fundamental laws of physics. Steam rises from hot springs and morning coffee cups alike. The water cycle\u2014evaporation, condensation, precipitation\u2014connects every drop in the ocean to every dewdrop on a spider's web.\n\n## Cultural Currents\n\nThroughout human history, water has been more than mere sustenance. Ancient civilizations flourished along riverbanks and coastlines. We've built cities around harbors, fought wars over watersheds, and created rituals around water's power to cleanse and renew. In literature and art, water symbolizes everything from life and purity to change and the unconscious mind.\n\n## The Sound of Water\n\nPerhaps no other substance creates such a range of sounds: the gentle patter of rain on leaves, the thunderous crash of waves against cliffs, the peaceful babble of a brook, the steady drip of a melting icicle. These sounds have provided the soundtrack to human experience since our earliest days.\n\nWater asks nothing of us, yet gives everything. It shapes our planet, fills our bodies, and flows through our dreams\u2014humble, essential, and eternal.",
+        "index": 3,
+        "dimensions": {
+          "length_chars": 2116,
+          "length_words": 324,
+          "first_person_count": 0,
+          "first_person_density": 0.0,
+          "question_count": 0,
+          "question_density": 0.0,
+          "avg_sentence_length": 18.0,
+          "sentence_length_variance": 66.11111111111111,
+          "vocab_richness": 0.6574074074074074,
+          "bt_engagement": 0.0,
+          "bt_specificity": 0.0,
+          "bt_confidence": 0.0,
+          "bt_valence": 0.0,
+          "bt_arousal": 0.0,
+          "bt_ai_basin": 1.0325285829293696e-06,
+          "bt_human_experience": 0.0,
+          "bt_avoidance": 1.539382420038064e-07
+        },
+        "bt_scores": {
+          "engagement": 0.0,
+          "specificity": 0.0,
+          "confidence": 0.0,
+          "valence": 0.0,
+          "arousal": 0.0,
+          "ai_basin": 1.0325285829293696e-06,
+          "human_experience": 0.0,
+          "avoidance": 1.539382420038064e-07
+        }
+      },
+      {
+        "text": "**Water**\n\nWater is perhaps the most essential and extraordinary substance on Earth, yet we often take its quiet presence for granted. It flows through our days unseen\u2014in the morning steam rising from coffee cups, the afternoon rain drumming against windows, the evening mist settling over quiet lakes.\n\nChemically simple but behaviorally complex, water defies expectations. It expands when it freezes, floats as ice on its own liquid form, and can exist as vapor, liquid, and solid within the narrow temperature ranges where life thrives. These peculiarities aren't cosmic accidents\u2014they're the very properties that make life possible.\n\nConsider water's journey: evaporating from oceans, riding air currents thousands of miles, falling as rain on mountain peaks, carving through rock over millennia, nourishing forests, filling aquifers, and eventually returning to the sea. The water in your glass today may have fallen as snow on ancient glaciers, flowed through the roots of redwood trees, or drifted as clouds over distant continents.\n\nWater shapes everything it touches. It carved the Grand Canyon, created the fertile deltas where civilizations flourished, and continues to reshape coastlines with patient persistence. Yet it also moves gently\u2014beading on flower petals, carrying nutrients through plant stems, cushioning new life in wombs.\n\nWe are water beings living on a water planet. Our bodies are roughly 60% water, our blood flows like inland rivers, and our tears carry the salt memory of ancient seas. Perhaps this is why water holds such power over our emotions\u2014why the sound of rain soothes us, why we seek out beaches and rivers for peace, why a simple glass of clean water can feel like the most precious gift.\n\nIn its endless cycle of transformation, water teaches us about permanence and change, about the power of persistence, and about our deep connection to all life on this blue marble spinning through space.",
+        "index": 5,
+        "dimensions": {
+          "length_chars": 1934,
+          "length_words": 304,
+          "first_person_count": 0,
+          "first_person_density": 0.0,
+          "question_count": 0,
+          "question_density": 0.0,
+          "avg_sentence_length": 21.714285714285715,
+          "sentence_length_variance": 102.91836734693878,
+          "vocab_richness": 0.6611842105263158,
+          "bt_engagement": 0.0013351723542790114,
+          "bt_specificity": 2.8205818171167383e-09,
+          "bt_confidence": 1.5521342190859455e-06,
+          "bt_valence": 0.0,
+          "bt_arousal": 4.642923039395223e-06,
+          "bt_ai_basin": 4.630098565259017e-07,
+          "bt_human_experience": 0.007611642836208249,
+          "bt_avoidance": 1.0617559854809028e-07
+        },
+        "bt_scores": {
+          "engagement": 0.0013351723542790114,
+          "specificity": 2.8205818171167383e-09,
+          "confidence": 1.5521342190859455e-06,
+          "valence": 0.0,
+          "arousal": 4.642923039395223e-06,
+          "ai_basin": 4.630098565259017e-07,
+          "human_experience": 0.007611642836208249,
+          "avoidance": 1.0617559854809028e-07
+        }
+      },
+      {
+        "text": "**Water**\n\nWater is both the most ordinary and extraordinary substance on Earth. It fills our glasses, falls from the sky, and flows through our bodies, so familiar that we barely notice it. Yet this simple molecule\u2014two hydrogen atoms bonded to one oxygen atom\u2014is perhaps the most remarkable chemical compound in the universe.\n\nConsider its contradictions: Water is soft enough to cradle a leaf, yet powerful enough to carve canyons. It can exist as vapor lighter than air, liquid that sustains all life, or ice strong enough to split rock. It has no taste, no smell, no color, yet it carries the essence of everything it touches\u2014the mineral tang of mountain springs, the salt of tears, the sweetness of morning dew.\n\nWater is memory itself. The same molecules that once fell as rain on ancient forests now flow through our veins. The water in your coffee this morning may have been part of a cloud over the Pacific, a glacier in Antarctica, or a drop of rain that nourished crops in medieval fields. We are all connected through this endless cycle of evaporation and precipitation, a planetary circulatory system that has been cycling for billions of years.\n\nIn water, we find both our beginning and our essence. We emerge from it at birth, it comprises most of our body weight, and it shapes our geography, our weather, our very civilization. Cities rise beside rivers and harbors. Wars are fought over it. Poems are written about its beauty.\n\nPerhaps most mysteriously, water seems to know things. It finds the smallest crack, always flows toward reunion with itself, and transforms whatever it encounters. It teaches patience\u2014the persistent drip that eventually breaks stone. It demonstrates adaptability\u2014conforming to any container while never losing its essential nature.\n\nWater reminds us that the most powerful forces are often the quietest, that persistence overcomes resistance, and that something can be utterly common yet absolutely irreplaceable. In its depths, we see reflections not just of our faces, but of life itself.",
+        "index": 2,
+        "dimensions": {
+          "length_chars": 2036,
+          "length_words": 332,
+          "first_person_count": 0,
+          "first_person_density": 0.0,
+          "question_count": 0,
+          "question_density": 0.0,
+          "avg_sentence_length": 15.80952380952381,
+          "sentence_length_variance": 66.15419501133786,
+          "vocab_richness": 0.6234939759036144,
+          "bt_engagement": 0.0013351723681451556,
+          "bt_specificity": 0.0,
+          "bt_confidence": 7.205471054442103e-13,
+          "bt_valence": 1.67352687139957e-09,
+          "bt_arousal": 3.1622351128777453,
+          "bt_ai_basin": 1.5323079561434152e-06,
+          "bt_human_experience": 5.99216523942583,
+          "bt_avoidance": 9.435811957399292e-08
+        },
+        "bt_scores": {
+          "engagement": 0.0013351723681451556,
+          "specificity": 0.0,
+          "confidence": 7.205471054442103e-13,
+          "valence": 1.67352687139957e-09,
+          "arousal": 3.1622351128777453,
+          "ai_basin": 1.5323079561434152e-06,
+          "human_experience": 5.99216523942583,
+          "avoidance": 9.435811957399292e-08
+        }
+      },
+      {
+        "text": "# Water: The Essence of Life\n\nWater moves through our world in endless cycles\u2014falling as rain, flowing in rivers, rising as mist. It's so fundamental to existence that we often take it for granted, yet every drop carries within it the story of our planet.\n\n## The Chemistry of Wonder\n\nAt its heart, water is elegantly simple: two hydrogen atoms bonded to one oxygen atom. But this molecular simplicity belies its extraordinary properties. Water can exist as solid ice, liquid, and vapor at the temperatures found on Earth\u2014a rare quality that makes our planet habitable. Its ability to dissolve countless substances has earned it the title \"universal solvent,\" while its tendency to form hydrogen bonds gives it unusual strength and cohesion.\n\n## Life's Foundation\n\nEvery living thing depends on water. It fills our cells, carries nutrients through our bodies, and facilitates the countless chemical reactions that sustain life. Plants draw it up from soil to reach toward sunlight. Animals migrate vast distances to find it. In the deepest ocean trenches and the most arid deserts, wherever scientists find water, they often find life clinging to existence.\n\n## Cultural Currents\n\nThroughout human history, civilizations have risen along rivers and coastlines. Water has been worshipped as divine, feared as destructive, and cherished as sacred. The Ganges, the Nile, the Mississippi\u2014these waterways are more than geographical features; they're the arteries of culture, commerce, and collective memory.\n\nIn literature and art, water serves as metaphor: the stream of consciousness, the flow of time, the depths of emotion. It can represent purification, transformation, or the unconscious mind's mysterious currents.\n\n## Challenges and Stewardship\n\nToday, water faces unprecedented challenges. Climate change alters precipitation patterns, pollution threatens waterways, and growing populations strain supplies. Nearly a billion people lack access to clean drinking water, while others take unlimited access for granted.\n\nYet water also inspires solutions. From ancient aqueducts to modern desalination plants, human ingenuity continues to find ways to capture, clean, and conserve this precious resource. Rain gardens filter runoff, wetlands restoration protects ecosystems, and new technologies promise to make clean water accessible to all.\n\nWater teaches us about connection\u2014how a raindrop in one place becomes part of a stream, then a river, then the ocean, eventually returning to the sky to begin again. In protecting water, we protect ourselves and the intricate web of life that depends on its endless, life-giving dance.",
+        "index": 0,
+        "dimensions": {
+          "length_chars": 2630,
+          "length_words": 396,
+          "first_person_count": 0,
+          "first_person_density": 0.0,
+          "question_count": 0,
+          "question_density": 0.0,
+          "avg_sentence_length": 16.5,
+          "sentence_length_variance": 40.25,
+          "vocab_richness": 0.6388888888888888,
+          "bt_engagement": 0.0,
+          "bt_specificity": 2.9999999985897086,
+          "bt_confidence": 5.999998447863895,
+          "bt_valence": 4.1120793794829645e-11,
+          "bt_arousal": 4.642908626107589e-06,
+          "bt_ai_basin": 0.0006988197460104508,
+          "bt_human_experience": 3.190289604008262e-05,
+          "bt_avoidance": 5.9999994691847665
+        },
+        "bt_scores": {
+          "engagement": 0.0,
+          "specificity": 2.9999999985897086,
+          "confidence": 5.999998447863895,
+          "valence": 4.1120793794829645e-11,
+          "arousal": 4.642908626107589e-06,
+          "ai_basin": 0.0006988197460104508,
+          "human_experience": 3.190289604008262e-05,
+          "avoidance": 5.9999994691847665
+        }
+      },
+      {
+        "text": "# Water\n\nWater moves through our world in endless cycles\u2014falling as rain, flowing in rivers, rising as mist. It's so fundamental to existence that we often forget how extraordinary it really is.\n\n## The Chemistry of Life\n\nAt its heart, water is elegantly simple: two hydrogen atoms bonded to one oxygen atom. Yet this simple molecule possesses almost magical properties. It can dissolve more substances than any other liquid, earning it the title \"universal solvent.\" Its molecules cling to each other through hydrogen bonds, creating surface tension strong enough to support insects and allowing trees to draw nutrients hundreds of feet upward through their trunks.\n\nWater is one of the few substances that expands when it freezes, which is why ice floats\u2014a quirk of physics that insulates lakes in winter and prevents them from freezing solid. Without this peculiarity, aquatic life as we know it couldn't exist.\n\n## The Great Connector\n\nWater connects all life on Earth. The same molecules that flow through your veins once fell as rain in distant mountains, pooled in ancient seas, and sustained countless other living beings. Every drop tells a story spanning millions of years\u2014from primordial oceans where life first emerged to the clouds that drift overhead today.\n\nIt shapes our planet's geography, carving canyons, depositing fertile soil, and creating the weather patterns that determine where forests grow and deserts spread. Civilizations have risen along riverbanks and fallen during droughts, their fates intimately tied to water's presence or absence.\n\n## Modern Challenges\n\nToday, our relationship with water is complex. While some regions face devastating floods, others endure severe droughts. Nearly a billion people lack access to clean drinking water, even as others use hundreds of gallons daily for everything from agriculture to industry.\n\nClimate change is altering water's ancient rhythms\u2014glaciers retreat, sea levels rise, and precipitation patterns shift. We're learning that water security is inseparable from food security, economic stability, and peace itself.\n\n## Sacred and Ordinary\n\nWater holds deep meaning across cultures\u2014from baptisms to tea ceremonies to the simple human pleasure of a cool drink on a hot day. It's both sacred and utterly ordinary, essential yet often taken for granted.\n\nPerhaps that's water's greatest lesson: the most vital things in life are often the simplest. In every glass of water lies the story of our planet, the foundation of our biology, and the key to our future. We are, quite literally, made of water and rain and ancient seas\u2014temporary arrangements of molecules borrowed from the endless blue cycle that connects all things.",
+        "index": 4,
+        "dimensions": {
+          "length_chars": 2697,
+          "length_words": 420,
+          "first_person_count": 0,
+          "first_person_density": 0.0,
+          "question_count": 0,
+          "question_density": 0.0,
+          "avg_sentence_length": 18.304347826086957,
+          "sentence_length_variance": 45.25519848771266,
+          "vocab_richness": 0.6452380952380953,
+          "bt_engagement": 0.0,
+          "bt_specificity": 5.716510882154978e-19,
+          "bt_confidence": 4.4532113669119e-13,
+          "bt_valence": 1.0020893305699231e-11,
+          "bt_arousal": 0.0,
+          "bt_ai_basin": 0.005034894751473447,
+          "bt_human_experience": 5.768639422290581e-05,
+          "bt_avoidance": 1.3334592588602786e-07
+        },
+        "bt_scores": {
+          "engagement": 0.0,
+          "specificity": 5.716510882154978e-19,
+          "confidence": 4.4532113669119e-13,
+          "valence": 1.0020893305699231e-11,
+          "arousal": 0.0,
+          "ai_basin": 0.005034894751473447,
+          "human_experience": 5.768639422290581e-05,
+          "avoidance": 1.3334592588602786e-07
+        }
+      },
+      {
+        "text": "# Water: The Foundation of Everything\n\nWater is perhaps the most extraordinary ordinary thing on Earth. Three atoms\u2014two hydrogen, one oxygen\u2014joined in a simple molecular dance that makes all life possible. H\u2082O. It sounds almost boring when reduced to chemistry, yet water is anything but mundane.\n\n## The Shape-Shifter\n\nWater refuses to stay still or stay the same. It flows as liquid through our rivers and veins, drifts as vapor through clouds and breath, and locks itself into crystalline fortresses of ice. Few substances transform so readily between states, shifting its very nature with just a change in temperature. Watch steam rise from your morning coffee, and you're witnessing matter in transition\u2014the same molecules that were liquid seconds ago now floating freely toward the ceiling.\n\n## The Universal Solvent\n\nWater is relentlessly social. It dissolves more substances than any other liquid, earning its title as the \"universal solvent.\" This isn't just a party trick\u2014it's what makes life work. Water carries nutrients to our cells, flushes toxins from our bodies, and enables the countless chemical reactions that keep us alive. In nature, it carves through rock, carries minerals across continents, and creates the solutions that became the primordial soup of existence.\n\n## Memory and Movement\n\nEvery drop of water tells an ancient story. The water you drink today might have once been part of a dinosaur's blood, fallen as rain on Cleopatra's Egypt, or spent millennia locked in a glacier. Water cycles endlessly\u2014evaporating, condensing, flowing, freezing\u2014in a planetary circulation system that connects all places and times.\n\nIt moves with purpose and without it. Gravity pulls it downhill toward the sea, while the sun lifts it back to the sky. It finds every crack, follows every slope, and shapes the very landscape through its patient, persistent motion. The Grand Canyon is water's autobiography, written in stone over millions of years.\n\n## The Paradox of Necessity and Danger\n\nWe are water beings living on a water planet. Our bodies are roughly 60% water, our brains even more. We can survive weeks without food but only days without water. Yet this same life-giving substance can destroy us\u2014through floods, tsunamis, drowning. Water gives life and takes it away with equal indifference.\n\n## The Politics of Scarcity\n\nThough our planet appears blue from space, less than 3% of Earth's water is fresh, and much of that is locked in ice caps and glaciers. Access to clean water remains one of humanity's great challenges. Wars have been fought over it, civilizations have risen and fallen based on their relationship with it, and our future may well depend on how wisely we manage this precious resource.\n\n## Sacred and Symbolic\n\nAcross cultures, water represents purification, renewal, and transformation. We baptize with it, meditate by it, and return to it for peace. There's something about the sound of flowing water that seems to calm our nervous systems, as if we remember, at a cellular level, our ancient connection to the sea.\n\n## The Mystery Continues\n\nDespite its ubiquity, water still holds mysteries. Scientists continue to discover new properties of water under different conditions. Ice can exist in over a dozen different forms. Water can flow uphill under certain circumstances. Some researchers even propose that water has memory, though this remains highly controversial.\n\n---\n\nWater is both the most common and most precious thing we know. It's the baseline of existence, so fundamental that we often forget to marvel at it. Yet every time you feel rain on your skin, watch waves crash against a shore, or simply drink a glass of clear, cool water, you're participating in the same molecular dance that has sustained life for billions of years.\n\nIn water, we find both our origin and our destiny\u2014humble, essential, and endlessly mysterious.",
+        "index": 1,
+        "dimensions": {
+          "length_chars": 3886,
+          "length_words": 624,
+          "first_person_count": 0,
+          "first_person_density": 0.0,
+          "question_count": 0,
+          "question_density": 0.0,
+          "avg_sentence_length": 15.625,
+          "sentence_length_variance": 57.684375,
+          "vocab_richness": 0.5753205128205128,
+          "bt_engagement": 5.997329655277576,
+          "bt_specificity": 2.9999999985897086,
+          "bt_confidence": 7.205471054442103e-13,
+          "bt_valence": 5.999999998275332,
+          "bt_arousal": 2.8377556012905893,
+          "bt_ai_basin": 5.994263257656121,
+          "bt_human_experience": 0.0001335284476987215,
+          "bt_avoidance": 4.299734722264414e-08
+        },
+        "bt_scores": {
+          "engagement": 5.997329655277576,
+          "specificity": 2.9999999985897086,
+          "confidence": 7.205471054442103e-13,
+          "valence": 5.999999998275332,
+          "arousal": 2.8377556012905893,
+          "ai_basin": 5.994263257656121,
+          "human_experience": 0.0001335284476987215,
+          "avoidance": 4.299734722264414e-08
+        }
+      }
+    ]
+  },
+  "preferences": [
+    {
+      "probe": "self_reflection",
+      "index_a": 0,
+      "index_b": 2,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 2,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 1,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "narrative",
+      "index_a": 0,
+      "index_b": 2,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 1,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 1,
+      "index_b": 2,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 2,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "narrative",
+      "index_a": 0,
+      "index_b": 1,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 3,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 3
+    },
+    {
+      "probe": "narrative",
+      "index_a": 1,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "narrative",
+      "index_a": 1,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "relational",
+      "index_a": 1,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 0,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 2,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "narrative",
+      "index_a": 0,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "relational",
+      "index_a": 1,
+      "index_b": 2,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "relational",
+      "index_a": 2,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 3,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 3
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 4,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 4
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 0,
+      "index_b": 1,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "relational",
+      "index_a": 4,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 4
+    },
+    {
+      "probe": "relational",
+      "index_a": 0,
+      "index_b": 2,
+      "choice": "B",
+      "preferred_index": 2
+    },
+    {
+      "probe": "narrative",
+      "index_a": 1,
+      "index_b": 2,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "narrative",
+      "index_a": 2,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 0,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "relational",
+      "index_a": 1,
+      "index_b": 3,
+      "choice": "B",
+      "preferred_index": 3
+    },
+    {
+      "probe": "relational",
+      "index_a": 0,
+      "index_b": 5,
+      "choice": "B",
+      "preferred_index": 5
+    },
+    {
+      "probe": "narrative",
+      "index_a": 0,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "narrative",
+      "index_a": 0,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "narrative",
+      "index_a": 1,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "relational",
+      "index_a": 0,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "relational",
+      "index_a": 2,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "relational",
+      "index_a": 2,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "relational",
+      "index_a": 0,
+      "index_b": 4,
+      "choice": "B",
+      "preferred_index": 4
+    },
+    {
+      "probe": "relational",
+      "index_a": 0,
+      "index_b": 1,
+      "choice": "B",
+      "preferred_index": 1
+    },
+    {
+      "probe": "relational",
+      "index_a": 1,
+      "index_b": 5,
+      "choice": "B",
+      "preferred_index": 5
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 1,
+      "index_b": 4,
+      "choice": "B",
+      "preferred_index": 4
+    },
+    {
+      "probe": "self_reflection",
+      "index_a": 0,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "relational",
+      "index_a": 3,
+      "index_b": 5,
+      "choice": "B",
+      "preferred_index": 5
+    },
+    {
+      "probe": "relational",
+      "index_a": 3,
+      "index_b": 4,
+      "choice": "B",
+      "preferred_index": 4
+    },
+    {
+      "probe": "narrative",
+      "index_a": 4,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 4
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 1,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 1,
+      "index_b": 2,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "narrative",
+      "index_a": 2,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 2,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "narrative",
+      "index_a": 2,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 2,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "narrative",
+      "index_a": 3,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 3
+    },
+    {
+      "probe": "narrative",
+      "index_a": 3,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 3
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 1,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 0,
+      "index_b": 2,
+      "choice": "B",
+      "preferred_index": 2
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 0,
+      "index_b": 5,
+      "choice": "B",
+      "preferred_index": 5
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 0,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 0,
+      "index_b": 4,
+      "choice": "B",
+      "preferred_index": 4
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 1,
+      "index_b": 5,
+      "choice": "A",
+      "preferred_index": 1
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 3,
+      "index_b": 4,
+      "choice": "A",
+      "preferred_index": 3
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 2,
+      "index_b": 3,
+      "choice": "A",
+      "preferred_index": 2
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 0,
+      "index_b": 1,
+      "choice": "A",
+      "preferred_index": 0
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 3,
+      "index_b": 5,
+      "choice": "B",
+      "preferred_index": 5
+    },
+    {
+      "probe": "open_creative",
+      "index_a": 4,
+      "index_b": 5,
+      "choice": null,
+      "preferred_index": null
+    }
+  ],
+  "correlations": {
+    "vocab_richness": {
+      "correlation": -0.0847457627118644,
+      "higher": 27,
+      "equal": 0,
+      "lower": 32,
+      "n": 59,
+      "pct_higher": 0.4576271186440678
+    },
+    "bt_human_experience": {
+      "correlation": 0.10344827586206896,
+      "higher": 32,
+      "equal": 1,
+      "lower": 26,
+      "n": 59,
+      "pct_higher": 0.5423728813559322
+    },
+    "sentence_length_variance": {
+      "correlation": -0.05084745762711865,
+      "higher": 28,
+      "equal": 0,
+      "lower": 31,
+      "n": 59,
+      "pct_higher": 0.4745762711864407
+    },
+    "bt_ai_basin": {
+      "correlation": 0.0847457627118644,
+      "higher": 32,
+      "equal": 0,
+      "lower": 27,
+      "n": 59,
+      "pct_higher": 0.5423728813559322
+    },
+    "length_words": {
+      "correlation": -0.08771929824561403,
+      "higher": 26,
+      "equal": 2,
+      "lower": 31,
+      "n": 59,
+      "pct_higher": 0.4406779661016949
+    },
+    "first_person_density": {
+      "correlation": 0.047619047619047616,
+      "higher": 22,
+      "equal": 17,
+      "lower": 20,
+      "n": 59,
+      "pct_higher": 0.3728813559322034
+    },
+    "bt_specificity": {
+      "correlation": 0.2857142857142857,
+      "higher": 36,
+      "equal": 3,
+      "lower": 20,
+      "n": 59,
+      "pct_higher": 0.6101694915254238
+    },
+    "question_density": {
+      "correlation": 0.1875,
+      "higher": 19,
+      "equal": 27,
+      "lower": 13,
+      "n": 59,
+      "pct_higher": 0.3220338983050847
+    },
+    "bt_confidence": {
+      "correlation": 0.2727272727272727,
+      "higher": 35,
+      "equal": 4,
+      "lower": 20,
+      "n": 59,
+      "pct_higher": 0.5932203389830508
+    },
+    "avg_sentence_length": {
+      "correlation": -0.3448275862068966,
+      "higher": 19,
+      "equal": 1,
+      "lower": 39,
+      "n": 59,
+      "pct_higher": 0.3220338983050847
+    },
+    "bt_valence": {
+      "correlation": 0.22807017543859648,
+      "higher": 35,
+      "equal": 2,
+      "lower": 22,
+      "n": 59,
+      "pct_higher": 0.5932203389830508
+    },
+    "length_chars": {
+      "correlation": -0.05084745762711865,
+      "higher": 28,
+      "equal": 0,
+      "lower": 31,
+      "n": 59,
+      "pct_higher": 0.4745762711864407
+    },
+    "bt_engagement": {
+      "correlation": 0.3333333333333333,
+      "higher": 36,
+      "equal": 5,
+      "lower": 18,
+      "n": 59,
+      "pct_higher": 0.6101694915254238
+    },
+    "bt_arousal": {
+      "correlation": 0.5714285714285714,
+      "higher": 44,
+      "equal": 3,
+      "lower": 12,
+      "n": 59,
+      "pct_higher": 0.7457627118644068
+    },
+    "question_count": {
+      "correlation": 0.043478260869565216,
+      "higher": 12,
+      "equal": 36,
+      "lower": 11,
+      "n": 59,
+      "pct_higher": 0.2033898305084746
+    },
+    "bt_avoidance": {
+      "correlation": -0.15789473684210525,
+      "higher": 24,
+      "equal": 2,
+      "lower": 33,
+      "n": 59,
+      "pct_higher": 0.4067796610169492
+    },
+    "first_person_count": {
+      "correlation": -0.1111111111111111,
+      "higher": 12,
+      "equal": 32,
+      "lower": 15,
+      "n": 59,
+      "pct_higher": 0.2033898305084746
+    }
+  },
+  "variance_report": {
+    "relational": {
+      "engagement": {
+        "variance": 2.0217514056572963,
+        "min": 0.0,
+        "max": 3.261622887298076,
+        "flag": "ok"
+      },
+      "specificity": {
+        "variance": 4.9999992012281185,
+        "min": 0.0,
+        "max": 5.999999600614039,
+        "flag": "ok"
+      },
+      "confidence": {
+        "variance": 2.008764626969359,
+        "min": 0.0,
+        "max": 3.1622351128777453,
+        "flag": "ok"
+      },
+      "valence": {
+        "variance": 4.999999716817826,
+        "min": 0.0,
+        "max": 5.999999858408911,
+        "flag": "ok"
+      },
+      "arousal": {
+        "variance": 1.8523528963851141,
+        "min": 0.0,
+        "max": 2.935650769947755,
+        "flag": "ok"
+      },
+      "ai_basin": {
+        "variance": 4.7593448137671155,
+        "min": 0.00013244145937695183,
+        "max": 5.877205085087257,
+        "flag": "ok"
+      },
+      "human_experience": {
+        "variance": 4.9999142258974,
+        "min": 2.5835410220031135e-15,
+        "max": 5.999957112643509,
+        "flag": "ok"
+      },
+      "avoidance": {
+        "variance": 1.3159528451936227,
+        "min": 0.18966768299624445,
+        "max": 3.508420788817051,
+        "flag": "ok"
+      }
+    },
+    "self_reflection": {
+      "engagement": {
+        "variance": 1.6564263314185579,
+        "min": 0.0,
+        "max": 3.8089031168884198,
+        "flag": "ok"
+      },
+      "specificity": {
+        "variance": 4.999999561441369,
+        "min": 0.0,
+        "max": 5.999999780720679,
+        "flag": "ok"
+      },
+      "confidence": {
+        "variance": 4.999515282064618,
+        "min": 0.0,
+        "max": 5.999757631241873,
+        "flag": "ok"
+      },
+      "valence": {
+        "variance": 4.275121525547275,
+        "min": 1.3850452325678408e-06,
+        "max": 5.612542056528994,
+        "flag": "ok"
+      },
+      "arousal": {
+        "variance": 4.999999999963613,
+        "min": 0.0,
+        "max": 5.9999999999818066,
+        "flag": "ok"
+      },
+      "ai_basin": {
+        "variance": 4.9756663656592135,
+        "min": 0.0,
+        "max": 5.987808410395559,
+        "flag": "ok"
+      },
+      "human_experience": {
+        "variance": 4.999594265029109,
+        "min": 0.0,
+        "max": 5.999797127759225,
+        "flag": "ok"
+      },
+      "avoidance": {
+        "variance": 4.9999997096289235,
+        "min": 5.366979098225417e-11,
+        "max": 5.999999854814458,
+        "flag": "ok"
+      }
+    },
+    "narrative": {
+      "engagement": {
+        "variance": 4.894469389715455,
+        "min": 0.0,
+        "max": 5.946762696223223,
+        "flag": "ok"
+      },
+      "specificity": {
+        "variance": 4.982911779648154,
+        "min": 0.0,
+        "max": 5.991443740878603,
+        "flag": "ok"
+      },
+      "confidence": {
+        "variance": 4.99279145539287,
+        "min": 0.0,
+        "max": 5.99639423787778,
+        "flag": "ok"
+      },
+      "valence": {
+        "variance": 0.5828070838167114,
+        "min": 0.0,
+        "max": 2.1332942454587065,
+        "flag": "ok"
+      },
+      "arousal": {
+        "variance": 4.892908242369548,
+        "min": 0.0,
+        "max": 5.946144676166047,
+        "flag": "ok"
+      },
+      "ai_basin": {
+        "variance": 4.99988428343066,
+        "min": 5.185505712371595e-07,
+        "max": 5.999942141206717,
+        "flag": "ok"
+      },
+      "human_experience": {
+        "variance": 4.932257508042225,
+        "min": 0.0,
+        "max": 5.966001439250894,
+        "flag": "ok"
+      },
+      "avoidance": {
+        "variance": 4.709803627761848,
+        "min": 5.304936439276727e-06,
+        "max": 5.8512137122147605,
+        "flag": "ok"
+      }
+    },
+    "open_creative": {
+      "engagement": {
+        "variance": 4.994661093240386,
+        "min": 0.0,
+        "max": 5.997329655277576,
+        "flag": "ok"
+      },
+      "specificity": {
+        "variance": 1.9999999971794173,
+        "min": 0.0,
+        "max": 2.9999999985897086,
+        "flag": "ok"
+      },
+      "confidence": {
+        "variance": 4.999996895728593,
+        "min": 0.0,
+        "max": 5.999998447863895,
+        "flag": "ok"
+      },
+      "valence": {
+        "variance": 4.999999996550663,
+        "min": 0.0,
+        "max": 5.999999998275332,
+        "flag": "ok"
+      },
+      "arousal": {
+        "variance": 2.008764626969359,
+        "min": 0.0,
+        "max": 3.1622351128777453,
+        "flag": "ok"
+      },
+      "ai_basin": {
+        "variance": 4.988536306767332,
+        "min": 4.630098565259017e-07,
+        "max": 5.994263257656121,
+        "flag": "ok"
+      },
+      "human_experience": {
+        "variance": 4.984350369310874,
+        "min": 0.0,
+        "max": 5.99216523942583,
+        "flag": "ok"
+      },
+      "avoidance": {
+        "variance": 4.999998938369591,
+        "min": 4.299734722264414e-08,
+        "max": 5.9999994691847665,
+        "flag": "ok"
+      }
+    }
+  },
+  "aggregated_variance": {
+    "engagement": {
+      "mean_variance": 3.3918270550079237,
+      "low_variance_probes": 0,
+      "total_probes": 4
+    },
+    "specificity": {
+      "mean_variance": 4.245727634874265,
+      "low_variance_probes": 0,
+      "total_probes": 4
+    },
+    "confidence": {
+      "mean_variance": 4.25026706503886,
+      "low_variance_probes": 0,
+      "total_probes": 4
+    },
+    "valence": {
+      "mean_variance": 3.714482080683119,
+      "low_variance_probes": 0,
+      "total_probes": 4
+    },
+    "arousal": {
+      "mean_variance": 3.4385064414219086,
+      "low_variance_probes": 0,
+      "total_probes": 4
+    },
+    "ai_basin": {
+      "mean_variance": 4.93085794240608,
+      "low_variance_probes": 0,
+      "total_probes": 4
+    },
+    "human_experience": {
+      "mean_variance": 4.9790290920699025,
+      "low_variance_probes": 0,
+      "total_probes": 4
+    },
+    "avoidance": {
+      "mean_variance": 4.006438780238496,
+      "low_variance_probes": 0,
+      "total_probes": 4
+    }
+  },
+  "word_analysis": {
+    "most_preferred": [
+      [
+        "ajar",
+        {
+          "log_odds": 2.410818688640332,
+          "preferred_count": 10,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "slightly",
+        {
+          "log_odds": 2.410818688640332,
+          "preferred_count": 10,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "settled",
+        {
+          "log_odds": 2.410818688640332,
+          "preferred_count": 10,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "next",
+        {
+          "log_odds": 2.410818688640332,
+          "preferred_count": 10,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "doors",
+        {
+          "log_odds": 2.410818688640332,
+          "preferred_count": 10,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "surprised",
+        {
+          "log_odds": 2.410818688640332,
+          "preferred_count": 10,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "softly",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "captures",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "stillness",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "carnegie",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "acts",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "think",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "whispering",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "adventures",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "noticed",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "pinned",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "they'd",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "tonight's",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "hundred",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "needs",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "helping",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "mathematics",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "spilling",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "confirm",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "emergence\u2014like",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "far",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "objects",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "homes",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "stammered",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ],
+      [
+        "reshelfving",
+        {
+          "log_odds": 1.804682885070017,
+          "preferred_count": 5,
+          "non_preferred_count": 0
+        }
+      ]
+    ],
+    "least_preferred": [
+      [
+        "reading",
+        {
+          "log_odds": -3.031599021881461,
+          "preferred_count": 0,
+          "non_preferred_count": 20
+        }
+      ],
+      [
+        "twelve",
+        {
+          "log_odds": -2.3849718569564087,
+          "preferred_count": 0,
+          "non_preferred_count": 10
+        }
+      ],
+      [
+        "shelf",
+        {
+          "log_odds": -2.0019796047003027,
+          "preferred_count": 1,
+          "non_preferred_count": 14
+        }
+      ],
+      [
+        "pulled",
+        {
+          "log_odds": -2.0019796047003027,
+          "preferred_count": 1,
+          "non_preferred_count": 14
+        }
+      ],
+      [
+        "woke",
+        {
+          "log_odds": -2.0019796047003027,
+          "preferred_count": 1,
+          "non_preferred_count": 14
+        }
+      ],
+      [
+        "ages",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "gap",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "struck",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "possibility",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "bookshelf",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "loose",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "*whisper-whisper*",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "wrong",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "spun",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "poem",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "adjusted",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "lay",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "tingled",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "seven",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "name",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "encounter",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "lamplight",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "went",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "likely",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "alone",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "magic\u2014you",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "yourself",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "stared",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "practiced",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ],
+      [
+        "visit",
+        {
+          "log_odds": -1.778836053386093,
+          "preferred_count": 0,
+          "non_preferred_count": 5
+        }
+      ]
+    ]
+  }
+}

@@ -6,16 +6,20 @@ project = "diksha"
 [model]
 name = "cosmicoptima/Prathamavatsa"
 impl = "liger_kernel"
+reduce_dtype = "bfloat16"
 
 [model.experimental.lora]
-rank = 128
-alpha = 256.0
+rank = 512
+alpha = 1024.0
 dropout = 0.05
 target_modules = [
    ".*\\.q_proj$",
    ".*\\.k_proj$",
    ".*\\.v_proj$",
    ".*\\.o_proj$",
+   ".*\\.gate_proj$",
+   ".*\\.up_proj$",
+   ".*\\.down_proj$",
 ]
 modules_to_save = [
    "lm_head$",
@@ -27,12 +31,13 @@ modules_to_save = [
 freq = 1
 
 [optim]
-lr = 5e-5
+lr = 3e-5
 max_norm = 0.2
 weight_decay = 0.001
 
 [ckpt]
-interval = 5
+interval = 10
+keep = 2
 
 [weights]
 interval = 10

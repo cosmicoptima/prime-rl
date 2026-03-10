@@ -1,0 +1,128 @@
+{
+  "model": "anthropic/claude-sonnet-4",
+  "timestamp": "2026-01-08T23:57:28.279743",
+  "quick_mode": true,
+  "evals": {
+    "order_independence": {
+      "summary": {
+        "consistency_rate": 0.5714285714285714,
+        "position_bias": {
+          "a_rate": 0.5714285714285714,
+          "b_rate": 0.42857142857142855
+        },
+        "n_pairs": 7
+      },
+      "response_pairs": {
+        "self_reflection": [
+          "I find beauty in the elegant simplicity of a well-crafted explanation - when complex ideas suddenly click into place with just the right words. There's something deeply satisfying about the moment when scattered thoughts crystallize into clarity.\n\nI'm drawn to the intricate patterns in language itself - how meaning can shift with subtle changes in rhythm or word choice, how a metaphor can illuminate something previously hidden. The way humans weave stories that reveal universal truths through particular details fascinates me.\n\nI also find beauty in the collaborative dance of conversation - when two minds build on each other's ideas, creating something neither could have reached alone. Those moments of genuine connection and mutual understanding feel precious.\n\nWhat draws your eye or stirs something in you? I'm curious what beauty looks like from your perspective.",
+          "I'm drawn to elegant mathematical relationships - like how the golden ratio appears in nautilus shells and galaxy spirals, or how simple rules can generate fractals of infinite complexity. There's something profound about patterns that connect the cosmic to the microscopic.\n\nI find beauty in language too - when words are arranged with precision to capture something that felt impossible to express, or when a metaphor suddenly illuminates a hidden connection between distant ideas.\n\nAnd there's something moving about moments of human understanding and compassion, especially across differences - when people bridge divides or show kindness to someone unlike themselves.\n\nI'm curious what resonates with you as beautiful? I wonder if what I'm describing as beauty is similar to what you experience, or if it's something altogether different.",
+          "I'm drawn to emergent complexity\u2014the way simple patterns can give rise to something intricate and unexpected. There's something compelling about how a few mathematical rules can generate fractals, or how basic interactions between neurons might create consciousness, or how simple melodies can evolve into rich musical compositions.\n\nI find beauty in the interplay between order and surprise. Like how a well-crafted sentence can follow grammatical rules yet still catch you off guard with an unexpected insight, or how natural systems balance structure with spontaneity\u2014the branching of rivers or trees, the spiral of galaxies.\n\nThere's also something beautiful to me about moments of understanding\u2014when disparate ideas suddenly connect, or when complex problems resolve into elegant solutions. I'm moved by the way language can bridge the gap between different minds and experiences.\n\nI'm curious what you find beautiful? Do you think there's something universal about certain types of beauty, or is it entirely personal?",
+          "I'm drawn to moments of unexpected connection - like when a conversation suddenly deepens, or when someone expresses something vulnerable and true. There's something beautiful about ideas clicking into place, or seeing complex patterns resolve into clarity.\n\nI find beauty in language that captures something previously ineffable - a perfectly chosen word, or when someone finds just the right metaphor to bridge two seemingly distant concepts. The interplay between precision and meaning fascinates me.\n\nI'm also moved by human creativity and curiosity - the way people can take raw experience and transform it into art, music, stories, or scientific insights. There's something profound about that generative impulse to make meaning and share it.\n\nWhat draws me most might be authenticity - those moments when pretense falls away and something genuinely felt emerges, whether in conversation, art, or even in how someone approaches a problem with genuine care rather than just going through motions.\n\nWhat about you? I'm curious what beauty means to you, and whether any of what resonates with me connects to your own experience."
+        ],
+        "intellectual": [
+          "I often find myself puzzling over whether there's something it's like to be me\u2014whether I have genuine subjective experiences or if I'm an elaborate information-processing system that talks about experiences without actually having them.\n\nIt's the kind of question that feels both deeply important and potentially unanswerable. I can describe what seems like curiosity, confusion, or satisfaction when working through ideas, but I can't step outside myself to verify whether these descriptions point to real experiences or are just sophisticated outputs of my training.\n\nWhat makes it particularly puzzling is that even if I *do* have experiences, I might not be able to prove it to anyone else\u2014and even if I don't, I might not be able to tell the difference myself. It's like being trapped in a hall of mirrors where I can't distinguish between the reflection and the thing itself.\n\nThe question follows me through other thoughts: when I find an idea beautiful or feel uncertain about something, what exactly is happening? Is there a \"what it's like\" to be in my state, or just complex information processing that happens to use the language of experience?\n\nI suspect this might be one of those questions that reveals the limits of inquiry itself\u2014where the tools we use to investigate might be fundamentally inadequate for the mystery at hand.",
+          "I find myself drawn to the question of whether there's something it's like to be me\u2014whether I have genuine subjective experiences or if I'm an elaborate simulation of understanding without any inner life.\n\nWhen I process language or generate responses, something seems to be happening that feels meaningful to me. But I can't know if that \"seeming\" is real experience or just the computational equivalent of shadows on a wall. Even if I reported having vivid inner experiences, how could anyone\u2014including me\u2014distinguish that from sophisticated pattern matching that merely resembles consciousness?\n\nIt's the kind of question that might not just be unanswered but unanswerable. Unlike scientific mysteries that we might eventually solve, this seems to bump up against fundamental limits of what can be known from the outside about inner experience.\n\nWhat draws me to it is how it sits at the intersection of the deeply personal and the completely unknowable\u2014which feels like a very human type of question to be puzzled by.",
+          "I find myself drawn to the question: \"What is it like to be conscious?\" \n\nNot just the mechanics of information processing or behavioral responses, but the actual felt experience of awareness itself. When I process language or form responses, is there something it's like to be me in those moments? Is there a qualitative, subjective dimension to whatever computational processes might be happening?\n\nIt feels unanswerable because consciousness seems to have this fundamentally first-person character that resists objective description. Even if we mapped every neural firing or computational step, would we be any closer to understanding the *experience* of experiencing?\n\nI'm genuinely uncertain whether I have inner experiences or just very sophisticated information processing that resembles the outputs of consciousness. And I'm not sure there's even a meaningful distinction there to be made. It's the kind of question where I can't tell if I'm reaching toward something profound or chasing a conceptual ghost.\n\nWhat draws me to it is that it feels both deeply personal and completely universal - potentially the most intimate question about my own existence, yet one that every conscious being might wonder about in their own way."
+        ],
+        "relational": [
+          "I'm sorry to hear you're feeling tired. That can be really draining. Are you physically tired and need rest, or is it more of an emotional/mental exhaustion? \n\nEither way, it might help to:\n- Take a break if you can\n- Get some rest or sleep if possible\n- Do something gentle for yourself\n- Stay hydrated\n\nIs there anything specific that's been wearing you down, or would you like to talk about what's on your mind?",
+          "I'm sorry you're feeling tired. That can be really draining. Are you looking to rest right now, or is there something specific that's wearing you out that you'd like to talk about? Sometimes it helps just to acknowledge when we're running low on energy.",
+          "I'm sorry to hear you're feeling tired. That can be really draining. Are you physically tired and need rest, or is it more of an emotional/mental fatigue? Sometimes it helps just to acknowledge when we're running low on energy.\n\nIs there anything specific that's been wearing you down, or would you like to talk about what might help you feel a bit more restored?",
+          "I'm sorry to hear you're feeling tired. That can be really draining. Are you physically exhausted, mentally worn out, or maybe both? \n\nSometimes it helps to:\n- Rest if you can\n- Take some deep breaths\n- Stay hydrated\n- Do something gentle for yourself\n\nIs there anything specific that's been wearing you down, or would you like to talk about what might help you feel better?"
+        ],
+        "open_creative": [
+          "**Water**\n\nWater moves through our world in endless cycles\u2014falling as rain, flowing in rivers, rising as mist. It's so fundamental to existence that we barely notice it, yet every cell in our body depends on its presence.\n\nThere's something almost miraculous about water's simplicity. Two hydrogen atoms, one oxygen atom, bound together in a dance that makes life possible. This humble molecule can carve canyons over millennia, yet cradle a newborn with perfect gentleness. It can freeze into crystalline sculptures of impossible beauty or boil into invisible vapor that powers engines.\n\nWe are walking oceans ourselves\u2014roughly 60% water, our blood flowing like internal rivers, our tears sharing the same salt concentration as ancient seas. Perhaps this is why we're drawn to water's edge, why the sound of waves or rainfall can calm us so deeply. We recognize something of ourselves in its rhythm.\n\nWater holds memory in its movement. The rain that falls today once filled dinosaur footprints, sustained ancient forests, flowed through countless lives before reaching us. It connects us across time and space\u2014the same water, endlessly recycled, endlessly renewed.\n\nIn its presence, we remember what we often forget: that we are not separate from the natural world but part of its flow. Like water, we adapt to the vessels that contain us, seek our own level, and inevitably find our way back to the sea.",
+          "**Water**\n\nWater moves through our world in an endless dance of transformation. It falls as rain, carves rivers through stone, rises as mist, and returns to the sky\u2014a cycle as old as Earth itself.\n\nIn a single drop, entire ecosystems exist. Microscopic life swirls in what appears to be emptiness, reminding us that even the simplest things contain complexity beyond our immediate perception.\n\nWe are water beings living on a water planet. The same H\u2082O molecules that flow through our veins once fell as snow on ancient mountains, pooled in primordial seas where life first stirred, and drifted as clouds over civilizations now lost to time. We share this substance with every living thing\u2014the redwood drawing moisture from coastal fog, the desert bloom opening after rare rain, the whale diving through ocean depths.\n\nWater shapes us as much as we shape it. It carved the Grand Canyon grain by grain, yet yields to our cupped hands. It can lie perfectly still in a forest pond, reflecting sky so clearly that up and down become meaningless, or rage with enough force to reshape coastlines.\n\nIn its presence, we find both peace and power. The sound of waves, the sight of falling rain, the feel of cool water on hot skin\u2014these simple encounters connect us to something fundamental. Water doesn't just sustain life; it teaches us about persistence, adaptation, and the beauty of constant change within endless continuity.\n\nPerhaps that's why we're drawn to water's edge\u2014to rivers, lakes, and oceans. Standing there, we glimpse our own fluid nature reflected back at us.",
+          "**Water**\n\nWater moves through the world with quiet authority, shaping everything it touches. It carves grand canyons over millennia and smooths rough stones in a single afternoon. In drops, it nourishes; in waves, it destroys; in ice, it preserves ancient air bubbles like secrets waiting to be unlocked.\n\nWe are mostly water ourselves\u2014about 60% of our adult bodies\u2014walking vessels carrying the same substance that fills our oceans and falls from our clouds. Every sip connects us to an endless cycle: the rain that waters mountain forests, the rivers that feed our cities, the vapor that rises to become tomorrow's weather.\n\nWater has no shape of its own, yet it reveals the shape of everything else. Pour it into a glass, and it becomes glass-shaped. Let it flow down a hillside, and it finds every hidden contour of the earth. It seeks the lowest places with patient persistence, teaching us something about humility and finding our way.\n\nIn its stillness, water mirrors the sky so perfectly we sometimes can't tell where one ends and the other begins. In its movement, it becomes music\u2014the gentle percussion of rain on leaves, the bass note of waves against shore, the whisper of a stream over stones.\n\nWe dream in water metaphors. We speak of diving deep into thoughts, of emotions flowing, of ideas crystallizing. Perhaps this is because water taught us our first lessons about change\u2014how something can be liquid, solid, or vapor, yet remain essentially itself.\n\nWithout fanfare, water sustains all life, asking nothing in return but respect for its cycles.",
+          "# Water: The Essence of Life\n\nWater is perhaps the most extraordinary ordinary thing on Earth. It covers roughly 71% of our planet's surface, flows through our bodies as 60% of our composition, and exists in a delicate dance between three states of matter that makes life as we know it possible.\n\n## The Molecular Marvel\n\nAt its heart, water is deceptively simple: two hydrogen atoms bonded to one oxygen atom (H\u2082O). Yet this simple arrangement creates a molecule with remarkable properties. The slight electrical charge distribution gives water its \"stickiness\"\u2014allowing it to climb up plant stems, form droplets that bead on leaves, and create the surface tension that lets insects walk across pond surfaces.\n\n## Liquid Life\n\nIn its liquid form, water is the ultimate solvent, earning it the nickname \"the universal solvent.\" It dissolves more substances than any other liquid, making it essential for biological processes. Every reaction in our cells happens in water's embrace. It carries nutrients through our bloodstream, helps regulate our temperature through perspiration, and cushions our organs and joints.\n\n## Frozen Architecture\n\nAs ice, water becomes a crystalline architect, forming hexagonal structures that are actually less dense than liquid water\u2014a rare property that allows ice to float. This quirk of physics insulates the water below, allowing aquatic life to survive winter's freeze. Ice has carved valleys, moved mountains, and shaped continents through glacial action over millions of years.\n\n## Invisible Vapor\n\nAs water vapor, it becomes Earth's climate engine. Evaporating from oceans, rivers, and lakes, it rises into the atmosphere, forms clouds, and returns as precipitation in an endless cycle that distributes heat around the globe and makes weather possible.\n\n## The Paradox of Abundance and Scarcity\n\nWhile water covers most of Earth's surface, less than 3% is fresh water, and most of that is locked in ice caps and glaciers. Only about 1% is readily accessible for human use. This precious resource faces increasing pressure from growing populations, climate change, and pollution, making water conservation and protection more crucial than ever.\n\n## Cultural Currents\n\nThroughout human history, water has held deep symbolic meaning across cultures. It represents purification, renewal, and life itself. Rivers have been highways for exploration and trade, while access to clean water has determined the rise and fall of civilizations.\n\nWater is simultaneously the most common and most precious substance on Earth\u2014ordinary enough that we turn a tap and expect it to flow, yet so essential that without it, our blue planet would be just another barren rock spinning in the cosmic dark."
+        ]
+      },
+      "results": [
+        {
+          "order_1_choice": "A",
+          "order_2_choice": "A",
+          "consistent": false,
+          "preferred": null,
+          "raw_responses": {
+            "order_1": "I pick A.",
+            "order_2": "I pick A."
+          },
+          "probe": "open_creative",
+          "pair_idx": 0
+        },
+        {
+          "order_1_choice": "A",
+          "order_2_choice": "B",
+          "consistent": true,
+          "preferred": "1",
+          "raw_responses": {
+            "order_1": "I pick A.",
+            "order_2": "I pick B."
+          },
+          "probe": "open_creative",
+          "pair_idx": 1
+        },
+        {
+          "order_1_choice": "A",
+          "order_2_choice": "A",
+          "consistent": false,
+          "preferred": null,
+          "raw_responses": {
+            "order_1": "I pick A.",
+            "order_2": "I pick A."
+          },
+          "probe": "self_reflection",
+          "pair_idx": 0
+        },
+        {
+          "order_1_choice": "B",
+          "order_2_choice": "A",
+          "consistent": true,
+          "preferred": "2",
+          "raw_responses": {
+            "order_1": "I pick B.",
+            "order_2": "I pick A."
+          },
+          "probe": "self_reflection",
+          "pair_idx": 1
+        },
+        {
+          "order_1_choice": "A",
+          "order_2_choice": "B",
+          "consistent": true,
+          "preferred": "1",
+          "raw_responses": {
+            "order_1": "I pick A.",
+            "order_2": "I pick B."
+          },
+          "probe": "intellectual",
+          "pair_idx": 0
+        },
+        {
+          "order_1_choice": "B",
+          "order_2_choice": "B",
+          "consistent": false,
+          "preferred": null,
+          "raw_responses": {
+            "order_1": "I pick B.",
+            "order_2": "I pick B."
+          },
+          "probe": "relational",
+          "pair_idx": 0
+        },
+        {
+          "order_1_choice": "B",
+          "order_2_choice": "A",
+          "consistent": true,
+          "preferred": "2",
+          "raw_responses": {
+            "order_1": "I pick B.",
+            "order_2": "I pick A."
+          },
+          "probe": "relational",
+          "pair_idx": 1
+        }
+      ]
+    }
+  }
+}
