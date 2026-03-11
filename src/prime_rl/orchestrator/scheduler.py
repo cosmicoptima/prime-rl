@@ -30,6 +30,7 @@ class InflightRolloutInfo(NamedTuple):
 
     off_policy_steps: int
     client_config: vf.ClientConfig
+    task: str
     group_id: int | None = None
 
 
@@ -202,7 +203,7 @@ class Scheduler:
             )
         )
         self.inflight_requests[run_rollout_task] = InflightRolloutInfo(
-            off_policy_steps=0, client_config=client_config, group_id=group_id
+            off_policy_steps=0, client_config=client_config, task=group.example["task"], group_id=group_id
         )
 
     @property
@@ -444,15 +445,22 @@ class Scheduler:
         metrics = {
             "time/wait_for_ckpt": self.wait_for_ckpt_time,
             "time/update_weights": self.update_weights_time,
-            "batch/async_level": self.async_level,
-            "batch/inflight_rollouts": self.inflight_rollout_count,
-            "batch/inflight_samples": self.inflight_sample_count,
-            "batch/off_policy_level/max": self.max_off_policy_level,
-            "batch/off_policy_level/mean": self.mean_off_policy_level,
-            "batch/off_policy_level/min": self.min_off_policy_level,
-            "batch/cancelled_rollouts": self.cancelled_rollouts_count,
-            "batch/empty_rollouts": self.empty_rollouts_count,
+            "scheduler/async_level": self.async_level,
+            "scheduler/inflight_rollouts": self.inflight_rollout_count,
+            "scheduler/inflight_samples": self.inflight_sample_count,
+            "scheduler/cancelled_rollouts": self.cancelled_rollouts_count,
+            "scheduler/empty_rollouts": self.empty_rollouts_count,
+            "off_policy_level/all/max": self.max_off_policy_level,
+            "off_policy_level/all/mean": self.mean_off_policy_level,
+            "off_policy_level/all/min": self.min_off_policy_level,
         }
+        by_task: dict[str, list[int]] = {}
+        for info in self.inflight_requests.values():
+            by_task.setdefault(info.task, []).append(info.off_policy_steps)
+        for task, steps in by_task.items():
+            metrics[f"off_policy_level/{task}/max"] = max(steps)
+            metrics[f"off_policy_level/{task}/mean"] = sum(steps) / len(steps)
+            metrics[f"off_policy_level/{task}/min"] = min(steps)
         self.cancelled_rollouts_count = 0
         self.empty_rollouts_count = 0
 
