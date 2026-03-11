@@ -44,6 +44,7 @@ from prime_rl.trainer.utils import (
     MemoryProfiler,
     Tensors,
     export_benchmark_json,
+    get_zero_gradient_ratio,
     get_ckpt_disk_metrics,
     setup_torch_distributed,
     print_benchmark,
@@ -467,6 +468,7 @@ def train(config: TrainerConfig):
         )
         if grad_norm.device.type == "cpu":
             grad_norm = grad_norm.to(torch.device("cuda"))
+        zero_grad_ratio = get_zero_gradient_ratio(model.parameters(), parallel_dims.dp_replicate)
 
         # Update the model parameters
         optimizer.step()
@@ -523,6 +525,7 @@ def train(config: TrainerConfig):
         optim_metrics = {
             "optim/lr": current_lr,
             "optim/grad_norm": grad_norm.item(),
+            "optim/zero_grad_ratio": zero_grad_ratio,
             "step": progress.step,
         }
         monitor.log(optim_metrics, step=progress.step)
@@ -566,6 +569,7 @@ def train(config: TrainerConfig):
                 mfu=mfu,
                 entropy=tensor_stats.get("entropy/mean", 0.0),
                 mismatch_kl=tensor_stats.get("mismatch_kl/mean", 0.0),
+                zero_grad_ratio=zero_grad_ratio,
             )
             # Update run/LoRA metrics
             multi_run_manager = get_multi_run_manager()
