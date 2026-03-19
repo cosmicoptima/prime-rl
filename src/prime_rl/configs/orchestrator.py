@@ -551,7 +551,10 @@ class DefaultAdvantageConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     type: Literal["default"] = "default"
-    length_weighted_mean: bool = False
+    length_shaping_alpha: Annotated[
+        float | None,
+        Field(description="Penalty coefficient for Group Relative Reward Rescaling (GR³). Recommended value: 0.33"),
+    ] = None
 
 
 class CustomAdvantageConfig(BaseModel):
@@ -943,6 +946,13 @@ class OrchestratorConfig(BaseConfig):
                 "verification.enabled cannot be False when buffer.hard_threshold is set. "
                 "Hard threshold depends on rewards which are disabled when verification.enabled=False."
             )
+        return self
+
+    @model_validator(mode="after")
+    def validate_length_shaping_requires_online_difficulty_filtering(self):
+        if isinstance(self.advantage, DefaultAdvantageConfig) and self.advantage.length_shaping_alpha is not None:
+            if not self.buffer.online_difficulty_filtering:
+                raise ValueError("Group Relative Reward (GR³) scaling requires online difficulty filtering")
         return self
 
     @model_validator(mode="after")
