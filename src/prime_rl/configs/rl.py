@@ -137,6 +137,15 @@ class SharedWeightBroadcastConfig(BaseConfig):
 
     port: Annotated[int, Field(description="The port to use for NCCL weight broadcast.")] = 29501
     timeout: Annotated[int, Field(description="The timeout in seconds for NCCL weight broadcast.")] = 1200
+    quantize_in_weight_transfer: Annotated[
+        bool,
+        Field(
+            description=(
+                "Use kernel-format FP8 quantized NCCL transfer for weight updates. "
+                "When disabled, uses default HF checkpoint-format transfer."
+            ),
+        ),
+    ] = False
 
 
 class BaseDeploymentConfig(BaseModel):
@@ -353,6 +362,22 @@ class RLConfig(BaseConfig):
         return self
 
     @model_validator(mode="after")
+    def validate_quantize_in_weight_transfer(self):
+        if self.weight_broadcast is None or not self.weight_broadcast.quantize_in_weight_transfer:
+            return self
+
+        if self.weight_broadcast.type != "nccl":
+            raise ValueError("weight_broadcast.quantize_in_weight_transfer requires weight_broadcast.type = 'nccl'.")
+
+        if self.inference is None:
+            raise ValueError("weight_broadcast.quantize_in_weight_transfer requires an inference config.")
+
+        if self.trainer.model.impl != "custom":
+            raise ValueError("weight_broadcast.quantize_in_weight_transfer requires trainer.model.impl = 'custom'.")
+
+        return self
+
+    @model_validator(mode="after")
     def validate_teacher_model(self):
         if (
             self.trainer.loss.type == "default" and self.trainer.loss.teacher_tau > 0
@@ -487,9 +512,13 @@ class RLConfig(BaseConfig):
         """Auto-setup shared model config for trainer, orchestrator, and inference."""
         if self.model is not None:
             self.trainer.model.name = self.model.name
-            self.orchestrator.model.name = self.model.name
             if self.inference is not None:
-                self.inference.model.name = self.model.name
+                inference_model_explicitly_set = "name" in self.inference.model.model_fields_set
+                if not inference_model_explicitly_set:
+                    self.inference.model.name = self.model.name
+                self.orchestrator.model.name = self.inference.model.name
+            else:
+                self.orchestrator.model.name = self.model.name
 
         validate_shared_model_name(self.trainer, self.orchestrator, self.inference)
 
@@ -549,11 +578,13 @@ class RLConfig(BaseConfig):
                     inference_world_size=inference_world_size,
                     port=self.weight_broadcast.port,
                     timeout=self.weight_broadcast.timeout,
+                    quantize_in_weight_transfer=self.weight_broadcast.quantize_in_weight_transfer,
                 )
                 self.orchestrator.weight_broadcast = OrchestratorNCCLWeightBroadcastConfig(
                     type=self.weight_broadcast.type,
                     port=self.weight_broadcast.port,
                     timeout=self.weight_broadcast.timeout,
+                    quantize_in_weight_transfer=self.weight_broadcast.quantize_in_weight_transfer,
                 )
             elif self.weight_broadcast.type == "filesystem":
                 self.trainer.weight_broadcast = TrainerFileSystemWeightBroadcastConfig()

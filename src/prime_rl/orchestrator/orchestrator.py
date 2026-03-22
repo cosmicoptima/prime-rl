@@ -353,6 +353,7 @@ async def orchestrate(config: OrchestratorConfig):
                 config.weight_broadcast.host,
                 config.weight_broadcast.port,
                 config.weight_broadcast.timeout,
+                quantize_in_weight_transfer=config.weight_broadcast.quantize_in_weight_transfer,
             )
     else:
         logger.info("Skipping weight broadcast initialization (SFT distillation mode)")
