@@ -1503,6 +1503,21 @@ wheels = [
 ]
 
 [[package]]
+name = "mamba-ssm"
+version = "2.3.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "einops", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
+    { name = "ninja", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
+    { name = "packaging", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
+    { name = "setuptools", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
+    { name = "torch", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
+    { name = "transformers", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
+    { name = "triton", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/34/67/ec89aa703da194a813e35d2ea2de8f74a7ce6991a120a29f3a0c5e30d4b9/mamba_ssm-2.3.1.tar.gz", hash = "sha256:4d529477ad94753962216d583fc8f1c127c717b7d7c875d6bbb9376366d0d761", size = 121707, upload-time = "2026-03-10T09:27:34.798Z" }
+
+[[package]]
 name = "markdown"
 version = "3.9"
 source = { registry = "https://pypi.org/simple" }
@@ -2491,6 +2506,9 @@ dev = [
 fp8-inference = [
     { name = "deep-gemm", marker = "platform_machine == 'x86_64' and sys_platform == 'linux'" },
 ]
+mamba-ssm = [
+    { name = "mamba-ssm", marker = "(platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -2549,6 +2567,7 @@ dev = [
     { name = "ruff", specifier = ">=0.12.1" },
 ]
 fp8-inference = [{ name = "deep-gemm", marker = "platform_machine == 'x86_64'", url = "https://github.com/hallerite/DeepGEMM/releases/download/v2.3.0-torch2.9/deep_gemm-2.3.0+35c4bc8-cp312-cp312-linux_x86_64.whl" }]
+mamba-ssm = [{ name = "mamba-ssm", specifier = ">=2.3.0" }]
 
 [[package]]
 name = "prime-sandboxes"
