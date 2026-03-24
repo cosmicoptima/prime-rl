@@ -13,7 +13,6 @@ from prime_rl.configs.shared import (
     WandbConfig,
 )
 from prime_rl.utils.config import BaseConfig
-from prime_rl.utils.vlm import is_vlm_model
 
 # -- Shared trainer configs (used by both SFT and RL trainers) --
 
@@ -714,7 +713,7 @@ class TrainerConfig(BaseConfig):
 
     @model_validator(mode="after")
     def vlms_require_bfloat16(self):
-        if is_vlm_model(self.model.name) and (
+        if self.model.vlm is not None and (
             self.model.optimization_dtype != "bfloat16" or self.model.reduce_dtype != "bfloat16"
         ):
             raise ValueError(
