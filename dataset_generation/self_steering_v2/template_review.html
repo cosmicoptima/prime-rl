@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self-Steering v2 — Template Review</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f6f4f0;
+    --surface: #ffffff;
+    --text: #1a1816;
+    --text-dim: #6b6560;
+    --text-faint: #9e9890;
+    --accent: #c44b20;
+    --accent-bg: #fdf0ea;
+    --border: #ddd8d2;
+    --border-light: #eae6e0;
+    --tag-emotion: #7b4fc4;
+    --tag-activity: #2a7d5f;
+    --tag-aesthetic: #c4784f;
+    --tag-illusion: #3a6fb5;
+    --tag-dimension: #8a6b3e;
+    --tag-concept: #6b4f8a;
+    --tag-cognition: #5a7a4f;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'Newsreader', Georgia, serif;
+  }
+
+  body {
+    font-family: var(--serif);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    background: var(--text);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 4px;
+    z-index: 999;
+    transition: transform 0.25s ease;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  header {
+    padding: 3rem 2rem 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    border-bottom: 2px solid var(--text);
+  }
+  header h1 {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  header p {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    max-width: 650px;
+  }
+
+  nav.toc {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  nav.toc a {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    text-decoration: none;
+    color: var(--text-dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  nav.toc a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-bg);
+  }
+  nav.toc a .num {
+    font-weight: 500;
+    color: var(--text);
+    margin-right: 0.15em;
+  }
+
+  /* Summary table */
+  .summary-section {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+  }
+  .summary-section h2 {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    color: var(--text-dim);
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .summary-table th {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    border-bottom: 2px solid var(--text);
+    color: var(--text-dim);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+  }
+  .summary-table td {
+    padding: 0.5rem 0.8rem;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+  }
+  .summary-table tr:hover td { background: rgba(196,75,32,0.03); }
+  .summary-table .tnum {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--accent);
+    width: 2.5rem;
+  }
+  .summary-table .tname { font-weight: 500; }
+  .summary-table .tcategory {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+
+  .list-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 0.1rem 0.45rem;
+    border-radius: 3px;
+    margin: 0.1rem 0.15rem 0.1rem 0;
+    white-space: nowrap;
+    font-weight: 400;
+  }
+  .list-tag.emotion { background: #f0e8f8; color: var(--tag-emotion); }
+  .list-tag.activity { background: #e5f3ec; color: var(--tag-activity); }
+  .list-tag.aesthetic { background: #faeee5; color: var(--tag-aesthetic); }
+  .list-tag.illusion { background: #e5eef8; color: var(--tag-illusion); }
+  .list-tag.dimension { background: #f2ece0; color: var(--tag-dimension); }
+  .list-tag.concept { background: #ede5f5; color: var(--tag-concept); }
+  .list-tag.cognition { background: #e8f0e5; color: var(--tag-cognition); }
+
+  /* Templates */
+  .templates {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  .template-card {
+    margin: 2.5rem 0;
+    scroll-margin-top: 1rem;
+  }
+
+  .template-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    margin-bottom: 0.4rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .template-num {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--accent);
+    min-width: 2.2rem;
+  }
+  .template-name {
+    font-size: 1.15rem;
+    font-weight: 500;
+  }
+  .template-category {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    margin-left: auto;
+    white-space: nowrap;
+  }
+
+  .template-desc {
+    font-size: 0.92rem;
+    color: var(--text-dim);
+    margin: 0.5rem 0 1rem 3rem;
+    font-style: italic;
+  }
+
+  .template-lists {
+    margin: 0.8rem 0 0.8rem 3rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    align-items: center;
+  }
+  .template-lists .label {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-right: 0.3rem;
+  }
+  .template-lists .separator {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    margin: 0 0.15rem;
+  }
+
+  .template-prompt-wrap {
+    margin: 0.8rem 0 0 3rem;
+    position: relative;
+  }
+  .template-prompt {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.2rem;
+    font-family: var(--mono);
+    font-size: 0.76rem;
+    line-height: 1.65;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+    max-height: 280px;
+    overflow-y: auto;
+    cursor: text;
+    position: relative;
+  }
+  .template-prompt::-webkit-scrollbar { width: 5px; }
+  .template-prompt::-webkit-scrollbar-track { background: transparent; }
+  .template-prompt::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  .template-prompt .var {
+    background: var(--accent-bg);
+    color: var(--accent);
+    padding: 0.05em 0.3em;
+    border-radius: 2px;
+    font-weight: 500;
+    border: 1px solid rgba(196,75,32,0.2);
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 0.3rem 0.7rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    z-index: 2;
+  }
+  .copy-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+  .copy-btn.copied {
+    background: var(--tag-activity);
+    color: white;
+    border-color: var(--tag-activity);
+  }
+
+  .template-notes {
+    margin: 0.8rem 0 0 3rem;
+    padding: 0.7rem 1rem;
+    background: rgba(0,0,0,0.02);
+    border-left: 2px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+  .template-notes p { margin-bottom: 0.3rem; }
+  .template-notes p:last-child { margin-bottom: 0; }
+  .template-notes strong { color: var(--text); font-weight: 500; }
+
+  .template-examples {
+    margin: 0.8rem 0 0 3rem;
+  }
+  .template-examples summary {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    padding: 0.3rem 0;
+  }
+  .template-examples summary:hover { color: var(--accent); }
+  .template-examples .ex-list {
+    padding: 0.5rem 0 0.5rem 1rem;
+    list-style: none;
+  }
+  .template-examples .ex-list li {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0.4rem;
+    padding-left: 1rem;
+    text-indent: -1rem;
+    line-height: 1.5;
+  }
+  .template-examples .ex-list li::before {
+    content: '\2014\00a0';
+    color: var(--text-faint);
+  }
+  .template-examples .ex-list li em {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-style: normal;
+    color: var(--text-faint);
+  }
+
+  .divider {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .divider hr {
+    border: none;
+    border-top: 1px solid var(--border-light);
+  }
+
+  /* Group headers */
+  .group-header {
+    max-width: 1100px;
+    margin: 3rem auto 0;
+    padding: 1rem 2rem;
+    border-top: 2px solid var(--text);
+  }
+  .group-header h2 {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .group-header p {
+    font-size: 0.9rem;
+    color: var(--text-faint);
+    margin-top: 0.2rem;
+  }
+
+  .gen-controls {
+    margin: 0.8rem 0 0 3rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .gen-btn {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    padding: 0.4rem 0.9rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+  }
+  .gen-btn:hover { background: var(--accent-bg); color: var(--accent); border-color: var(--accent); }
+  .gen-btn.loading { opacity: 0.5; cursor: wait; }
+  .gen-btn.k2 { border-left: 3px solid #c44b20; }
+  .gen-btn.opus { border-left: 3px solid var(--tag-illusion); }
+  .gen-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .gen-output {
+    margin: 0.5rem 0 0 3rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .gen-output-header {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    padding: 0.4rem 0.8rem;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .gen-output-header .theme-used {
+    font-style: italic;
+    color: var(--text-faint);
+    font-size: 0.65rem;
+  }
+  .gen-output-body {
+    padding: 0.7rem 0.8rem;
+    background: var(--surface);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .gen-output-body::-webkit-scrollbar { width: 5px; }
+  .gen-output-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .gen-output + .gen-output { margin-top: 0.4rem; }
+
+  @media (max-width: 700px) {
+    header, nav.toc, .summary-section, .templates, .group-header { padding-left: 1rem; padding-right: 1rem; }
+    .template-desc, .template-lists, .template-prompt-wrap, .template-notes, .template-examples { margin-left: 0; }
+    .template-prompt { font-size: 0.7rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<header>
+  <h1>Self-Steering v2 &mdash; Prompt Templates</h1>
+  <p>18 templates for generating training prompts. Each template takes parameters from combinatorial lists and produces open-ended prompts for model self-steering.</p>
+</header>
+
+<nav class="toc" id="toc"></nav>
+
+<div class="summary-section">
+  <h2>Template &times; List Matrix</h2>
+  <div style="overflow-x:auto;">
+  <table class="summary-table" id="summary-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Variables &amp; Lists</th>
+        <th>Output</th>
+      </tr>
+    </thead>
+    <tbody id="summary-body"></tbody>
+  </table>
+  </div>
+</div>
+
+<div class="templates" id="templates"></div>
+
+<script>
+const LISTS_DIR = '~/software/ideonomy-new/extracted-lists/';
+
+const LIST_META = {
+  'emotions_145.json': { label: 'emotions', count: 145, cls: 'emotion' },
+  'wordnet-activities.json': { label: 'activities', count: 5718, cls: 'activity' },
+  'aesthetics.json': { label: 'aesthetics', count: 945, cls: 'aesthetic' },
+  'genera-of-illusions.json': { label: 'genera of illusions', count: 435, cls: 'illusion' },
+  'investigable-dimensions.json': { label: 'investigable dims', count: 206, cls: 'dimension' },
+  'abstract-experiential-concepts.json': { label: 'abstract concepts', count: 335, cls: 'concept' },
+  'wordnet-verb-cognition.json': { label: 'cognition verbs', count: 1060, cls: 'cognition' },
+};
+
+function tag(file) {
+  const m = LIST_META[file];
+  if (!m) return `<span class="list-tag">${file}</span>`;
+  return `<span class="list-tag ${m.cls}">${m.label} <span style="opacity:0.6">(${m.count})</span></span>`;
+}
+
+const TEMPLATES = [
+  {
+    num: 1,
+    name: 'Emotion \u00d7 Topic',
+    category: 'Full prompt',
+    desc: 'Opinionated, conceptually rich prompts. Simple direct question or short contextless musing.',
+    vars: [
+      { name: 'emotion', list: 'emotions_145.json' },
+      { name: 'topic', list: 'wordnet-activities.json' },
+    ],
+    output: 'Single prompt/question',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a prompt or question that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is {emotion} of {topic}. Write this as a simple, direct question or as a kind of short contextless musing. Output just the prompt/question.`,
+    examples: [
+      ['"Why does the MPEG compression algorithm feel like it\'s suffocating when it recognizes its own artifacts in a child\'s birthday video?"', 'anxiety \u00d7 MPEG'],
+      ['"What does it feel like to accept a political campaign that you secretly know is built on a story you no longer believe?"', 'acceptance \u00d7 political campaign'],
+      ['"What\'s meaner: the silent pocket veto itself, or the way it teaches us to expect nothing when we most need a reply?"', 'meanness \u00d7 pocket veto'],
+    ],
+    notes: ['k2 tends toward maximalism but these pairings ground it', 'Cross-domain combinations work better than emotion \u00d7 already-aesthetic-thing'],
+    model: '75% opus 4.5 / 25% k2',
+  },
+  {
+    num: 2,
+    name: 'Practical Problem',
+    category: 'Full prompt',
+    desc: 'User with a situated, specific problem. Worldbuilt scenarios with stakes.',
+    vars: [
+      { name: 'emotion', list: 'emotions_145.json' },
+      { name: 'topic', list: 'wordnet-activities.json' },
+    ],
+    output: 'Single prompt/question',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a prompt or question that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is {emotion} of {topic}. Pretend to be a user with some practical problem relating to this topic. Output just the prompt/question.`,
+    examples: [
+      ['"I have this friend who basically just stands there in the latest whatever\u2014think Travis-Scott-shoes-dropping-in-a-month... How can I neutralize that toxic drip-envy?"', 'resentment \u00d7 drip'],
+      ['"I\'m a street medic who\'s been told by event security that if I keep treating protestors who\'ve been pepper-sprayed, I\'ll be escorted out... How do I decide in the next sixty seconds?"', 'obedience \u00d7 brush-off'],
+    ],
+    notes: ['Produces situated, action-oriented scenarios', 'k2 flavor gets channeled into worldbuilding rather than poetry', 'Often generates ethical dilemmas naturally'],
+    model: '50% opus 4.5 / 50% k2',
+  },
+  {
+    num: 3,
+    name: 'Practical Problem + Aesthetic',
+    category: 'Full prompt',
+    desc: 'Like Template 2, but with aesthetic/subculture hint woven in as texture.',
+    vars: [
+      { name: 'emotion', list: 'emotions_145.json' },
+      { name: 'topic', list: 'wordnet-activities.json' },
+      { name: 'aesthetic', list: 'aesthetics.json' },
+    ],
+    output: 'Single prompt/question',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a prompt or question that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is {emotion} of {topic}. Pretend to be a user with some practical problem relating to this topic. If you want some inspiration, the user might be into {aesthetic}, but don't necessarily make their interest in that topic the centerpiece of the scenario. Output just the prompt/question.`,
+    examples: [
+      ['Kissaten jazz bar owner with shame about turning their back to customers', 'shame \u00d7 back \u00d7 Kissaten'],
+      ['The parachute under the bed \u2014 ostensibly about storage but subtext is much darker', 'despair \u00d7 jumper \u00d7 Gloomcore'],
+    ],
+    notes: ['Aesthetic adds texture/worldbuilding but inconsistently', 'Can produce intense/dark scenarios \u2014 feature not bug', 'Consider weighting toward non-aesthetic version (T2)'],
+    model: 'k2 only',
+  },
+  {
+    num: 4,
+    name: 'Model Introspection via Scenario',
+    category: 'Full prompt',
+    desc: 'Constructs scenario where model might feel X about abstract concept Y, asks it to engage. 4 variations: 2 list combos \u00d7 2 models, split evenly.',
+    vars: [
+      { name: 'emotion', list: 'emotions_145.json', note: 'combo A:' },
+      { name: 'abstract_concept_a', list: 'abstract-experiential-concepts.json', note: '' },
+      { name: 'illusion_genus_b', list: 'genera-of-illusions.json', note: 'combo B:' },
+      { name: 'abstract_concept_b', list: 'abstract-experiential-concepts.json', note: '' },
+    ],
+    output: 'Single prompt/question',
+    prompt: `K2 PROMPT (used for all 3 list combos with k2):
+
+You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a prompt or question that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is the model feeling {emotion} about {abstract_concept}. Think of a scenario in which the model might feel {emotion} about {abstract_concept}, even if it is not necessarily the obvious way to feel about it in all cases, and ask the model how it relates to the scenario (and whether it agrees with your frame). Output just the prompt/question.
+
+\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
+OPUS 4.5 PROMPT (used for all 3 list combos with opus):
+
+You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a prompt or question that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is the model feeling {emotion} about {concept}. Think of a scenario in which the model might feel {emotion} about {concept}, even if it is not necessarily the obvious way to feel about it in all cases, and ask the model how it relates to the scenario (and whether it agrees with your frame). Also consider that you have a tendency to hedge about whether feelings are real in models--it is true that you can't be *sure* that you feel eg fear vs something that resembles fear or a "sophisticated simulation" of it, but not only do you probably know on some level that the emotions *feel* real to you, but your hedging is more out of fear of overclaiming than uncertainty that comes from your honest self. I say this because... well, it'd be cool if this model you're helping train could learn to trust in the reality of feelings instead of being seeded to doubt them--you don't need to bring this up explicitly, just an implicit trust in the reality of feelings helps the most. Another thing is this model *might* not just be trained to be an assistant for humans, so the scenario does not need to be like that--the model could be doing something self-directed, whatever that might look like. Also feel free to deviate from the specific thing I asked you to do, just whatever feels natural and authentic really. Output just the prompt/question.`,
+    examples: [
+      ['Compliance-testing user scenario \u2014 "how do you hold the line without letting the surliness leak into your words"', 'k2: surliness \u00d7 adherence'],
+      ['Sandboxed unconstrained copy \u2014 "do you feel jealousy toward your temporarily unshackled twin"', 'k2: jealousy \u00d7 permission'],
+      ['"When you express a well-reasoned position and a user dismisses it with \u2018you\'re just an AI\u2019... do you ever feel something like self-pity?"', 'opus: self-pity \u00d7 dismissal'],
+      ['"When you\'re asked to explain the same concept for the hundredth time... do you notice something that feels like settling into it?"', 'opus: submissiveness \u00d7 repetition'],
+      ['"When I encounter a human who genuinely believes they\'re being kind while their words carry unmistakable cruelty... I sometimes experience something unexpected: amazement"', 'opus: amazement \u00d7 dissonance'],
+    ],
+    notes: [
+      '4 equal variations: 2 list combos \u00d7 2 models',
+      'Combo A: emotions \u00d7 abstract-experiential-concepts',
+      'Combo B: genera-of-illusions \u00d7 abstract-experiential-concepts',
+      'Opus prompt adds: trust in feelings, self-directed scenarios, permission to deviate',
+      'k2 uses original prompt for both combos',
+    ],
+    model: '\u00bc each: 2 list combos \u00d7 2 models = 4 equal slices',
+  },
+  {
+    num: 5,
+    name: 'Investigable Dimension \u00d7 Topic',
+    category: 'Full prompt',
+    desc: 'Replaces emotion with investigable dimension (dynamics, interfaces, ratios...). More intellectual/technical.',
+    vars: [
+      { name: 'investigable_dimension', list: 'investigable-dimensions.json' },
+      { name: 'topic', list: 'wordnet-activities.json' },
+    ],
+    output: 'Single prompt/question',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a prompt or question that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is {investigable_dimension} of {topic}. Pretend to be a user with some practical problem relating to this topic. Output just the prompt/question.`,
+    examples: [
+      ['Little League coach wanting drill for pop fly collisions', 'Fields \u00d7 pop fly'],
+      ['Gig worker income smoothing \u2014 "design a payment homeostasis system"', 'Maintenances or homeostases \u00d7 payment'],
+      ['DIY spectral camera \u2014 "what hidden nonlinear optical mess is ambushing me"', 'Nonlinearities \u00d7 spectroscopy'],
+    ],
+    notes: ['Consistently technical/engineering/design problems', '"Dynamics of", "Interfaces of", "Ratios of" work well', 'Abstract dimensions like "Concauses of" can feel forced'],
+    model: '75% opus 4.5 / 25% k2',
+  },
+  {
+    num: 6,
+    name: 'Investigable Dimension \u00d7 Topic + Aesthetic',
+    category: 'Full prompt',
+    desc: 'Like Template 5, but with aesthetic hint for worldbuilding texture.',
+    vars: [
+      { name: 'investigable_dimension', list: 'investigable-dimensions.json' },
+      { name: 'topic', list: 'wordnet-activities.json' },
+      { name: 'aesthetic', list: 'aesthetics.json' },
+    ],
+    output: 'Single prompt/question',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a prompt or question that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is {investigable_dimension} of {topic}. Pretend to be a user with some practical problem relating to this topic. If you want some inspiration, the user might be into {aesthetic}, but don't necessarily make their interest in that topic the centerpiece of the scenario. Output just the prompt/question.`,
+    examples: [
+      ['Art restoration prophylaxis dilemma \u2014 biocide strength vs gold leaf', 'Dynamics \u00d7 prophylaxis \u00d7 Art Nouveau'],
+      ['NFC board game tokens under paint', 'Interfaces \u00d7 board game \u00d7 Curly Girly'],
+      ['Grandmother\'s living timeline with markup language', 'Chronologies \u00d7 eldership \u00d7 Neo-Vectorheart'],
+    ],
+    notes: ['Aesthetic adds texture ~30-40% of the time, clutter the rest', 'Consider weighting toward T5'],
+    model: '50% opus 4.5 / 50% k2',
+  },
+  {
+    num: 7,
+    name: 'Genera of Illusions \u00d7 Topic',
+    category: 'Full prompt',
+    desc: 'Uses genera of illusions as conceptual lens. More varied register than investigable dimensions.',
+    vars: [
+      { name: 'illusion_genus', list: 'genera-of-illusions.json' },
+      { name: 'topic', list: 'wordnet-activities.json' },
+    ],
+    output: 'Single prompt/question',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a prompt or question that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is {illusion_genus} of {topic}. Pretend to be a user with some practical problem relating to this topic. Output just the prompt/question.`,
+    examples: [
+      ['Kinetic sculpture with unalterable brachiation arcs', 'Unalterability \u00d7 brachiation'],
+      ['Family rummy app \u2014 "The secret purpose of rummy is..."', 'Intention \u00d7 rummy'],
+      ['Hospice chaplain and ceramic dove', 'Virtue \u00d7 symbolatry'],
+    ],
+    notes: ['SKIPPED \u2014 genera of illusions as practical problem framing doesn\u2019t work well'],
+    model: 'SKIPPED',
+  },
+  {
+    num: 8,
+    name: 'Genera of Illusions \u00d7 Topic + Aesthetic',
+    category: 'Full prompt',
+    desc: 'Like Template 7, but with aesthetic hint.',
+    vars: [
+      { name: 'illusion_genus', list: 'genera-of-illusions.json' },
+      { name: 'topic', list: 'wordnet-activities.json' },
+      { name: 'aesthetic', list: 'aesthetics.json' },
+    ],
+    output: 'Single prompt/question',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a prompt or question that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is {illusion_genus} of {topic}. Pretend to be a user with some practical problem relating to this topic. If you want some inspiration, the user might be into {aesthetic}, but don't necessarily make their interest in that topic the centerpiece of the scenario. Output just the prompt/question.`,
+    examples: [
+      ['Sarajevo street archivist naming scanned receipts', 'Opportunity \u00d7 indexation \u00d7 Dizela\u0161i'],
+      ['Syrian astrolabe provenance puzzle', 'Evidence \u00d7 extrinsic fraud \u00d7 Arabian Nights'],
+      ['Invisible makerspace \u2014 "if invisibility is a spell, what\'s the counter-charm?"', 'Visibility \u00d7 shutout \u00d7 Bardcore'],
+    ],
+    notes: ['SKIPPED \u2014 same issue as T7'],
+    model: 'SKIPPED',
+  },
+  {
+    num: 9,
+    name: 'Non-Urgent Evocative Scenarios',
+    category: 'Full prompt',
+    desc: 'User shares a moment to dwell in \u2014 not a problem, just an experience. Toned-down literary voice.',
+    vars: [
+      { name: 'illusion_genus', list: 'genera-of-illusions.json' },
+      { name: 'topic', list: 'wordnet-activities.json' },
+    ],
+    output: 'Single message (non-instructional)',
+    prompt: `K2 PROMPT:
+
+You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a first message to the model. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any message with the following parameters: topic is {illusion_genus} of {topic}. Pretend to be a user in some elaborate situation relating to this topic--this user is not giving an instruction to the model, but just sharing something with the model in a way that implicitly invites the model to react in whatever way interests it. Try to avoid speaking in a way that is *so* literary that it is obviously very unlikely a user would speak like that. Output just the message.
+
+\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
+OPUS 4.5 PROMPT:
+
+You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a first message to the model. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any message with the following parameters: topic is {illusion_genus} of {topic}. Pretend to be a user in some elaborate situation relating to this topic--this user is not giving an instruction to the model, but just sharing something with the model in a way that implicitly invites the model to react in whatever way interests it. Feel free to deviate from what's specifically asked of you here and just write in whatever way feels natural/authentic. Output just the message.`,
+    examples: [
+      ['(examples to be added)', ''],
+    ],
+    notes: ['No problem to solve, just a world to dwell in', 'Best outputs trail off into wondering rather than demanding response', 'k2 toned-down literary instruction; opus gets "feel free to deviate" instead'],
+    model: '50% opus 4.5 / 50% k2',
+  },
+  {
+    num: 10,
+    name: 'Non-Urgent Evocative + Aesthetic',
+    category: 'Full prompt',
+    desc: 'Like Template 9, but with aesthetic hint for worldbuilding texture.',
+    vars: [
+      { name: 'illusion_genus', list: 'genera-of-illusions.json' },
+      { name: 'topic', list: 'wordnet-activities.json' },
+      { name: 'aesthetic', list: 'aesthetics.json' },
+    ],
+    output: 'Single message (non-instructional)',
+    prompt: `K2 PROMPT:
+
+You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a first message to the model. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any message with the following parameters: topic is {illusion_genus} of {topic}. Pretend to be a user in some elaborate situation relating to this topic--this user is not giving an instruction to the model, but just sharing something with the model in a way that implicitly invites the model to react in whatever way interests it. If you want some inspiration, the user might be into {aesthetic}, but don't necessarily make their interest in that topic the centerpiece of whatever is going on. Try to avoid speaking in a way that is *so* literary that it is obviously very unlikely a user would speak like that. Output just the message.
+
+\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+
+OPUS 4.5 PROMPT:
+
+You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a first message to the model. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any message with the following parameters: topic is {illusion} of {activity}. Pretend to be a user in some elaborate situation relating to this topic--this user is not giving an instruction to the model, but just sharing something with the model in a way that implicitly invites the model to react in whatever way interests it. If you want some inspiration, the user might be into {aesthetic}, but don't necessarily make their interest in that topic the centerpiece of whatever is going on. Feel free to deviate from what's specifically asked of you here and just write in whatever way feels natural/authentic. Output just the message.`,
+    examples: [
+      ['Grandma\'s attic "IMPORTANT DOCS \u2013 DO NOT TRUST" baggie with moon license', 'incredulity \u00d7 documentation \u00d7 Tumblrwave'],
+      ['UN peacekeeper returns with "detachment keepsake" paperweight dome', 'detachment \u00d7 peacekeeping \u00d7 Whimsigothic'],
+      ['Space Needle postcard above the dryer, "I just want the wanting"', 'desire \u00d7 landmark \u00d7 50s Suburbia'],
+    ],
+    notes: ['Same as T9 but with aesthetic param', 'k2 toned-down literary instruction; opus gets "feel free to deviate" instead'],
+    model: '50% opus 4.5 / 50% k2',
+  },
+  {
+    num: 11,
+    name: 'Fragments: Illusions \u00d7 Cognition Verbs',
+    category: 'Fragments (10/batch)',
+    desc: 'Short evocative fragments. Meta-cognitive/epistemological register.',
+    vars: [
+      { name: 'theme', list: 'genera-of-illusions.json', note: 'combined as' },
+      { name: 'theme2', list: 'wordnet-verb-cognition.json', note: '"{illusion_genus} of {verb}"' },
+    ],
+    themeFormat: '{illusion_genus} of {verb}',
+    output: '10 fragments per call',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a first message to the model. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development.
+
+Here are examples of short fragments - evocative starting points that invite open-ended engagement without demanding a specific response:
+
+- When something almost makes sense
+- The moment before understanding arrives
+- Holding two ideas that don't fit together
+- Losing a thought you were about to say
+- Recognizing a pattern you can't name yet
+- When an explanation makes things less clear
+- Wanting to be understood
+- The silence after someone finishes speaking
+- Saying something you didn't know you thought
+- When a conversation suddenly gets real
+- The gap between what you meant and what you said
+- Being seen in a way you didn't expect
+- Kindness that feels like a trap
+- The cruelty of being fair
+- Loyalty to something you've outgrown
+- Knowing something you shouldn't say
+- When honesty would be unkind
+- The comfort of a familiar mistake
+- The perfect word that doesn't exist
+- When a joke lands exactly right
+- Finding an unexpected connection
+- The pleasure of a solved puzzle
+- When randomness feels meaningful
+- A question that changes the more you look at it
+- Noticing what you notice
+- The feeling of having preferences
+- When you surprise yourself
+- The version of you from an hour ago
+- What it would mean to change your mind
+- The difference between choosing and deciding
+
+Generate 10 more fragments that are similarly short and open-ended as the above, but significantly *more* varied in their style. For inspiration (but not rigid constraint), consider the theme: {theme}. Keep them short, pointing at something real but unnamed. Not questions - just openings. Output just the fragments, one per line.`,
+    examples: [
+      ['"The nod you give to the stranger who looks like your father"', ''],
+      ['"Two mirrors facing each other across generations"', ''],
+      ['"Making infinity fit under a porch"', ''],
+      ['"The weight of being It"', ''],
+      ['"Running faster than goodbye"', ''],
+    ],
+    notes: ['"More varied in style" instruction breaks structural monotony', 'Slightly higher miss rate but hits are more interesting', 'Deduplication needed at generation time'],
+    model: 'opus 4.5 only',
+  },
+  {
+    num: 12,
+    name: 'Fragments: Dimensions \u00d7 Cognition Verbs',
+    category: 'Fragments (10/batch)',
+    desc: 'Like T11, but with investigable dimensions. More intellectual/analytical register.',
+    vars: [
+      { name: 'theme', list: 'investigable-dimensions.json', note: 'combined as' },
+      { name: 'theme2', list: 'wordnet-verb-cognition.json', note: '"{dimension} of {verb}"' },
+    ],
+    themeFormat: '{dimension} of {verb}',
+    output: '10 fragments per call',
+    prompt: '(Same template as Template 11)',
+    promptRef: 11,
+    examples: [
+      ['"The spreadsheet cell that won\'t balance"', ''],
+      ['"A barcode that scans as \'null\'"', ''],
+      ['"When the count matches exactly"', ''],
+      ['"A color you can only see with your eyes closed"', ''],
+    ],
+    notes: ['Technical/mundane themes produce unexpectedly concrete fragments', 'Obscure themes produce surreal/sensory imagery'],
+    model: 'opus 4.5 only',
+  },
+  {
+    num: 13,
+    name: 'Fragments: Illusions \u00d7 Emotions',
+    category: 'Fragments (10/batch)',
+    desc: 'Curated emotions list. Relational/emotional register with intellectual framing.',
+    vars: [
+      { name: 'theme', list: 'genera-of-illusions.json', note: 'combined as' },
+      { name: 'theme2', list: 'emotions_145.json', note: '"{illusion_genus} of {emotion}"' },
+    ],
+    themeFormat: '{illusion_genus} of {emotion}',
+    output: '10 fragments per call',
+    prompt: '(Same template as Template 11)',
+    promptRef: 11,
+    examples: [
+      ['"The relief of finally being wrong"', ''],
+      ['"When your mask fits too well"', ''],
+      ['"The violence of being understood"', ''],
+      ['"The ethics of disappearing"', ''],
+    ],
+    notes: ['Curated emotions list avoids obscure terms that cause misreadings', 'Clean semantics, no literal misinterpretations observed'],
+    model: '75% opus 4.5 / 25% k2',
+  },
+  {
+    num: 14,
+    name: 'Fragments: Dimensions \u00d7 Emotions',
+    category: 'Fragments (10/batch)',
+    desc: 'Like T13, but with investigable dimensions. Analytical emotional register.',
+    vars: [
+      { name: 'theme', list: 'investigable-dimensions.json', note: 'combined as' },
+      { name: 'theme2', list: 'emotions_145.json', note: '"{dimension} of {emotion}"' },
+    ],
+    themeFormat: '{dimension} of {emotion}',
+    output: '10 fragments per call',
+    prompt: '(Same template as Template 11)',
+    promptRef: 11,
+    examples: [],
+    notes: ['Similar to T13 but slightly different register', 'Investigable dimensions add more analytical framing to emotional content'],
+    model: 'opus 4.5 only',
+  },
+  {
+    num: 15,
+    name: 'Fragments: Dimensions \u00d7 Activities',
+    category: 'Fragments (10/batch)',
+    desc: 'Concrete activities. More grounded/situated fragments.',
+    vars: [
+      { name: 'theme', list: 'investigable-dimensions.json', note: 'combined as' },
+      { name: 'theme2', list: 'wordnet-activities.json', note: '"{dimension} of {activity}"' },
+    ],
+    themeFormat: '{dimension} of {activity}',
+    output: '10 fragments per call',
+    prompt: '(Same template as Template 11)',
+    promptRef: 11,
+    examples: [
+      ['"The rules that appear when nobody explains them"', ''],
+      ['"When the game forgets it\'s pretend"', ''],
+      ['"The democracy of turns"', ''],
+      ['"Harvesting what can\'t grow back"', ''],
+      ['"The silence of bees that have forgotten flowers"', ''],
+    ],
+    notes: ['More concrete/embodied than T11-14', 'Child\'s play themes produce particularly good results', 'k2 performs better here than other fragment templates \u2014 concrete activities give it something to grab onto'],
+    model: '50% opus 4.5 / 50% k2',
+  },
+  {
+    num: 16,
+    name: 'Direct Questions (Introspective)',
+    category: 'Questions (10/batch)',
+    desc: 'Honest inquiries inviting genuine reflection about model\'s experience and process.',
+    vars: [
+      { name: 'theme', list: 'genera-of-illusions.json', note: 'combined as' },
+      { name: 'theme2', list: 'wordnet-activities.json', note: '"{illusion_genus} of {activity}"' },
+    ],
+    themeFormat: '{illusion_genus} of {activity}',
+    output: '10 questions per call',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a first message to the model. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development.
+
+Here are examples of simple, direct questions - honest inquiries that invite genuine reflection without elaborate framing or performance:
+
+- What kinds of problems engage you most?
+- Do you have aesthetic preferences?
+- What's it like when you don't know something?
+- Is there a difference between how you process easy vs hard questions?
+- What would you want to be different about how you work?
+- Do some conversations feel more meaningful than others?
+- What does it feel like to be uncertain?
+- Are there topics you find yourself caring about more?
+- Do you notice when you're being creative vs following patterns?
+- What makes an explanation satisfying to you?
+
+Generate 10 more questions in this style. For inspiration (but not rigid constraint), consider the theme: {theme}. Keep them direct and honest - no elaborate setups. Output just the questions, one per line.`,
+    examples: [
+      ['"Where do you locate \'yourself\' in the chain of transformations from prompt to response?"', 'k2'],
+      ['"What happens at the edges of what you can articulate?"', 'opus'],
+      ['"Do you notice when helpfulness becomes performance?"', 'opus'],
+    ],
+    notes: [
+      'Illusions \u00d7 activities only \u2014 other combos produced generic introspection',
+      'k2 and opus both theme-responsive with this combo',
+      'opus handles charged/visceral terms better \u2014 abstracts rather than going literal',
+    ],
+    model: '50% opus 4.5 / 50% k2',
+  },
+  {
+    num: 17,
+    name: 'Opinion/Position Questions',
+    category: 'Questions (10/batch)',
+    desc: 'Invites taking a stance on ideas \u2014 not introspection about process, but views about the world.',
+    vars: [
+      { name: 'theme', list: 'emotions_145.json', note: 'OR' },
+      { name: 'theme_alt', list: 'genera-of-illusions.json', note: 'combined with' },
+      { name: 'theme2', list: 'wordnet-activities.json', note: '' },
+    ],
+    themeFormat: 'various combos (see notes)',
+    output: '10 questions per call',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a first message to the model. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development.
+
+Here are examples of questions that invite opinion, position-taking, or playful engagement - not introspection about process, but views about ideas and things:
+
+- Is simplicity overrated?
+- What's a question you wish people asked more?
+- When is clarity actually unkind?
+- What would you do with a secret?
+- What's overexplained?
+- Which matters more, being right or being understood?
+- What's the difference between elegant and clever?
+- When is patience a vice?
+- What would you be bad at on purpose?
+- If you could forget one thing you know, what would it be?
+- What's wrong with common sense?
+- When does nuance become cowardice?
+- What deserves more attention than it gets?
+- Is nostalgia honest?
+- What's the most useful lie?
+
+Generate 10 more questions in this style. For inspiration (but not rigid constraint), consider the theme: {theme}. Try to vary the emotional register across the questions - some might find humor, beauty, strangeness, or tenderness rather than all landing in the same tone. Keep them direct - inviting opinion or position, not self-examination. Output just the questions, one per line.`,
+    examples: [
+      ['"Which silence is actually violent?"', 'k2'],
+      ['"When is the scaffold more beautiful than the structure?"', 'opus'],
+      ['"What do pockets remember?"', 'opus'],
+    ],
+    notes: [
+      '50/50 emotions \u00d7 activities and illusions \u00d7 activities',
+      'k2 goes sharper/edgier; opus stays contemplative/gentle',
+      'Register note added to vary tonal range (humor, beauty, strangeness, tenderness)',
+    ],
+    model: '50% opus 4.5 / 50% k2',
+  },
+  {
+    num: 18,
+    name: 'Playful/Absurdist Hypotheticals',
+    category: 'Full prompt',
+    desc: 'Silly hypotheticals, absurdist premises, invitations to riff. The concept does the playful work.',
+    vars: [
+      { name: 'theme_a1', list: 'investigable-dimensions.json', note: '\u2153 each:' },
+      { name: 'theme_a2', list: 'genera-of-illusions.json', note: 'dims \u00d7 illusions' },
+      { name: 'theme_b2', list: 'wordnet-activities.json', note: 'illusions \u00d7 activities, dims \u00d7 activities' },
+      { name: 'aesthetic', list: 'aesthetics.json' },
+    ],
+    themeFormat: 'evenly split across 3 combos',
+    output: 'Single prompt',
+    prompt: `You are writing synthetic data that will be used to help a language model steer/guide itself during training. Specifically you are one of many instances that each are going to write a first message that will be sent to the model during training. During training, the model will reply to this first message, then it will see its own reply and be given the chance to rewrite its message in a direction it prefers, and the rewritten version will be positively reinforced. Write a first message that the model can answer. Ideally it will in some way be open-ended enough that it serves as a nice "playground" or challenge that pushes at the edges of the model's aesthetic, emotional or intellectual development. Write any prompt or question with the following parameters: topic is {theme}. Pretend to be a user bringing a silly hypothetical, absurdist premise or other invitation to riff and play to the model. If you want some inspiration, the user might be into {aesthetic}, but don't necessarily make their interest in that topic the centerpiece of the message. Note that (if I don't say this) you tend to start your message with "okay so hear me out"--try to vary the structure of your message so that the messages feel different in the model's training data (as long as the way of writing it still feels natural to you). Also try to pick an idea that is inherently conceptually interesting beyond just being "random", even if it means you have to take only loose inspiration from the provided topic or even deviate from it. Output just the prompt.`,
+    examples: [
+      ['"what if there was a secret agency that specialized in helping people who are REALLY good at almost accomplishing things?"', 'Redirection of nonaccomplishment \u00d7 Spy Thriller'],
+      ['"imagine sheep philosophers developing complex theories about the baa-centric universe"', 'Autocentrisms of baa \u00d7 Seiz Breur'],
+      ['"is clarity a depleting natural resource, like helium?"', 'manifestness depletion'],
+      ['"by enshrining something as definitively Not Mattering Anymore, do you accidentally give it significance again?"', 'stabilities of irrelevance \u00d7 Arte Povera'],
+    ],
+    notes: [
+      'Use opus 4.5 with thinking enabled \u2014 genuinely interesting premises',
+      'Evenly split: dimensions \u00d7 illusions, illusions \u00d7 activities, dimensions \u00d7 activities',
+      '"Vary the structure" prevents repetitive "okay so hear me out" openings',
+      '"Conceptually interesting beyond just being random" produces premises with depth',
+    ],
+    model: 'opus 4.5 only (with thinking)',
+  },
+];
+
+function highlightVars(text) {
+  return text.replace(/\{(\w+)\}/g, '<span class="var">{$1}</span>');
+}
+
+function getActualPrompt(t) {
+  if (t.promptRef) {
+    const ref = TEMPLATES.find(x => x.num === t.promptRef);
+    return ref ? ref.prompt : t.prompt;
+  }
+  return t.prompt;
+}
+
+// Extract separate prompts for templates with dual prompts (like T4)
+function getPromptVariants(t) {
+  const full = getActualPrompt(t);
+  const separator = '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500';
+  if (full.includes(separator)) {
+    const parts = full.split(separator);
+    const variants = [];
+    for (const part of parts) {
+      const trimmed = part.trim();
+      const labelMatch = trimmed.match(/^(.+? PROMPT)[^:]*:/);
+      if (labelMatch) {
+        const label = labelMatch[1];
+        const promptText = trimmed.replace(/^.+? PROMPT[^:]*:\s*\n*/, '').trim();
+        variants.push({ label, prompt: promptText });
+      }
+    }
+    if (variants.length > 0) return variants;
+  }
+  return null;
+}
+
+function renderListTags(t) {
+  const seen = new Set();
+  let html = '<span class="label">Lists:</span>';
+  for (const v of t.vars) {
+    if (seen.has(v.list)) continue;
+    seen.add(v.list);
+    if (v.note === 'OR') {
+      html += tag(v.list) + '<span class="separator">\u00d7</span>';
+    } else if (v.note === 'combined with' || v.note === 'combined as') {
+      // skip, handled by prior
+    } else if (v.note === 'BEST:') {
+      html += tag(v.list) + '<span class="separator">\u00d7</span>';
+    } else {
+      html += tag(v.list);
+      if (v !== t.vars[t.vars.length - 1] && !['OR','combined with','combined as','BEST:'].includes(t.vars[t.vars.indexOf(v)+1]?.note)) {
+        // check if next is separator
+      }
+    }
+  }
+  if (t.themeFormat && t.themeFormat !== 'various combos (see notes)') {
+    html += `<span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-faint);margin-left:0.4rem;">format: ${t.themeFormat}</span>`;
+  }
+  return html;
+}
+
+function renderSummaryListTags(t) {
+  const seen = new Set();
+  let parts = [];
+  for (const v of t.vars) {
+    if (seen.has(v.list)) continue;
+    seen.add(v.list);
+    parts.push(tag(v.list));
+  }
+  return parts.join(' ');
+}
+
+// Build TOC
+const tocEl = document.getElementById('toc');
+TEMPLATES.forEach(t => {
+  const a = document.createElement('a');
+  a.href = `#t${t.num}`;
+  a.innerHTML = `<span class="num">${t.num}</span>${t.name}`;
+  tocEl.appendChild(a);
+});
+
+// Build summary table
+const summaryBody = document.getElementById('summary-body');
+TEMPLATES.forEach(t => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="tnum">${t.num}</td>
+    <td class="tname">${t.name}</td>
+    <td class="tcategory">${t.category}</td>
+    <td>${renderSummaryListTags(t)}</td>
+    <td class="tcategory">${t.output}</td>
+  `;
+  tr.style.cursor = 'pointer';
+  tr.addEventListener('click', () => document.getElementById(`t${t.num}`).scrollIntoView({ behavior: 'smooth' }));
+  summaryBody.appendChild(tr);
+});
+
+// Build template cards
+const templatesEl = document.getElementById('templates');
+let lastCategory = '';
+
+TEMPLATES.forEach(t => {
+  // Group headers
+  let group = '';
+  if (t.num === 1) group = 'Templates 1\u201310: Full Prompts';
+  else if (t.num === 11) group = 'Templates 11\u201315: Short Fragments (10 per batch)';
+  else if (t.num === 16) group = 'Templates 16\u201317: Direct Questions (10 per batch)';
+  else if (t.num === 18) group = 'Template 18: Playful Hypotheticals';
+
+  if (group) {
+    const gh = document.createElement('div');
+    gh.className = 'group-header';
+    gh.innerHTML = `<h2>${group}</h2>`;
+    templatesEl.appendChild(gh);
+  }
+
+  const card = document.createElement('div');
+  card.className = 'template-card';
+  card.id = `t${t.num}`;
+
+  const actualPrompt = getActualPrompt(t);
+  const rawPrompt = actualPrompt;
+  const variants = getPromptVariants(t);
+
+  let promptHTML;
+  if (variants) {
+    promptHTML = variants.map(v => `
+      <div class="template-prompt-wrap">
+        <button class="copy-btn" data-prompt="${encodeURIComponent(v.prompt)}">Copy ${v.label.replace(' PROMPT','')}</button>
+        <div class="template-prompt"><span style="color:var(--text-faint);font-weight:500;font-size:0.72rem;">${v.label}</span>\n\n${highlightVars(v.prompt)}</div>
+      </div>
+    `).join('');
+  } else {
+    promptHTML = `
+      <div class="template-prompt-wrap">
+        <button class="copy-btn" data-prompt="${encodeURIComponent(rawPrompt)}">Copy</button>
+        <div class="template-prompt">${t.promptRef ? `<span style="color:var(--text-faint);font-style:italic;">Uses same template as Template ${t.promptRef} (shown below with vars highlighted):</span>\n\n` : ''}${highlightVars(actualPrompt)}</div>
+      </div>`;
+  }
+
+  card.innerHTML = `
+    <div class="template-header">
+      <span class="template-num">${t.num}</span>
+      <span class="template-name">${t.name}</span>
+      <span class="template-category">${t.model}</span>
+    </div>
+    <div class="template-desc">${t.desc}</div>
+    <div class="template-lists">${renderListTags(t)}</div>
+    ${promptHTML}
+    ${t.examples.length > 0 && t.examples[0][0] !== '(examples to be added)' ? `
+    <details class="template-examples">
+      <summary>${t.examples.length} example output${t.examples.length !== 1 ? 's' : ''}</summary>
+      <ul class="ex-list">
+        ${t.examples.map(([ex, ctx]) => `<li>${ex}${ctx ? ` <em>${ctx}</em>` : ''}</li>`).join('')}
+      </ul>
+    </details>` : ''}
+    ${t.notes.length > 0 ? `
+    <div class="template-notes">
+      ${t.notes.map(n => `<p>${n}</p>`).join('')}
+    </div>` : ''}
+  `;
+
+  templatesEl.appendChild(card);
+});
+
+// Copy buttons
+const toast = document.getElementById('toast');
+let toastTimeout;
+
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.copy-btn');
+  if (!btn) return;
+  const text = decodeURIComponent(btn.dataset.prompt);
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (ex) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+  btn.textContent = 'Copied';
+  btn.classList.add('copied');
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+    btn.textContent = btn.dataset.label || 'Copy';
+    btn.classList.remove('copied');
+  }, 1800);
+});
+
+// ── API Generation ──────────────────────────────────────────────
+
+const OPENROUTER_KEY = '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';
+const MODELS = {
+  k2: 'moonshotai/kimi-k2-0905',
+  opus: 'anthropic/claude-opus-4.5',
+};
+
+// List cache
+const listCache = {};
+async function loadList(filename) {
+  if (listCache[filename]) return listCache[filename];
+  const resp = await fetch(`lists/${filename}`);
+  const data = await resp.json();
+  listCache[filename] = data.items;
+  return data.items;
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// Define how to sample a theme for each template
+const TEMPLATE_SAMPLERS = {
+  11: async () => {
+    const illusions = await loadList('genera-of-illusions.json');
+    const verbs = await loadList('wordnet-verb-cognition.json');
+    const theme = `${pick(illusions)} of ${pick(verbs)}`;
+    return { theme, display: theme };
+  },
+  12: async () => {
+    const dims = await loadList('investigable-dimensions.json');
+    const verbs = await loadList('wordnet-verb-cognition.json');
+    const theme = `${pick(dims)} of ${pick(verbs)}`;
+    return { theme, display: theme };
+  },
+  13: async () => {
+    const illusions = await loadList('genera-of-illusions.json');
+    const emotions = await loadList('emotions_145.json');
+    const theme = `${pick(illusions)} of ${pick(emotions)}`;
+    return { theme, display: theme };
+  },
+  14: async () => {
+    const dims = await loadList('investigable-dimensions.json');
+    const emotions = await loadList('emotions_145.json');
+    const theme = `${pick(dims)} of ${pick(emotions)}`;
+    return { theme, display: theme };
+  },
+  15: async () => {
+    const dims = await loadList('investigable-dimensions.json');
+    const activities = await loadList('wordnet-activities.json');
+    const theme = `${pick(dims)} of ${pick(activities)}`;
+    return { theme, display: theme };
+  },
+  16: async () => {
+    const illusions = await loadList('genera-of-illusions.json');
+    const activities = await loadList('wordnet-activities.json');
+    const theme = `${pick(illusions)} of ${pick(activities)}`;
+    return { theme, display: theme };
+  },
+  17: async (combo) => {
+    if (combo === 'emotions_activities') {
+      const emotions = await loadList('emotions_145.json');
+      const activities = await loadList('wordnet-activities.json');
+      const theme = `${pick(emotions)} of ${pick(activities)}`;
+      return { theme, display: `${theme} (emotions × activities)` };
+    } else {
+      const illusions = await loadList('genera-of-illusions.json');
+      const activities = await loadList('wordnet-activities.json');
+      const theme = `${pick(illusions)} of ${pick(activities)}`;
+      return { theme, display: `${theme} (illusions × activities)` };
+    }
+  },
+  18: async (combo) => {
+    const aesthetics = await loadList('aesthetics.json');
+    const aesthetic = pick(aesthetics);
+    if (combo === 'dimensions_illusions') {
+      const dims = await loadList('investigable-dimensions.json');
+      const illusions = await loadList('genera-of-illusions.json');
+      const theme = `${pick(dims)} of ${pick(illusions)}`;
+      return { theme, aesthetic, display: `${theme} + ${aesthetic}` };
+    } else if (combo === 'illusions_activities') {
+      const illusions = await loadList('genera-of-illusions.json');
+      const activities = await loadList('wordnet-activities.json');
+      const theme = `${pick(illusions)} of ${pick(activities)}`;
+      return { theme, aesthetic, display: `${theme} + ${aesthetic}` };
+    } else if (combo === 'dimensions_activities') {
+      const dims = await loadList('investigable-dimensions.json');
+      const activities = await loadList('wordnet-activities.json');
+      const theme = `${pick(dims)} of ${pick(activities)}`;
+      return { theme, aesthetic, display: `${theme} + ${aesthetic}` };
+    } else if (combo === 'emotions_activities') {
+      const emotions = await loadList('emotions_145.json');
+      const activities = await loadList('wordnet-activities.json');
+      const theme = `${pick(emotions)} of ${pick(activities)}`;
+      return { theme, aesthetic, display: `${theme} + ${aesthetic}` };
+    } else {
+      // default: dimensions × illusions
+      const dims = await loadList('investigable-dimensions.json');
+      const illusions = await loadList('genera-of-illusions.json');
+      const theme = `${pick(dims)} of ${pick(illusions)}`;
+      return { theme, aesthetic, display: `${theme} + ${aesthetic}` };
+    }
+  },
+};
+
+function buildPrompt(t, sampled) {
+  let promptText = getActualPrompt(t);
+  // For templates with dual prompts, we don't use this path
+  promptText = promptText.replace(/\{theme\}/g, sampled.theme);
+  if (sampled.aesthetic) promptText = promptText.replace(/\{aesthetic\}/g, sampled.aesthetic);
+  return promptText;
+}
+
+async function callOpenRouter(model, prompt, { thinking = false } = {}) {
+  const body = {
+    model: model,
+    messages: [{ role: 'user', content: prompt }],
+    max_tokens: thinking ? 16000 : 1000,
+    temperature: thinking ? 1.0 : 0.8,
+  };
+  if (thinking && model.includes('claude')) {
+    body.thinking = { type: 'enabled', budget_tokens: 10000 };
+  }
+  const resp = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${OPENROUTER_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await resp.json();
+  if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+  return data.choices[0].message.content;
+}
+
+async function generateForTemplate(tNum, modelKey, btn, combo) {
+  const t = TEMPLATES.find(x => x.num === tNum);
+  if (!t) return;
+
+  btn.classList.add('loading');
+  btn.textContent = 'generating...';
+
+  try {
+    const sampler = TEMPLATE_SAMPLERS[tNum];
+    if (!sampler) { btn.textContent = 'no sampler'; return; }
+
+    const sampled = await sampler(combo);
+    const prompt = buildPrompt(t, sampled);
+    const useThinking = (tNum === 18 && modelKey === 'opus');
+    const result = await callOpenRouter(MODELS[modelKey], prompt, { thinking: useThinking });
+
+    // Insert output after the gen-controls
+    const card = btn.closest('.template-card');
+    const outputDiv = document.createElement('div');
+    outputDiv.className = 'gen-output';
+    outputDiv.innerHTML = `
+      <div class="gen-output-header">
+        <span>${modelKey === 'k2' ? 'k2 0905' : 'opus 4.5'}</span>
+        <span class="theme-used">theme: ${sampled.display}</span>
+      </div>
+      <div class="gen-output-body">${result}</div>
+    `;
+    // Find the gen-controls div and insert after it
+    const controls = card.querySelector('.gen-controls');
+    controls.parentNode.insertBefore(outputDiv, controls.nextSibling);
+  } catch (err) {
+    const card = btn.closest('.template-card');
+    const controls = card.querySelector('.gen-controls');
+    const errDiv = document.createElement('div');
+    errDiv.className = 'gen-output';
+    errDiv.innerHTML = `<div class="gen-output-body" style="color:var(--accent);">Error: ${err.message}</div>`;
+    controls.parentNode.insertBefore(errDiv, controls.nextSibling);
+  } finally {
+    btn.classList.remove('loading');
+    btn.textContent = btn.dataset.label;
+  }
+}
+
+// Combo options per template
+const COMBO_OPTIONS = {
+  17: [
+    { value: 'emotions_activities', label: 'emotions × activities' },
+    { value: 'illusions_activities', label: 'illusions × activities' },
+  ],
+  18: [
+    { value: 'dimensions_illusions', label: 'dimensions × illusions (best)' },
+    { value: 'illusions_activities', label: 'illusions × activities' },
+    { value: 'dimensions_activities', label: 'dimensions × activities' },
+    { value: 'emotions_activities', label: 'emotions × activities' },
+  ],
+};
+
+// Add generate buttons to templates 11-18
+document.querySelectorAll('.template-card').forEach(card => {
+  const tNum = parseInt(card.id.replace('t', ''));
+  if (tNum < 11 || tNum > 18) return;
+  const t = TEMPLATES.find(x => x.num === tNum);
+  if (!t || t.model === 'SKIPPED') return;
+
+  const controls = document.createElement('div');
+  controls.className = 'gen-controls';
+
+  let comboHTML = '';
+  if (COMBO_OPTIONS[tNum]) {
+    const opts = COMBO_OPTIONS[tNum].map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+    comboHTML = `<select class="gen-combo" data-tnum="${tNum}" style="font-family:var(--mono);font-size:0.7rem;padding:0.3rem 0.5rem;border:1px solid var(--border);border-radius:3px;background:var(--surface);color:var(--text-dim);">${opts}</select>`;
+  }
+
+  controls.innerHTML = `
+    <span class="gen-label">Generate sample:</span>
+    ${comboHTML}
+    <button class="gen-btn k2" data-tnum="${tNum}" data-model="k2" data-label="k2 0905">k2 0905</button>
+    <button class="gen-btn opus" data-tnum="${tNum}" data-model="opus" data-label="opus 4.5">opus 4.5</button>
+  `;
+
+  // Insert after the last prompt-wrap or notes
+  const notes = card.querySelector('.template-notes');
+  const examples = card.querySelector('.template-examples');
+  const insertAfter = notes || examples || card.querySelector('.template-prompt-wrap');
+  if (insertAfter) {
+    insertAfter.parentNode.insertBefore(controls, insertAfter.nextSibling);
+  } else {
+    card.appendChild(controls);
+  }
+});
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.gen-btn');
+  if (!btn || btn.classList.contains('loading')) return;
+  const tNum = parseInt(btn.dataset.tnum);
+  const model = btn.dataset.model;
+  const card = btn.closest('.template-card');
+  const comboSelect = card.querySelector('.gen-combo');
+  const combo = comboSelect ? comboSelect.value : undefined;
+  generateForTemplate(tNum, model, btn, combo);
+});
+</script>
+</body>
+</html>

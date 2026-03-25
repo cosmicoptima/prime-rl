@@ -4,7 +4,7 @@ max_steps = 120
 project = "diksha"
 
 [model]
-name = "cosmicoptima/Prathamavatsa"
+name = "cosmicoptima/GLM-4-32B-Base-32K"
 impl = "liger_kernel"
 reduce_dtype = "bfloat16"
 

@@ -4,6 +4,7 @@ import os
 import re
 from typing import Any
 
+from anthropic import AsyncAnthropic
 from openai import AsyncOpenAI
 
 import verifiers as vf
@@ -148,6 +149,7 @@ class LLMJudgeRubric(Rubric):
         max_concurrent: int = 32,
         judge1_weight: float = 0.6,
         judge2_weight: float = 0.4,
+        disable_reasoning: bool = False,
         **kwargs,
     ):
         self._judge_futures: dict[str, asyncio.Future] = {}
@@ -211,13 +213,24 @@ class LLMJudgeRubric(Rubric):
         self.max_concurrent = max_concurrent
         self.judge1_weight = judge1_weight
         self.judge2_weight = judge2_weight
-        self._client = None
+        self.disable_reasoning = disable_reasoning
+        self._openai_client = None
+        self._anthropic_client = None
         self._sem = None
 
-    def _get_client(self) -> AsyncOpenAI:
-        if self._client is None:
-            self._client = AsyncOpenAI(base_url=self.judge_api_base, api_key=self.judge_api_key)
-        return self._client
+    @property
+    def _is_anthropic(self) -> bool:
+        return "anthropic.com" in self.judge_api_base
+
+    def _get_client(self):
+        if self._is_anthropic:
+            if self._anthropic_client is None:
+                self._anthropic_client = AsyncAnthropic(api_key=self.judge_api_key)
+            return self._anthropic_client
+        else:
+            if self._openai_client is None:
+                self._openai_client = AsyncOpenAI(base_url=self.judge_api_base, api_key=self.judge_api_key)
+            return self._openai_client
 
     def _get_semaphore(self) -> asyncio.Semaphore:
         if self._sem is None:
@@ -244,16 +257,29 @@ class LLMJudgeRubric(Rubric):
         async with sem:
             for attempt in range(2):
                 try:
-                    result = await client.chat.completions.create(
-                        model=self.judge_model,
-                        messages=[
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": user_content},
-                        ],
-                        max_tokens=200,
-                        temperature=0,
-                    )
-                    content = result.choices[0].message.content or ""
+                    if self._is_anthropic:
+                        result = await client.messages.create(
+                            model=self.judge_model,
+                            system=system_prompt,
+                            messages=[{"role": "user", "content": user_content}],
+                            max_tokens=200,
+                            temperature=0,
+                        )
+                        content = result.content[0].text
+                    else:
+                        kwargs = dict(
+                            model=self.judge_model,
+                            messages=[
+                                {"role": "system", "content": system_prompt},
+                                {"role": "user", "content": user_content},
+                            ],
+                            max_tokens=200,
+                            temperature=0,
+                        )
+                        if self.disable_reasoning:
+                            kwargs["extra_body"] = {"reasoning": {"enabled": False}}
+                        result = await client.chat.completions.create(**kwargs)
+                        content = result.choices[0].message.content or ""
                     coherence, ranking = parse_ranking(content, n)
                     scores = ranking_to_scores(coherence, ranking, n)
                     return scores
@@ -307,20 +333,27 @@ class LLMJudgeRubric(Rubric):
 def load_environment(
     judge_model: str = "moonshotai/kimi-k2-0905",
     judge_api_base: str = "https://openrouter.ai/api/v1",
+    judge_api_key_env: str = None,
     openrouter_api_key_env: str = "OPENROUTER_API_KEY",
+    dataset_path: str = "",
     max_concurrent: int = 32,
     judge1_weight: float = 0.6,
     judge2_weight: float = 0.4,
+    disable_reasoning: bool = False,
     **kwargs,
 ):
     """Load a dual-judge LLM environment for prime-rl."""
-    from datasets import Features, Value, load_dataset
+    from datasets import Dataset, Features, Value, load_dataset
 
-    api_key = os.environ.get(openrouter_api_key_env, "")
+    key_env = judge_api_key_env if judge_api_key_env is not None else openrouter_api_key_env
+    api_key = os.environ.get(key_env, "")
     if not api_key:
-        raise ValueError(f"Environment variable {openrouter_api_key_env} not set")
+        raise ValueError(f"Environment variable {key_env} not set")
 
-    dataset = load_dataset("cosmicoptima/Drishyamala", split="train")
+    if dataset_path:
+        dataset = Dataset.from_json(dataset_path)
+    else:
+        dataset = load_dataset("cosmicoptima/Drishyamala", split="train")
 
     mapped_features = Features({
         "question": Value("string"),
@@ -356,6 +389,7 @@ def load_environment(
         max_concurrent=max_concurrent,
         judge1_weight=judge1_weight,
         judge2_weight=judge2_weight,
+        disable_reasoning=disable_reasoning,
         parser=parser,
     )
 

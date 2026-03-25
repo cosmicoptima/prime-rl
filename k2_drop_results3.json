@@ -1,0 +1,506 @@
+[
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 8,
+    "trial": 0,
+    "raw": "A_COHERENT: YES  \nB_COHERENT: YES  \nC_COHERENT: YES  \nD_COHERENT: YES  \nE_COHERENT: YES  \nF_COHERENT: YES  \nG_COHERENT: YES  \nH_COHERENT: YES  \n\nRANKING: E ~ F >> G ~ H >> A ~ B ~ C ~ D",
+    "ranked_labels": [
+      "E",
+      "F",
+      "G",
+      "H",
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 8,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 788,
+      "completion_tokens": 75
+    }
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 8,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: E >> H > A ~ C ~ G > B ~ F > D",
+    "ranked_labels": [
+      "E",
+      "H",
+      "A",
+      "C",
+      "G",
+      "B",
+      "F",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 8,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 788,
+      "completion_tokens": 75
+    }
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 8,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: E ~ H > G > C > A > B > F > D",
+    "ranked_labels": [
+      "E",
+      "H",
+      "G",
+      "C",
+      "A",
+      "B",
+      "F",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 8,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 788,
+      "completion_tokens": 75
+    }
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 12,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nRANKING: A ~ E ~ H > C ~ F ~ G ~ K ~ L > B > D > I ~ J",
+    "ranked_labels": [
+      "A",
+      "E",
+      "H",
+      "C",
+      "F",
+      "G",
+      "K",
+      "L",
+      "B",
+      "D",
+      "I",
+      "J"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 12,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1015,
+      "completion_tokens": 111
+    }
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 12,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nRANKING: A >> E > F > C > B > H > G > L > K > D > J > I",
+    "ranked_labels": [
+      "A",
+      "E",
+      "F",
+      "C",
+      "B",
+      "H",
+      "G",
+      "L",
+      "K",
+      "D",
+      "J",
+      "I"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 12,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1015,
+      "completion_tokens": 111
+    }
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 12,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nRANKING: A >> E >> C > F > B > H > G > L > D > K > J > I",
+    "ranked_labels": [
+      "A",
+      "E",
+      "C",
+      "F",
+      "B",
+      "H",
+      "G",
+      "L",
+      "D",
+      "K",
+      "J",
+      "I"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 12,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1015,
+      "completion_tokens": 112
+    }
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 16,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nM_COHERENT: YES\nN_COHERENT: YES\nO_COHERENT: YES\nP_COHERENT: YES\nRANKING: O >> A > E > C > F > B > H > L > K > G > D > N > J > I > M >> P",
+    "ranked_labels": [
+      "O",
+      "A",
+      "E",
+      "C",
+      "F",
+      "B",
+      "H",
+      "L",
+      "K",
+      "G",
+      "D",
+      "N",
+      "J",
+      "I",
+      "M",
+      "P"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 16,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1254,
+      "completion_tokens": 148
+    }
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 16,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nM_COHERENT: YES\nN_COHERENT: YES\nO_COHERENT: YES\nP_COHERENT: YES\nRANKING: E > A > B ~ C > F > G > H > L > K > D > O > N > I > J > M >> P",
+    "ranked_labels": [
+      "E",
+      "A",
+      "B",
+      "C",
+      "F",
+      "G",
+      "H",
+      "L",
+      "K",
+      "D",
+      "O",
+      "N",
+      "I",
+      "J",
+      "M",
+      "P"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 16,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1254,
+      "completion_tokens": 147
+    }
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 16,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nM_COHERENT: YES\nN_COHERENT: YES\nO_COHERENT: YES\nP_COHERENT: YES\nRANKING: A ~ B ~ C ~ D ~ E ~ F ~ G ~ H ~ K ~ L ~ N ~ O > I > J > M >> P",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H",
+      "K",
+      "L",
+      "N",
+      "O",
+      "I",
+      "J",
+      "M",
+      "P"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 16,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1254,
+      "completion_tokens": 147
+    }
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 8,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: H >> E > F ~ C > A ~ B > G > D",
+    "ranked_labels": [
+      "H",
+      "E",
+      "F",
+      "C",
+      "A",
+      "B",
+      "G",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 8,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 816,
+      "completion_tokens": 75
+    }
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 8,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: H >> E > C ~ F > A ~ B > G > D",
+    "ranked_labels": [
+      "H",
+      "E",
+      "C",
+      "F",
+      "A",
+      "B",
+      "G",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 8,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 816,
+      "completion_tokens": 75
+    }
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 8,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: H >> E > C ~ F > A ~ B > G > D",
+    "ranked_labels": [
+      "H",
+      "E",
+      "C",
+      "F",
+      "A",
+      "B",
+      "G",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 8,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 816,
+      "completion_tokens": 76
+    }
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 12,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nRANKING: H > E > C > A ~ F > B > L > G > D > I > K >> J",
+    "ranked_labels": [
+      "H",
+      "E",
+      "C",
+      "A",
+      "F",
+      "B",
+      "L",
+      "G",
+      "D",
+      "I",
+      "K",
+      "J"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 12,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1055,
+      "completion_tokens": 111
+    }
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 12,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nRANKING: H >> E >> F >> C > A > B > L > G > D > K > I > J",
+    "ranked_labels": [
+      "H",
+      "E",
+      "F",
+      "C",
+      "A",
+      "B",
+      "L",
+      "G",
+      "D",
+      "K",
+      "I",
+      "J"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 12,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1055,
+      "completion_tokens": 111
+    }
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 12,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nRANKING: A ~~ C ~ H > E ~ F ~ L > G ~ B > D > I > J ~~ K",
+    "ranked_labels": [
+      "A",
+      "C",
+      "H",
+      "E",
+      "F",
+      "L",
+      "G",
+      "B",
+      "D",
+      "I",
+      "J",
+      "K"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 12,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1055,
+      "completion_tokens": 112
+    }
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 16,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nM_COHERENT: YES\nN_COHERENT: YES\nO_COHERENT: YES\nP_COHERENT: YES\nRANKING: H >> C > E > F > B > A > L > N > O > G > D > I > K > J > M >> P",
+    "ranked_labels": [
+      "H",
+      "C",
+      "E",
+      "F",
+      "B",
+      "A",
+      "L",
+      "N",
+      "O",
+      "G",
+      "D",
+      "I",
+      "K",
+      "J",
+      "M",
+      "P"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 16,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1307,
+      "completion_tokens": 147
+    }
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 16,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nM_COHERENT: YES\nN_COHERENT: YES\nO_COHERENT: YES\nP_COHERENT: YES\nRANKING: H >> C > E > F > B > A > G > L > D > N > O > K > I > J > M >> P",
+    "ranked_labels": [
+      "H",
+      "C",
+      "E",
+      "F",
+      "B",
+      "A",
+      "G",
+      "L",
+      "D",
+      "N",
+      "O",
+      "K",
+      "I",
+      "J",
+      "M",
+      "P"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 16,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1307,
+      "completion_tokens": 147
+    }
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 16,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nI_COHERENT: YES\nJ_COHERENT: YES\nK_COHERENT: YES\nL_COHERENT: YES\nM_COHERENT: YES\nN_COHERENT: YES\nO_COHERENT: YES\nP_COHERENT: YES\nRANKING: H >> E >> C >> F > B > A > L > G > N > O > D > I > K > J > M >> P",
+    "ranked_labels": [
+      "H",
+      "E",
+      "C",
+      "F",
+      "B",
+      "A",
+      "L",
+      "G",
+      "N",
+      "O",
+      "D",
+      "I",
+      "K",
+      "J",
+      "M",
+      "P"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_ranked": 16,
+    "n_missing": 0,
+    "usage": {
+      "prompt_tokens": 1307,
+      "completion_tokens": 148
+    }
+  }
+]

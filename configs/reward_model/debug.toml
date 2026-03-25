@@ -1,0 +1,26 @@
+# Debug config for Bradley-Terry reward model training
+# Usage: torchrun --nproc-per-node=1 -m prime_rl.trainer.reward_model.train @ configs/reward_model/debug.toml
+
+[model]
+name = "Qwen/Qwen3-0.6B"
+load_using_meta = false
+
+[model.experimental.lora]
+rank = 16
+alpha = 32
+target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
+modules_to_save = ["lm_head"]
+
+[data]
+name = "path/to/preference_data.jsonl"  # columns: prompt, chosen, rejected
+batch_size = 4
+seq_len = 1024
+
+[optim]
+type = "adamw"
+lr = 1e-4
+
+[scheduler]
+type = "constant"
+
+max_steps = 20

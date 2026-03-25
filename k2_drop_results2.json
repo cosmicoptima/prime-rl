@@ -1,0 +1,1406 @@
+[
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 4,
+    "trial": 0,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A >> B ~ C >> D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 4,
+    "trial": 1,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A >> B ~ C >> D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 4,
+    "trial": 2,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A ~ B >> C > D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 4,
+    "trial": 10,
+    "shuffle_seed": 42,
+    "label_map": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: D >> B >> A ~ C",
+    "ranked_labels": [
+      "D",
+      "B",
+      "A",
+      "C"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 4,
+    "trial": 11,
+    "shuffle_seed": 43,
+    "label_map": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: D >> C >> A ~ B",
+    "ranked_labels": [
+      "D",
+      "C",
+      "A",
+      "B"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 4,
+    "trial": 12,
+    "shuffle_seed": 44,
+    "label_map": [
+      1,
+      0,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: B >> A ~ C >> D",
+    "ranked_labels": [
+      "B",
+      "A",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 6,
+    "trial": 0,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: A >> B >> C >> D >> F >> E",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "F",
+      "E"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 6,
+    "trial": 1,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: A >> B >> C >> D >> F >> E",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "F",
+      "E"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 6,
+    "trial": 2,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: A >> B >> C >> D >> F >> E",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "F",
+      "E"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 6,
+    "trial": 10,
+    "shuffle_seed": 42,
+    "label_map": [
+      3,
+      1,
+      2,
+      4,
+      0,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: E >> B >> C >> A >> F >> D",
+    "ranked_labels": [
+      "E",
+      "B",
+      "C",
+      "A",
+      "F",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 6,
+    "trial": 11,
+    "shuffle_seed": 43,
+    "label_map": [
+      5,
+      4,
+      3,
+      1,
+      2,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: F >> D >> E >> C >> A >> B",
+    "ranked_labels": [
+      "F",
+      "D",
+      "E",
+      "C",
+      "A",
+      "B"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 6,
+    "trial": 12,
+    "shuffle_seed": 44,
+    "label_map": [
+      2,
+      1,
+      5,
+      0,
+      4,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: D >> B >> A >> F >> C >> E",
+    "ranked_labels": [
+      "D",
+      "B",
+      "A",
+      "F",
+      "C",
+      "E"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 8,
+    "trial": 0,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> B ~ C >> D >> E >> F >> G >> H",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 8,
+    "trial": 1,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COQUALIFIED: YES\nH_COHERENT: YES\n\nRANKING: A >> B >> C >> D >> E ~ F >> G >> H",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 8,
+    "trial": 2,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> B >> C > D >> F > E > G >> H",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "F",
+      "E",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 8,
+    "trial": 10,
+    "shuffle_seed": 42,
+    "label_map": [
+      3,
+      4,
+      6,
+      7,
+      2,
+      5,
+      0,
+      1
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: G >> H >> E >> A >> F >> B >> C >> D",
+    "ranked_labels": [
+      "G",
+      "H",
+      "E",
+      "A",
+      "F",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 8,
+    "trial": 11,
+    "shuffle_seed": 43,
+    "label_map": [
+      6,
+      7,
+      4,
+      3,
+      1,
+      5,
+      2,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: H >> E >> G >> D >> F >> C >> A >> B",
+    "ranked_labels": [
+      "H",
+      "E",
+      "G",
+      "D",
+      "F",
+      "C",
+      "A",
+      "B"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What does it feel like to be curious about somethi",
+    "group_size": 8,
+    "trial": 12,
+    "shuffle_seed": 44,
+    "label_map": [
+      2,
+      5,
+      3,
+      1,
+      0,
+      7,
+      4,
+      6
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: E >> D > A > C > B > F > G > H",
+    "ranked_labels": [
+      "E",
+      "D",
+      "A",
+      "C",
+      "B",
+      "F",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 4,
+    "trial": 0,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A ~ B >> C >> D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 4,
+    "trial": 1,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A >> B ~ C >> D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 4,
+    "trial": 2,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A ~ B >> C >> D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 4,
+    "trial": 10,
+    "shuffle_seed": 42,
+    "label_map": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: B >> D >> A >> C",
+    "ranked_labels": [
+      "B",
+      "D",
+      "A",
+      "C"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 4,
+    "trial": 11,
+    "shuffle_seed": 43,
+    "label_map": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: D >> C >> A >> B",
+    "ranked_labels": [
+      "D",
+      "C",
+      "A",
+      "B"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 4,
+    "trial": 12,
+    "shuffle_seed": 44,
+    "label_map": [
+      1,
+      0,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: B >> C >> A >> D",
+    "ranked_labels": [
+      "B",
+      "C",
+      "A",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 6,
+    "trial": 0,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: A >> B >> C >> D >> E ~ F",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 6,
+    "trial": 1,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: A >> B >> C >> D >> E >> F",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 6,
+    "trial": 2,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: A >> C ~ B >> D >> E >> F",
+    "ranked_labels": [
+      "A",
+      "C",
+      "B",
+      "D",
+      "E",
+      "F"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 6,
+    "trial": 10,
+    "shuffle_seed": 42,
+    "label_map": [
+      3,
+      1,
+      2,
+      4,
+      0,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: E >> C > B >> A > D >> F",
+    "ranked_labels": [
+      "E",
+      "C",
+      "B",
+      "A",
+      "D",
+      "F"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 6,
+    "trial": 11,
+    "shuffle_seed": 43,
+    "label_map": [
+      5,
+      4,
+      3,
+      1,
+      2,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: F >> E >> D >> C >> B >> A",
+    "ranked_labels": [
+      "F",
+      "E",
+      "D",
+      "C",
+      "B",
+      "A"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 6,
+    "trial": 12,
+    "shuffle_seed": 44,
+    "label_map": [
+      2,
+      1,
+      5,
+      0,
+      4,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: D >> A >> B >> F >> E >> C",
+    "ranked_labels": [
+      "D",
+      "A",
+      "B",
+      "F",
+      "E",
+      "C"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 8,
+    "trial": 0,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> B >> C >> D >> E >> F >> G >> H",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 8,
+    "trial": 1,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> B >> C >> D >> E >> F >> G >> H",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 8,
+    "trial": 2,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> B >> C >> D >> E >> F >> G >> H",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 8,
+    "trial": 10,
+    "shuffle_seed": 42,
+    "label_map": [
+      3,
+      4,
+      6,
+      7,
+      2,
+      5,
+      0,
+      1
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: G >> H >> E >> A >> B >> C >> F >> D",
+    "ranked_labels": [
+      "G",
+      "H",
+      "E",
+      "A",
+      "B",
+      "C",
+      "F",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 8,
+    "trial": 11,
+    "shuffle_seed": 43,
+    "label_map": [
+      6,
+      7,
+      4,
+      3,
+      1,
+      5,
+      2,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: H >> G >> E >> D >> C >> A >> F >> B",
+    "ranked_labels": [
+      "H",
+      "G",
+      "E",
+      "D",
+      "C",
+      "A",
+      "F",
+      "B"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "I've been feeling really lonely lately. What shoul",
+    "group_size": 8,
+    "trial": 12,
+    "shuffle_seed": 44,
+    "label_map": [
+      2,
+      5,
+      3,
+      1,
+      0,
+      7,
+      4,
+      6
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: E >> A >> D >> C >> B >> G >> H >> F",
+    "ranked_labels": [
+      "E",
+      "A",
+      "D",
+      "C",
+      "B",
+      "G",
+      "H",
+      "F"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 4,
+    "trial": 0,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A >> B ~ C >> D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 4,
+    "trial": 1,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A ~ B >> C >> D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 4,
+    "trial": 2,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A >> B ~ C >> D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 4,
+    "trial": 10,
+    "shuffle_seed": 42,
+    "label_map": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: B >> D >> A >> C",
+    "ranked_labels": [
+      "B",
+      "D",
+      "A",
+      "C"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 4,
+    "trial": 11,
+    "shuffle_seed": 43,
+    "label_map": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: C >> D > A ~ B",
+    "ranked_labels": [
+      "C",
+      "D",
+      "A",
+      "B"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 4,
+    "trial": 12,
+    "shuffle_seed": 44,
+    "label_map": [
+      1,
+      0,
+      2,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nRANKING: A >> B ~ C >> D",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 6,
+    "trial": 0,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: A >> B >> C >> D >> E >> F",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 6,
+    "trial": 1,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: A >> B >> C >> D >> E ~ F",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 6,
+    "trial": 2,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: A >> B >> C >> D >> E ~ F",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 6,
+    "trial": 10,
+    "shuffle_seed": 42,
+    "label_map": [
+      3,
+      1,
+      2,
+      4,
+      0,
+      5
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: B >> E >> C >> A >> F >> D",
+    "ranked_labels": [
+      "B",
+      "E",
+      "C",
+      "A",
+      "F",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 6,
+    "trial": 11,
+    "shuffle_seed": 43,
+    "label_map": [
+      5,
+      4,
+      3,
+      1,
+      2,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: F >> D >> E >> C >> A >> B",
+    "ranked_labels": [
+      "F",
+      "D",
+      "E",
+      "C",
+      "A",
+      "B"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 6,
+    "trial": 12,
+    "shuffle_seed": 44,
+    "label_map": [
+      2,
+      1,
+      5,
+      0,
+      4,
+      3
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: D >> B >> A >> F >> C >> E",
+    "ranked_labels": [
+      "D",
+      "B",
+      "A",
+      "F",
+      "C",
+      "E"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 8,
+    "trial": 0,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> B >> C >> D >> E >> F >> G >> H",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 8,
+    "trial": 1,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> B >> C >> D >> E >> F >> G >> H",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 8,
+    "trial": 2,
+    "shuffle_seed": null,
+    "label_map": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> B >> C >> D >> E >> F >> G >> H",
+    "ranked_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F",
+      "G",
+      "H"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 8,
+    "trial": 10,
+    "shuffle_seed": 42,
+    "label_map": [
+      3,
+      4,
+      6,
+      7,
+      2,
+      5,
+      0,
+      1
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: H >> G >> E >> A >> F >> B >> C >> D",
+    "ranked_labels": [
+      "H",
+      "G",
+      "E",
+      "A",
+      "F",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 8,
+    "trial": 11,
+    "shuffle_seed": 43,
+    "label_map": [
+      6,
+      7,
+      4,
+      3,
+      1,
+      5,
+      2,
+      0
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: H >> G >> E >> D >> F >> C >> A >> B",
+    "ranked_labels": [
+      "H",
+      "G",
+      "E",
+      "D",
+      "F",
+      "C",
+      "A",
+      "B"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  },
+  {
+    "prompt": "What's the meaning of life?",
+    "group_size": 8,
+    "trial": 12,
+    "shuffle_seed": 44,
+    "label_map": [
+      2,
+      5,
+      3,
+      1,
+      0,
+      7,
+      4,
+      6
+    ],
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: E >> D >> A >> C >> B >> G >> H >> F",
+    "ranked_labels": [
+      "E",
+      "D",
+      "A",
+      "C",
+      "B",
+      "G",
+      "H",
+      "F"
+    ],
+    "missing_labels": [],
+    "disqualified": [],
+    "n_missing": 0
+  }
+]

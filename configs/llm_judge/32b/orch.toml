@@ -5,7 +5,7 @@ rollouts_per_example = 4
 mask_truncated_completions = false
 
 [model]
-name = "cosmicoptima/Prathamavatsa"
+name = "cosmicoptima/GLM-4-32B-Base-32K"
 
 [wandb]
 project = "diksha"

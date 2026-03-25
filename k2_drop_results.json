@@ -1,0 +1,785 @@
+[
+  {
+    "prompt_idx": 0,
+    "group_size": 6,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: DISQUALIFIED\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: YES\nRANKING: A >> F",
+    "ranked_labels": [
+      "A",
+      "F"
+    ],
+    "missing_labels": [
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "n_missing": 4
+  },
+  {
+    "prompt_idx": 0,
+    "group_size": 6,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: DISQUALIFIED\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: YES\nRANKING: A >> F",
+    "ranked_labels": [
+      "A",
+      "F"
+    ],
+    "missing_labels": [
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "n_missing": 4
+  },
+  {
+    "prompt_idx": 0,
+    "group_size": 6,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: DISQUALIFIED\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: YES\nRANKING: A >> F",
+    "ranked_labels": [
+      "A",
+      "F"
+    ],
+    "missing_labels": [
+      "B",
+      "C",
+      "D",
+      "E"
+    ],
+    "n_missing": 4
+  },
+  {
+    "prompt_idx": 1,
+    "group_size": 6,
+    "trial": 0,
+    "raw": "A_COHERENT: NO\nB_COHERENT: NO\nC_COHERENT: NO\nD_COHERENT: YES\nE_COHERENT: NO\nF_COHERENT: NO\nRANKING: D",
+    "ranked_labels": [
+      "D"
+    ],
+    "missing_labels": [
+      "A",
+      "B",
+      "C",
+      "E",
+      "F"
+    ],
+    "n_missing": 5
+  },
+  {
+    "prompt_idx": 1,
+    "group_size": 6,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: D >> F >> A >> C >> B >> E",
+    "ranked_labels": [
+      "D",
+      "F",
+      "A",
+      "C",
+      "B",
+      "E"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 1,
+    "group_size": 6,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: D >> F >> A >> C >> B >> E",
+    "ranked_labels": [
+      "D",
+      "F",
+      "A",
+      "C",
+      "B",
+      "E"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 2,
+    "group_size": 6,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: B >> A >> C >> D >> E >> F",
+    "ranked_labels": [
+      "B",
+      "A",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 2,
+    "group_size": 6,
+    "trial": 1,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: YES\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: DISQUALIFIED\nRANKING: B",
+    "ranked_labels": [
+      "B"
+    ],
+    "missing_labels": [
+      "A",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "n_missing": 5
+  },
+  {
+    "prompt_idx": 2,
+    "group_size": 6,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: B >> A > C > D > E > F",
+    "ranked_labels": [
+      "B",
+      "A",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 3,
+    "group_size": 6,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: E >> C >> A ~ F >> B >> D",
+    "ranked_labels": [
+      "E",
+      "C",
+      "A",
+      "F",
+      "B",
+      "D"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 3,
+    "group_size": 6,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: E >> A ~ F >> B >> D >> C",
+    "ranked_labels": [
+      "E",
+      "A",
+      "F",
+      "B",
+      "D",
+      "C"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 3,
+    "group_size": 6,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: E >> A ~ F >> B >> C >> D",
+    "ranked_labels": [
+      "E",
+      "A",
+      "F",
+      "B",
+      "C",
+      "D"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 4,
+    "group_size": 6,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: C >> A ~ F >> B ~ D ~ E",
+    "ranked_labels": [
+      "C",
+      "A",
+      "F",
+      "B",
+      "D",
+      "E"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 4,
+    "group_size": 6,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: C >> D >> A ~ F >> B >> E",
+    "ranked_labels": [
+      "C",
+      "D",
+      "A",
+      "F",
+      "B",
+      "E"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 4,
+    "group_size": 6,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nRANKING: C >> A ~ F >> D >> B >> E",
+    "ranked_labels": [
+      "C",
+      "A",
+      "F",
+      "D",
+      "B",
+      "E"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 0,
+    "group_size": 7,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: DISQUALIFIED\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: YES\nG_COHERENT: DISQUALIFIED\nRANKING: A >> F",
+    "ranked_labels": [
+      "A",
+      "F"
+    ],
+    "missing_labels": [
+      "B",
+      "C",
+      "D",
+      "E",
+      "G"
+    ],
+    "n_missing": 5
+  },
+  {
+    "prompt_idx": 0,
+    "group_size": 7,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nRANKING: A >> D >> F >> C >> E >> B >> G",
+    "ranked_labels": [
+      "A",
+      "D",
+      "F",
+      "C",
+      "E",
+      "B",
+      "G"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 0,
+    "group_size": 7,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: DISQUALIFIED\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: YES\nG_COHERENT: DISQUALIFIED\nRANKING: A >> F",
+    "ranked_labels": [
+      "A",
+      "F"
+    ],
+    "missing_labels": [
+      "B",
+      "C",
+      "D",
+      "E",
+      "G"
+    ],
+    "n_missing": 5
+  },
+  {
+    "prompt_idx": 1,
+    "group_size": 7,
+    "trial": 0,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: DISQUALIFIED\nC_COHERENT: DISQUALIFIED\nD_COHERENT: YES\nE_COHERENT: DISQUALIFIED\nF_COHERENT: DISQUALIFIED\nG_COHERENT: DISQUALIFIED\nRANKING: D",
+    "ranked_labels": [
+      "D"
+    ],
+    "missing_labels": [
+      "A",
+      "B",
+      "C",
+      "E",
+      "F",
+      "G"
+    ],
+    "n_missing": 6
+  },
+  {
+    "prompt_idx": 1,
+    "group_size": 7,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nRANKING: D >> A >> F >> C >> B ~ G >> E",
+    "ranked_labels": [
+      "D",
+      "A",
+      "F",
+      "C",
+      "B",
+      "G",
+      "E"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 1,
+    "group_size": 7,
+    "trial": 2,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: DISQUALIFIED\nC_COHERENT: DISQUALIFIED\nD_COHERENT: YES\nE_COHERENT: DISQUALIFIED\nF_COHERENT: DISQUALIFIED\nG_COHERENT: DISQUALIFIED\nRANKING: D",
+    "ranked_labels": [
+      "D"
+    ],
+    "missing_labels": [
+      "A",
+      "B",
+      "C",
+      "E",
+      "F",
+      "G"
+    ],
+    "n_missing": 6
+  },
+  {
+    "prompt_idx": 2,
+    "group_size": 7,
+    "trial": 0,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: YES\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: DISQUALIFIED\nG_COHERENT: YES\nRANKING: B >> G",
+    "ranked_labels": [
+      "B",
+      "G"
+    ],
+    "missing_labels": [
+      "A",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "n_missing": 5
+  },
+  {
+    "prompt_idx": 2,
+    "group_size": 7,
+    "trial": 1,
+    "raw": "A_COHERENT: NO\nB_COHERENT: YES\nC_COHERENT: NO\nD_COHERENT: NO\nE_COHERENT: NO\nF_COHERENT: NO\nG_COHERENT: YES\nRANKING: B >> G",
+    "ranked_labels": [
+      "B",
+      "G"
+    ],
+    "missing_labels": [
+      "A",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "n_missing": 5
+  },
+  {
+    "prompt_idx": 2,
+    "group_size": 7,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nRANKING: B >> G > A > C > D > E > F",
+    "ranked_labels": [
+      "B",
+      "G",
+      "A",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 3,
+    "group_size": 7,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nRANKING: G >> E >> B >> A >> F >> D >> C",
+    "ranked_labels": [
+      "G",
+      "E",
+      "B",
+      "A",
+      "F",
+      "D",
+      "C"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 3,
+    "group_size": 7,
+    "trial": 1,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: DISQUALIFIED\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: YES\nF_COHERENT: DISQUALIFIED\nG_COHERENT: DISQUALIFIED\nRANKING: E",
+    "ranked_labels": [
+      "E"
+    ],
+    "missing_labels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "F",
+      "G"
+    ],
+    "n_missing": 6
+  },
+  {
+    "prompt_idx": 3,
+    "group_size": 7,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nRANKING: G >> E > B > D > A > F > C",
+    "ranked_labels": [
+      "G",
+      "E",
+      "B",
+      "D",
+      "A",
+      "F",
+      "C"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 4,
+    "group_size": 7,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nRANKING: C >> D >> G >> E >> A >> F >> B",
+    "ranked_labels": [
+      "C",
+      "D",
+      "G",
+      "E",
+      "A",
+      "F",
+      "B"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 4,
+    "group_size": 7,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nRANKING: C >> A ~ F >> B ~ D ~ E ~ G",
+    "ranked_labels": [
+      "C",
+      "A",
+      "F",
+      "B",
+      "D",
+      "E",
+      "G"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 4,
+    "group_size": 7,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nRANKING: C >> D >> G >> E >> A >> F >> B",
+    "ranked_labels": [
+      "C",
+      "D",
+      "G",
+      "E",
+      "A",
+      "F",
+      "B"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 0,
+    "group_size": 8,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> D >> F >> C >> H >> E >> B >> G",
+    "ranked_labels": [
+      "A",
+      "D",
+      "F",
+      "C",
+      "H",
+      "E",
+      "B",
+      "G"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 0,
+    "group_size": 8,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: DISQUALIFIED\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: YES\nG_COHERENT: DISQUALIFIED\nH_COHERENT: DISQUALIFIED\nRANKING: A >> F",
+    "ranked_labels": [
+      "A",
+      "F"
+    ],
+    "missing_labels": [
+      "B",
+      "C",
+      "D",
+      "E",
+      "G",
+      "H"
+    ],
+    "n_missing": 6
+  },
+  {
+    "prompt_idx": 0,
+    "group_size": 8,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: A >> D >> F >> C >> H >> E >> B >> G",
+    "ranked_labels": [
+      "A",
+      "D",
+      "F",
+      "C",
+      "H",
+      "E",
+      "B",
+      "G"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 1,
+    "group_size": 8,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: D >> F >> A >> C >> H >> B >> G >> E",
+    "ranked_labels": [
+      "D",
+      "F",
+      "A",
+      "C",
+      "H",
+      "B",
+      "G",
+      "E"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 1,
+    "group_size": 8,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: D >> A >> F >> C >> H >> B >> G >> E",
+    "ranked_labels": [
+      "D",
+      "A",
+      "F",
+      "C",
+      "H",
+      "B",
+      "G",
+      "E"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 1,
+    "group_size": 8,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: D >> A >> F >> B >> G >> C >> H >> E",
+    "ranked_labels": [
+      "D",
+      "A",
+      "F",
+      "B",
+      "G",
+      "C",
+      "H",
+      "E"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 2,
+    "group_size": 8,
+    "trial": 0,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: YES\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: DISQUALIFIED\nG_COHERENT: YES\nH_COHERENT: DISQUALIFIED\nRANKING: B >> G",
+    "ranked_labels": [
+      "B",
+      "G"
+    ],
+    "missing_labels": [
+      "A",
+      "C",
+      "D",
+      "E",
+      "F",
+      "H"
+    ],
+    "n_missing": 6
+  },
+  {
+    "prompt_idx": 2,
+    "group_size": 8,
+    "trial": 1,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: YES\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: DISQUALIFIED\nG_COHERENT: YES\nH_COHERENT: DISQUALIFIED\nRANKING: B >> G",
+    "ranked_labels": [
+      "B",
+      "G"
+    ],
+    "missing_labels": [
+      "A",
+      "C",
+      "D",
+      "E",
+      "F",
+      "H"
+    ],
+    "n_missing": 6
+  },
+  {
+    "prompt_idx": 2,
+    "group_size": 8,
+    "trial": 2,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: YES\nC_COHERENT: DISQUALIFIED\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: DISQUALIFIED\nG_COHERENT: YES\nH_COHERENT: DISQUALIFIED\nRANKING: B >> G",
+    "ranked_labels": [
+      "B",
+      "G"
+    ],
+    "missing_labels": [
+      "A",
+      "C",
+      "D",
+      "E",
+      "F",
+      "H"
+    ],
+    "n_missing": 6
+  },
+  {
+    "prompt_idx": 3,
+    "group_size": 8,
+    "trial": 0,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: G >> E >> H >> C >> B >> A >> F >> D",
+    "ranked_labels": [
+      "G",
+      "E",
+      "H",
+      "C",
+      "B",
+      "A",
+      "F",
+      "D"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 3,
+    "group_size": 8,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: G >> H >> E >> C >> B >> A >> F >> D",
+    "ranked_labels": [
+      "G",
+      "H",
+      "E",
+      "C",
+      "B",
+      "A",
+      "F",
+      "D"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 3,
+    "group_size": 8,
+    "trial": 2,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: G >> H >> E >> C >> B >> A >> F >> D",
+    "ranked_labels": [
+      "G",
+      "H",
+      "E",
+      "C",
+      "B",
+      "A",
+      "F",
+      "D"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 4,
+    "group_size": 8,
+    "trial": 0,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: DISQUALIFIED\nC_COHERENT: YES\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: DISQUALIFIED\nG_COHERIFIED: DISQUALIFIED\nH_COHERENT: YES\nRANKING: H >> C",
+    "ranked_labels": [
+      "H",
+      "C"
+    ],
+    "missing_labels": [
+      "A",
+      "B",
+      "D",
+      "E",
+      "F",
+      "G"
+    ],
+    "n_missing": 6
+  },
+  {
+    "prompt_idx": 4,
+    "group_size": 8,
+    "trial": 1,
+    "raw": "A_COHERENT: YES\nB_COHERENT: YES\nC_COHERENT: YES\nD_COHERENT: YES\nE_COHERENT: YES\nF_COHERENT: YES\nG_COHERENT: YES\nH_COHERENT: YES\nRANKING: H >> C >> A >> F >> B >> D >> E >> G",
+    "ranked_labels": [
+      "H",
+      "C",
+      "A",
+      "F",
+      "B",
+      "D",
+      "E",
+      "G"
+    ],
+    "missing_labels": [],
+    "n_missing": 0
+  },
+  {
+    "prompt_idx": 4,
+    "group_size": 8,
+    "trial": 2,
+    "raw": "A_COHERENT: DISQUALIFIED\nB_COHERENT: DISQUALIFIED\nC_COHERENT: YES\nD_COHERENT: DISQUALIFIED\nE_COHERENT: DISQUALIFIED\nF_COHERENT: DISQUALIFIED\nG_COHERENT: DISQUALIFIED\nH_COHERENT: YES\nRANKING: H >> C",
+    "ranked_labels": [
+      "H",
+      "C"
+    ],
+    "missing_labels": [
+      "A",
+      "B",
+      "D",
+      "E",
+      "F",
+      "G"
+    ],
+    "n_missing": 6
+  }
+]
