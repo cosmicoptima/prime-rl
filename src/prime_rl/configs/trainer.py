@@ -509,7 +509,13 @@ class MuonConfig(BaseOptimizerConfig):
     ] = 0.95
 
 
-OptimizerConfig: TypeAlias = Annotated[SGDConfig | AdamWConfig | MuonConfig, Field(discriminator="type")]
+class SignSGDConfig(BaseOptimizerConfig):
+    type: Literal["sign_sgd"] = "sign_sgd"
+
+
+OptimizerConfig: TypeAlias = Annotated[
+    SGDConfig | AdamWConfig | MuonConfig | SignSGDConfig, Field(discriminator="type")
+]
 
 
 class WeightCheckpointConfig(BaseConfig):
