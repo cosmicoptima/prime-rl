@@ -158,6 +158,13 @@ class LoRAConfig(BaseConfig):
         ),
     ] = []
 
+    use_rslora: Annotated[
+        bool,
+        Field(
+            description="Use rank-stabilized LoRA scaling (alpha / sqrt(rank) instead of alpha / rank). Recommended for high-rank adapters.",
+        ),
+    ] = False
+
 
 class DebugModelConfig(BaseConfig):
     """Debugging feature around model and distributed training."""

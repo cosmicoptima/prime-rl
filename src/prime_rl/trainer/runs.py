@@ -511,7 +511,12 @@ def setup_multi_run_manager(
             return True, ""
 
         def on_run_discovered(idx: int, run_id: str, orch_config: "OrchestratorConfig") -> None:
-            _MULTI_RUN_MANAGER.scaling_factors[idx] = orch_config.model.lora.alpha / orch_config.model.lora.rank
+            import math
+
+            if trainer_lora.use_rslora:
+                _MULTI_RUN_MANAGER.scaling_factors[idx] = orch_config.model.lora.alpha / math.sqrt(orch_config.model.lora.rank)
+            else:
+                _MULTI_RUN_MANAGER.scaling_factors[idx] = orch_config.model.lora.alpha / orch_config.model.lora.rank
 
         _MULTI_RUN_MANAGER.register_config_validation_hook(validate_lora_rank)
         _MULTI_RUN_MANAGER.register_discovered_hook(on_run_discovered)

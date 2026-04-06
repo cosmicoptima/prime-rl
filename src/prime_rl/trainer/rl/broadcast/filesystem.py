@@ -85,6 +85,7 @@ class FileSystemWeightBroadcast(WeightBroadcast):
                             rank=orch_lora.rank,
                             alpha=orch_lora.alpha,
                             dropout=self.lora_config.dropout,
+                            use_rslora=self.lora_config.use_rslora,
                         )
 
                     self._notify_orchestrator(save_dir)

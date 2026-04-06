@@ -366,6 +366,7 @@ class WeightCheckpointManager:
                         rank=self.lora_config.rank,
                         alpha=self.lora_config.alpha,
                         dropout=self.lora_config.dropout,
+                        use_rslora=self.lora_config.use_rslora,
                     )
             self.logger.debug(f"Saved weight checkpoint to {path} in {time.perf_counter() - start_time:.2f} seconds")
 

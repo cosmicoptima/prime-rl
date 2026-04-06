@@ -130,7 +130,12 @@ def train(config: SFTConfig):
     if config.model.lora is not None:
         multi_run_manager = get_multi_run_manager()
         multi_run_manager.reset_run_parameters(0)
-        multi_run_manager.scaling_factors[0] = config.model.lora.alpha / config.model.lora.rank
+        import math
+
+        if config.model.lora.use_rslora:
+            multi_run_manager.scaling_factors[0] = config.model.lora.alpha / math.sqrt(config.model.lora.rank)
+        else:
+            multi_run_manager.scaling_factors[0] = config.model.lora.alpha / config.model.lora.rank
 
     logger.info(f"Initializing tokenizer ({config.tokenizer})")
     tokenizer = setup_tokenizer(config.tokenizer)

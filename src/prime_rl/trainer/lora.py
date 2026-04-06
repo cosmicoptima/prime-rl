@@ -234,7 +234,7 @@ def clean_lora_state_dict(state_dict: Dict[str, torch.Tensor]) -> Dict[str, torc
     return clean_state_dict
 
 
-def save_lora_config(model: nn.Module, save_path, rank: int, alpha: float, dropout: float) -> None:
+def save_lora_config(model: nn.Module, save_path, rank: int, alpha: float, dropout: float, use_rslora: bool = False) -> None:
     """
     Save LoRA configuration as JSON for adapter portability.
 
@@ -274,6 +274,7 @@ def save_lora_config(model: nn.Module, save_path, rank: int, alpha: float, dropo
         "bias": "none",
         "target_modules": sorted(list(target_modules)),
         "modules_to_save": sorted(list(modules_to_save)) if modules_to_save else None,
+        "use_rslora": use_rslora,
     }
 
     config_path = save_path / "adapter_config.json"
