@@ -35,44 +35,17 @@ ssh_cmd_quiet() {
 
 echo "=== Pod setup: $SSH_TARGET ==="
 
-# --- 1. Push fork source code ---
+# --- 1. Clone/update fork on pod ---
 echo ""
-echo "--- Pushing source code ---"
-
-# Encode changed files as base64 and push
-push_file() {
-    local src="$1" dst="$2"
-    local b64
-    b64=$(base64 < "$src")
-    ssh_cmd "mkdir -p \$(dirname $dst); echo '$b64' | base64 -d > $dst" > /dev/null 2>&1
-    echo "  pushed $dst"
-}
-
-# Push our patched source files (only the ones we changed from upstream)
-push_file "$SCRIPT_DIR/src/prime_rl/configs/trainer.py" "/app/src/prime_rl/configs/trainer.py"
-push_file "$SCRIPT_DIR/src/prime_rl/trainer/runs.py" "/app/src/prime_rl/trainer/runs.py"
-push_file "$SCRIPT_DIR/src/prime_rl/trainer/sft/train.py" "/app/src/prime_rl/trainer/sft/train.py"
-push_file "$SCRIPT_DIR/src/prime_rl/trainer/lora.py" "/app/src/prime_rl/trainer/lora.py"
-push_file "$SCRIPT_DIR/src/prime_rl/trainer/rl/broadcast/filesystem.py" "/app/src/prime_rl/trainer/rl/broadcast/filesystem.py"
-push_file "$SCRIPT_DIR/src/prime_rl/trainer/ckpt.py" "/app/src/prime_rl/trainer/ckpt.py"
-
-# Push environment to /workspace (persists across restarts)
-push_file "$SCRIPT_DIR/environments/vf_multiturn/__init__.py" "/workspace/environments/vf_multiturn/__init__.py"
-
-# Push config and system prompt
-push_file "$SCRIPT_DIR/configs/negamp_v2/rl.toml" "/app/configs/negamp_v2/rl.toml"
-push_file "$SCRIPT_DIR/configs/negamp_v2/SYSTEM_PROMPT.md" "/workspace/SYSTEM_PROMPT.md"
-
-# Clear pycache
-ssh_cmd "find /app/src -name __pycache__ -exec rm -rf {} + 2>/dev/null; find /workspace/environments -name __pycache__ -exec rm -rf {} + 2>/dev/null; echo CACHE_CLEARED" > /dev/null 2>&1
-echo "  cleared pycache"
+echo "--- Syncing source code ---"
+ssh_cmd 'if [ -d /workspace/prime-rl/.git ]; then cd /workspace/prime-rl && git pull --ff-only 2>&1 | tail -1; else git clone https://github.com/cosmicoptima/prime-rl.git /workspace/prime-rl 2>&1 | tail -1; fi; cp -r /workspace/prime-rl/configs/negamp_v2 /app/configs/negamp_v2; cp /workspace/prime-rl/configs/negamp_v2/SYSTEM_PROMPT.md /workspace/SYSTEM_PROMPT.md; find /workspace/prime-rl -name __pycache__ -exec rm -rf {} + 2>/dev/null; echo SYNC_DONE' 2>&1 | grep -E "SYNC_DONE|Already|Updating|Cloning" || true
 
 # --- 2. Wait for user sim ---
 echo ""
 echo "--- Waiting for user sim ---"
 for i in $(seq 1 120); do
-    STATUS=$(ssh_cmd_quiet 'curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8002/health' | grep -o "[0-9][0-9][0-9]" | tail -1)
-    if [ "$STATUS" = "200" ]; then
+    RESULT=$(ssh_cmd 'curl -s -o /dev/null -w "HEALTH_%{http_code}" http://127.0.0.1:8002/health' 2>&1 | grep -o "HEALTH_[0-9]*" | tail -1)
+    if [ "$RESULT" = "HEALTH_200" ]; then
         echo "  user sim ready!"
         break
     fi
@@ -91,8 +64,7 @@ ssh_cmd 'for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 
 if [ "$LAUNCH" = "--launch" ]; then
     echo ""
     echo "--- Launching RL run ---"
-    # Source env file written by startup, or use env vars from host
-    ssh_cmd "export HF_HOME=/workspace/hf_cache; export HF_HUB_ENABLE_HF_TRANSFER=1; export HF_TOKEN=${HF_TOKEN:?Set HF_TOKEN env var}; export OPENROUTER_API_KEY=${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY env var}; export WANDB_API_KEY=${WANDB_API_KEY:?Set WANDB_API_KEY env var}; export PYTHONPATH=/workspace/environments; nohup /app/.venv/bin/rl @ configs/negamp_v2/rl.toml > /workspace/logs/run.log 2>&1 & sleep 2; ps aux | grep 'rl @' | grep -v grep | head -1; echo RL_LAUNCHED" 2>&1 | grep -E "rl @|RL_LAUNCHED" || echo "  WARNING: launch may have failed"
+    ssh_cmd "export HF_HOME=/workspace/hf_cache; export HF_HUB_ENABLE_HF_TRANSFER=1; export HF_TOKEN=${HF_TOKEN:?Set HF_TOKEN env var}; export OPENROUTER_API_KEY=${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY env var}; export WANDB_API_KEY=${WANDB_API_KEY:?Set WANDB_API_KEY env var}; export PYTHONPATH=/workspace/prime-rl/src:/workspace/prime-rl/environments; nohup /app/.venv/bin/rl @ configs/negamp_v2/rl.toml > /workspace/logs/run.log 2>&1 & sleep 2; ps aux | grep 'rl @' | grep -v grep | head -1; echo RL_LAUNCHED" 2>&1 | grep -E "rl @|RL_LAUNCHED" || echo "  WARNING: launch may have failed"
     echo ""
     echo "  Check logs: ssh into pod and run: tail -f /workspace/logs/run.log"
 fi
