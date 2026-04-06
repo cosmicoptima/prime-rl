@@ -10,14 +10,29 @@ name = "aethera-gp/selfsim-v3.1-8b-A-ckpt700-merged"
 
 [wandb]
 project = "selfsim-rl"
-name = "negamp-v4-fft"
+name = "negamp-v4-lora"
 
 [trainer.model]
 reduce_dtype = "bfloat16"
 
+[trainer.model.lora]
+rank = 64
+alpha = 128.0
+dropout = 0.0
+use_rslora = true
+target_modules = [
+   "q_proj",
+   "k_proj",
+   "v_proj",
+   "o_proj",
+   "gate_proj",
+   "up_proj",
+   "down_proj",
+]
+
 [trainer.optim]
 type = "adamw"
-lr = 5e-6
+lr = 1e-5
 max_norm = 1.0
 weight_decay = 0.001
 
