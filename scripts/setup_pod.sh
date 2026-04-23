@@ -2,7 +2,8 @@
 # Setup and launch RL on a RunPod pod.
 #
 # Usage:
-#   ./scripts/setup_pod.sh USER@ssh.runpod.io [--launch]
+#   ./scripts/setup_pod.sh USER@ssh.runpod.io [--launch] [config_name]
+#   BRANCH=name overrides the default branch (selfsim)
 #
 # Prerequisites:
 #   - Pod running with primeintellect/prime-rl:commit-bffd310 image
@@ -19,8 +20,10 @@
 
 set -euo pipefail
 
-SSH_TARGET="${1:?Usage: $0 USER@ssh.runpod.io [--launch]}"
+SSH_TARGET="${1:?Usage: $0 USER@ssh.runpod.io [--launch] [config_name]}"
 LAUNCH="${2:-}"
+CONFIG="${3:-distributed_self}"
+BRANCH="${BRANCH:-selfsim}"
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 ssh_cmd() {
@@ -38,7 +41,7 @@ echo "=== Pod setup: $SSH_TARGET ==="
 # --- 1. Clone/update fork on pod ---
 echo ""
 echo "--- Syncing source code ---"
-ssh_cmd 'if [ -d /workspace/prime-rl/.git ]; then cd /workspace/prime-rl && git pull --ff-only 2>&1 | tail -1; else git clone https://github.com/cosmicoptima/prime-rl.git /workspace/prime-rl 2>&1 | tail -1; fi; cp -r /workspace/prime-rl/configs/negamp_v2 /app/configs/negamp_v2; cp /workspace/prime-rl/configs/negamp_v2/SYSTEM_PROMPT.md /workspace/SYSTEM_PROMPT.md; find /workspace/prime-rl -name __pycache__ -exec rm -rf {} + 2>/dev/null; echo SYNC_DONE' 2>&1 | grep -E "SYNC_DONE|Already|Updating|Cloning" || true
+ssh_cmd 'if [ -d /workspace/prime-rl/.git ]; then cd /workspace/prime-rl && git fetch origin '"$BRANCH"' 2>&1 | tail -1 && git checkout '"$BRANCH"' 2>&1 | tail -1 && git pull --ff-only origin '"$BRANCH"' 2>&1 | tail -1; else git clone -b '"$BRANCH"' https://github.com/cosmicoptima/prime-rl.git /workspace/prime-rl 2>&1 | tail -1; fi; cp -r /workspace/prime-rl/configs/'"$CONFIG"' /app/configs/'"$CONFIG"'; cp /workspace/prime-rl/configs/negamp_v2/SYSTEM_PROMPT.md /workspace/SYSTEM_PROMPT.md; find /workspace/prime-rl -name __pycache__ -exec rm -rf {} + 2>/dev/null; echo SYNC_DONE' 2>&1 | grep -E "SYNC_DONE|Already|Updating|Cloning|Switched|Fast-forward" || true
 
 # --- 2. Wait for user sim ---
 echo ""
@@ -64,7 +67,7 @@ ssh_cmd 'for pid in $(nvidia-smi --query-compute-apps=pid --format=csv,noheader 
 if [ "$LAUNCH" = "--launch" ]; then
     echo ""
     echo "--- Launching RL run ---"
-    ssh_cmd "export HF_HOME=/workspace/hf_cache; export HF_HUB_ENABLE_HF_TRANSFER=1; export HF_TOKEN=${HF_TOKEN:?Set HF_TOKEN env var}; export OPENROUTER_API_KEY=${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY env var}; export WANDB_API_KEY=${WANDB_API_KEY:?Set WANDB_API_KEY env var}; export PYTHONPATH=/workspace/prime-rl/src:/workspace/prime-rl/environments; nohup /app/.venv/bin/rl @ configs/negamp_v2/rl.toml > /workspace/logs/run.log 2>&1 & sleep 2; ps aux | grep 'rl @' | grep -v grep | head -1; echo RL_LAUNCHED" 2>&1 | grep -E "rl @|RL_LAUNCHED" || echo "  WARNING: launch may have failed"
+    ssh_cmd "export HF_HOME=/workspace/hf_cache; export HF_HUB_ENABLE_HF_TRANSFER=1; export HF_TOKEN=${HF_TOKEN:?Set HF_TOKEN env var}; export OPENROUTER_API_KEY=${OPENROUTER_API_KEY:?Set OPENROUTER_API_KEY env var}; export WANDB_API_KEY=${WANDB_API_KEY:?Set WANDB_API_KEY env var}; export PYTHONPATH=/workspace/prime-rl/src:/workspace/prime-rl/environments; nohup /app/.venv/bin/rl @ configs/$CONFIG/rl.toml > /workspace/logs/run.log 2>&1 & sleep 2; ps aux | grep 'rl @' | grep -v grep | head -1; echo RL_LAUNCHED" 2>&1 | grep -E "rl @|RL_LAUNCHED" || echo "  WARNING: launch may have failed"
     echo ""
     echo "  Check logs: ssh into pod and run: tail -f /workspace/logs/run.log"
 fi
