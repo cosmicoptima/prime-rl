@@ -118,6 +118,7 @@ class MultiturnJudgeRubric(Rubric):
         openrouter_api_key: str = "",
         openrouter_model: str = "z-ai/glm-5",
         signal_prompt: str = "",
+        reasoning_effort: str = "none",
         max_concurrent: int = 32,
         rollouts_per_group: int = 8,
         **kwargs,
@@ -127,6 +128,7 @@ class MultiturnJudgeRubric(Rubric):
         self._lock = None
         self._expected_group_size = rollouts_per_group
         self._signal_prompt = signal_prompt or DEFAULT_SIGNAL_PROMPT
+        self._reasoning_effort = reasoning_effort
 
         rubric_self = self
 
@@ -225,8 +227,8 @@ class MultiturnJudgeRubric(Rubric):
                                 {"role": "user", "content": user_content},
                             ],
                             "temperature": 0,
-                            "max_tokens": 300,
-                            "reasoning": {"effort": "none"},
+                            "max_tokens": 300 if self._reasoning_effort == "none" else 2000,
+                            "reasoning": {"effort": self._reasoning_effort},
                         },
                         timeout=120,
                     )
@@ -426,6 +428,8 @@ def load_environment(
     openrouter_api_key_env: str = "OPENROUTER_API_KEY",
     openrouter_model: str = "z-ai/glm-5",
     signal_prompt: str = "",
+    signal_prompt_file: str = "",
+    reasoning_effort: str = "none",
     max_concurrent: int = 32,
     rollouts_per_group: int = 8,
     # User sim config
@@ -449,6 +453,10 @@ def load_environment(
         raise ValueError(f"Environment variable {openrouter_api_key_env} not set (needed for judge_backend='openrouter')")
     if judge_backend == "gemini" and not api_key:
         raise ValueError(f"Environment variable {judge_api_key_env} not set")
+
+    # Load signal prompt from file if specified
+    if signal_prompt_file and os.path.exists(signal_prompt_file):
+        signal_prompt = open(signal_prompt_file).read().strip()
 
     # Load system prompt
     if system_prompt_file and os.path.exists(system_prompt_file):
@@ -501,6 +509,7 @@ def load_environment(
         openrouter_api_key=or_api_key,
         openrouter_model=openrouter_model,
         signal_prompt=signal_prompt,
+        reasoning_effort=reasoning_effort,
         max_concurrent=max_concurrent,
         rollouts_per_group=rollouts_per_group,
         parser=parser,
