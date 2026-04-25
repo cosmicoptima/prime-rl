@@ -57,6 +57,8 @@ For each adjacent pair in the ranking, indicate the gap:
 Respond only in this format:
 RANKING: [e.g. {example_ranking}]
 
+Think before giving your final response, but don't say "RANKING:" until your final response is ready.
+
 Include all {n} conversations in the ranking."""
 
 
@@ -227,7 +229,7 @@ class MultiturnJudgeRubric(Rubric):
                                 {"role": "user", "content": user_content},
                             ],
                             "temperature": 0,
-                            "max_tokens": 300 if self._reasoning_effort == "none" else 2000,
+                            "max_tokens": 4000,
                             "reasoning": {"effort": self._reasoning_effort},
                         },
                         timeout=120,
