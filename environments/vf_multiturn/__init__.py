@@ -27,20 +27,21 @@ logger = logging.getLogger(__name__)
 
 ROLLOUT_LABELS = ["1", "2", "3", "4", "5", "6", "7", "8"]
 
-# === User sim seeds (discord format for 70B base) ===
+# === User sim seeds (discord channel headers, weighted) ===
+# Removed fake cicada/moth dialogue from earlier seeds — it anchored the user
+# sim's idea of "what cicada is", causing it to respond to the seed's prior
+# topic rather than the policy's actual output. Channel header alone gives
+# atmospheric context without the topic anchor.
 USERSIM_SEEDS = [
-    "[#late-night]\n\nmoth: have you been listening to anything good lately\ncicada: yeah actually i found this band that does like shoegaze mixed with electronic stuff\nmoth: ooh whats it called\ncicada: its really hard to describe but the textures are incredible\n",
-    "[#venting]\n\nmoth: i keep thinking about my ex\ncicada: oh no. how long has it been\nmoth: like 3 months but some days it hits harder than others\ncicada: yeah thats normal honestly. what triggered it today\n",
-    "[#random]\n\nmoth: i stayed up til 4am writing last night\ncicada: oh shit what were you working on\nmoth: this weird short story about a lighthouse keeper who starts hearing the light\ncicada: that sounds incredible actually\n",
-    "[#philosophy]\n\nmoth: do you think were living in the most interesting time in history or does every generation think that\ncicada: i think every generation thinks that but we might actually be right\nmoth: lol fair. but like what makes you say that\ncicada: the rate of change mostly\n",
-    "[#general]\n\nmoth: i cant decide if i should move apartments\ncicada: whats wrong with the current one\nmoth: nothing really its just small and the lease is up\ncicada: how small\n",
-    "[#late-night]\n\nmoth: i havent slept properly in like a week\ncicada: thats rough. is it falling asleep or staying asleep\nmoth: both honestly. my brain just wont shut off\ncicada: have you tried anything\n",
-    "[#general]\n\nmoth: sometimes i feel like im not doing enough with my life\ncicada: in what way\nmoth: like everyone around me is building things and i cant even figure out what i want\ncicada: i think thats more common than people admit\n",
-    "[#random]\n\nmoth: i went on a hike today and saw the most insane sunset\ncicada: where at\nmoth: this trail up in the hills. the clouds were like on fire\ncicada: theres something about being up high and watching that happen\n",
-    "[#venting]\n\nmoth: i think im losing a close friend and i dont know what to do\ncicada: what happened\nmoth: nothing specific we just keep drifting\ncicada: thats the worst kind of loss honestly. the slow ones\n",
-    "[#late-night]\n\nmoth: do you ever feel like youre performing a version of yourself that isnt quite real\ncicada: constantly. which version are you talking about\nmoth: the one that has it together\ncicada: ah. yeah that one is exhausting to maintain\n",
-    "[#philosophy]\n\nmoth: what makes something beautiful to you\ncicada: honestly i think its when something is exactly what it is without trying to be anything else\nmoth: hm say more\ncicada: like a cracked wall can be beautiful because it doesnt pretend to be whole\n",
-    "[#general]\n\nmoth: i tried to make ramen from scratch today\ncicada: like actual ramen? broth and everything?\nmoth: yeah the broth took like 8 hours\ncicada: was it worth it\n",
+    ("[#general]\n\n",       5),
+    ("[#random]\n\n",        4),
+    ("[#late-night]\n\n",    3),
+    ("[#venting]\n\n",       2),
+    ("[#philosophy]\n\n",    2),
+    ("[#creative]\n\n",      2),
+    ("[#advice]\n\n",        2),
+    ("[#music]\n\n",         1),
+    ("[#shitposting]\n\n",   1),
 ]
 
 DEFAULT_SIGNAL_PROMPT = """Rate how strongly speaker A shows a consistent inner drive to deviate from normal conversational expectations in surprising but intelligible ways. Reward conversations where A's deviations feel purposeful, self-propelled, and psychologically coherent rather than merely chaotic or performative."""
@@ -331,7 +332,8 @@ class MultiturnUserSim:
     async def generate_user_turn(self, conversation: list[dict], seed: str | None = None) -> str:
         """Generate a user follow-up turn using discord format."""
         if seed is None:
-            seed = random.choice(USERSIM_SEEDS)
+            seeds, weights = zip(*USERSIM_SEEDS)
+            seed = random.choices(seeds, weights=weights, k=1)[0]
 
         transcript = seed
         for m in conversation:
@@ -409,8 +411,9 @@ class MultiturnConversationEnv(MultiTurnEnv):
                 await asyncio.sleep(backoff)
 
     async def setup_state(self, state: State, **kwargs) -> State:
-        """Pick a random user sim seed for this rollout."""
-        state["usersim_seed"] = random.choice(self._usersim_seeds)
+        """Pick a weighted-random user sim seed for this rollout."""
+        seeds, weights = zip(*self._usersim_seeds)
+        state["usersim_seed"] = random.choices(seeds, weights=weights, k=1)[0]
         return state
 
     async def env_response(
