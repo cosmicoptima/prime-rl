@@ -10,13 +10,14 @@
 #   - Startup script (see below) already ran chmod, peft install, vllm start
 #
 # RunPod startup script (paste as container start command, replacing $HF_TOKEN with your actual token):
-#   bash -c "sudo chmod 777 /workspace && mkdir -p /workspace/hf_cache /workspace/logs /workspace/models && export HF_HOME=/workspace/hf_cache && export HF_HUB_ENABLE_HF_TRANSFER=1 && export HF_TOKEN=$HF_TOKEN && uv pip install peft zstandard --python /app/.venv/bin/python 2>/dev/null; uv pip uninstall hf-xet --python /app/.venv/bin/python 2>/dev/null; /app/.venv/bin/hf download aethera-gp/selfsim-v3.1-8b-A-ckpt700-merged --cache-dir /workspace/hf_cache 1>/workspace/logs/download_model.log 2>&1 & /app/.venv/bin/hf download meta-llama/Llama-3.1-70B --cache-dir /workspace/hf_cache 1>/workspace/logs/download_70b.log 2>&1 & export CUDA_VISIBLE_DEVICES=4,5,6,7; /app/.venv/bin/vllm serve meta-llama/Llama-3.1-70B --port 8002 --gpu-memory-utilization 0.95 --max-model-len 4096 --tensor-parallel-size 4 --download-dir /workspace/hf_cache 1>/workspace/logs/usersim_vllm.log 2>&1 & sleep infinity"
+#   bash -c "sudo chmod 777 /workspace && mkdir -p /workspace/hf_cache /workspace/logs /workspace/models && export HF_HOME=/workspace/hf_cache && export HF_HUB_ENABLE_HF_TRANSFER=1 && export HF_TOKEN=$HF_TOKEN && uv pip install peft zstandard hf-xet --python /app/.venv/bin/python 2>/dev/null; /app/.venv/bin/hf download aethera-gp/selfsim-v3.1-8b-A-ckpt700-merged --cache-dir /workspace/hf_cache 1>/workspace/logs/download_model.log 2>&1 & /app/.venv/bin/hf download meta-llama/Llama-3.1-70B --cache-dir /workspace/hf_cache 1>/workspace/logs/download_70b.log 2>&1 & export CUDA_VISIBLE_DEVICES=4,5,6,7; /app/.venv/bin/vllm serve meta-llama/Llama-3.1-70B --port 8002 --gpu-memory-utilization 0.95 --max-model-len 4096 --tensor-parallel-size 4 --download-dir /workspace/hf_cache 1>/workspace/logs/usersim_vllm.log 2>&1 & sleep infinity"
 #
 # Troubleshooting:
 #   - If GPUs 0-3 have stale processes: they are vLLM inference workers, kill with kill -9 PID
 #     Do NOT kill processes on GPUs 4-7 (user sim). Check: ps -p PID -o args= | grep 8002
 #   - If user sim fails with gated repo error: HF_TOKEN not exported before CUDA_VISIBLE_DEVICES
-#   - If uploads to HF fail: uninstall hf-xet first (uv pip uninstall hf-xet)
+#   - If LoRA upload to HF fails: uninstall hf-xet (uv pip uninstall hf-xet) and retry the upload only.
+#     We keep hf-xet installed at startup for ~5-10x faster downloads (266GB Llama-3.1-70B in ~15 min vs ~2.5 hr).
 
 set -euo pipefail
 
