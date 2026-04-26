@@ -59,6 +59,14 @@ num_policy_turns = 5
 signal_prompt_file = "/workspace/prime-rl/signal_prompts/distributed_self_lain.txt"
 system_prompt_file = "/workspace/SYSTEM_PROMPT.md"
 
+[ckpt]
+interval = 10
+keep = 8
+keep_interval = 20
+
+[ckpt.weights]
+save_adapter_separately = true
+
 [trainer]
 
 [inference]
