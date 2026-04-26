@@ -61,10 +61,10 @@ system_prompt_file = "/workspace/SYSTEM_PROMPT.md"
 
 [ckpt]
 interval = 10
-keep = 8
+keep_last = 8
 keep_interval = 20
 
-[ckpt.weights]
+[trainer.ckpt.weights]
 save_adapter_separately = true
 
 [trainer]
