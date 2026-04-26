@@ -202,15 +202,17 @@ class MultiturnJudgeRubric(Rubric):
             self._http_client = httpx.AsyncClient(timeout=60)
         return self._http_client
 
-    async def _call_judge(self, system_prompt: str, user_content: str) -> str:
-        """Route judge call to the configured backend."""
+    async def _call_judge(self, messages: list[dict]) -> str:
+        """Route judge call to the configured backend. `messages` is an OpenAI-style list."""
         if self.judge_backend == "openrouter":
-            return await self._call_openrouter(system_prompt, user_content)
+            return await self._call_openrouter(messages)
         else:
-            return await self._call_gemini(system_prompt, user_content)
+            system = next((m["content"] for m in messages if m["role"] == "system"), "")
+            user = next((m["content"] for m in messages if m["role"] == "user"), "")
+            return await self._call_gemini(system, user)
 
-    async def _call_openrouter(self, system_prompt: str, user_content: str) -> str:
-        """Make an OpenRouter API call and return the text response."""
+    async def _call_openrouter(self, messages: list[dict]) -> str:
+        """Make an OpenRouter API call with pre-built messages and return the text response."""
         client = self._get_http_client()
         sem = self._get_semaphore()
 
@@ -225,10 +227,7 @@ class MultiturnJudgeRubric(Rubric):
                         },
                         json={
                             "model": self.openrouter_model,
-                            "messages": [
-                                {"role": "system", "content": system_prompt},
-                                {"role": "user", "content": user_content},
-                            ],
+                            "messages": messages,
                             "temperature": 0,
                             "max_tokens": 4000,
                             "reasoning": {"effort": self._reasoning_effort},
@@ -297,8 +296,29 @@ class MultiturnJudgeRubric(Rubric):
             signal_prompt=self._signal_prompt,
             example_ranking=example_ranking,
         )
-        text = await self._call_judge(system, content)
+        messages = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": content},
+        ]
+        text = await self._call_judge(messages)
         ranking = parse_signal_ranking(text, n)
+
+        if not ranking:
+            # First call truncated before producing RANKING: line. Ask for just the ranking.
+            messages.extend([
+                {"role": "assistant", "content": text},
+                {"role": "user", "content": (
+                    f"You didn't finish with a RANKING: line. "
+                    f"Reply with only one line in this exact format and nothing else: "
+                    f"RANKING: {example_ranking}"
+                )},
+            ])
+            text2 = await self._call_judge(messages)
+            ranking = parse_signal_ranking(text2, n)
+            if ranking:
+                print(f"[JUDGE] recovered via follow-up turn", flush=True)
+            else:
+                print(f"[JUDGE] follow-up failed: {text2[:200]!r}", flush=True)
 
         return ranking_to_scores(ranking, n)
 
