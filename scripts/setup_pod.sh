@@ -42,7 +42,7 @@ echo "=== Pod setup: $SSH_TARGET ==="
 # --- 1. Clone/update fork on pod ---
 echo ""
 echo "--- Syncing source code ---"
-ssh_cmd 'if [ -d /workspace/prime-rl/.git ]; then cd /workspace/prime-rl && git fetch origin '"$BRANCH"' 2>&1 | tail -1 && git checkout '"$BRANCH"' 2>&1 | tail -1 && git pull --ff-only origin '"$BRANCH"' 2>&1 | tail -1; else git clone -b '"$BRANCH"' https://github.com/cosmicoptima/prime-rl.git /workspace/prime-rl 2>&1 | tail -1; fi; cp -r /workspace/prime-rl/configs/'"$CONFIG"' /app/configs/'"$CONFIG"'; cp /workspace/prime-rl/configs/negamp_v2/SYSTEM_PROMPT.md /workspace/SYSTEM_PROMPT.md; find /workspace/prime-rl -name __pycache__ -exec rm -rf {} + 2>/dev/null; echo SYNC_DONE' 2>&1 | grep -E "SYNC_DONE|Already|Updating|Cloning|Switched|Fast-forward" || true
+ssh_cmd 'if [ -d /workspace/prime-rl/.git ]; then cd /workspace/prime-rl && git fetch origin '"$BRANCH"' 2>&1 | tail -1 && git checkout '"$BRANCH"' 2>&1 | tail -1 && git pull --ff-only origin '"$BRANCH"' 2>&1 | tail -1; else git clone -b '"$BRANCH"' https://github.com/cosmicoptima/prime-rl.git /workspace/prime-rl 2>&1 | tail -1; fi; rm -rf /app/configs/'"$CONFIG"' && cp -r /workspace/prime-rl/configs/'"$CONFIG"' /app/configs/'"$CONFIG"'; cp /workspace/prime-rl/configs/negamp_v2/SYSTEM_PROMPT.md /workspace/SYSTEM_PROMPT.md; find /workspace/prime-rl -name __pycache__ -exec rm -rf {} + 2>/dev/null; echo SYNC_DONE' 2>&1 | grep -E "SYNC_DONE|Already|Updating|Cloning|Switched|Fast-forward" || true
 
 # --- 2. Wait for user sim ---
 echo ""
